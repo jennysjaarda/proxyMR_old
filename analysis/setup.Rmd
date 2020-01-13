@@ -78,10 +78,11 @@ Open project in atom (or preferred text editor) and modify the following files:
 Return to sgg server and run the following:
 
 ```bash
-project_dir=/data/sgg2/jenny/projects/PSYMETAB
+project_dir=/data/sgg2/jenny/projects/proxyMR
 mkdir $project_dir/data/raw
 mkdir $project_dir/data/processed
 mkdir $project_dir/docs/assets
+mkdir $project_dir/docs/generated_reports
 ```
 
 This will create the following directory structure in `proxyMR/`:
@@ -103,6 +104,7 @@ proxyMR/
 │   ├── raw/
 │   └── processed/
 ├── docs/
+│   ├── generated_reports/
 │   └── assets/
 ├── myproject.Rproj
 ├── output/
@@ -116,6 +118,10 @@ proxyMR/
 
 **Note that Part A and B are happening in parallel.**
 
+```{r eval=FALSE}
+library(drake)
+```
+
 For execution of drake plan: see [`make.R`](https://GitHub.com/jennysjaarda/PSYMETAB/blob/master/make.R)
 For drake plan see: [`code/plan.R`](https://GitHub.com/jennysjaarda/PSYMETAB/blob/master/code/plan.R)
 
@@ -126,7 +132,7 @@ drake_hpc_template_file("slurm_clustermq.tmpl")
 
 # Write the file slurm_clustermq.tmpl. and edit manually
 ```
-The file created using the `clustermq` template was edited manually to match [`slurm_clustermq.tmpl`](https://GitHub.com/jennysjaarda/PSYMETAB/blob/master/slurm_clustermq.tmpl)
+The file created using the `clustermq` template was edited manually to match [`slurm_clustermq.tmpl`](https://GitHub.com/jennysjaarda/proxyMR/blob/master/slurm_clustermq.tmpl)
 
 ```{r comment=''}
 cat(readLines('slurm_clustermq.tmpl'), sep = '\n')
