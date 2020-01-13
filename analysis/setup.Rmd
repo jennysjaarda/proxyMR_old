@@ -112,6 +112,26 @@ proxyMR/
 └── README.md
 ```
 
+# Initialize a packrat directory
+
+[Packrat](https://rstudio.github.io/packrat/) is a dependency management system for R. It is useful for making your project:
+1. Isolated.
+2. Portable.
+3. Reproducible.
+
+Initialize a `packrat` project by simply running:
+
+```{r eval=FALSE}
+packrat::init("/data/sgg2/jenny/projects/proxyMR")
+```
+
+This creates a `packrat` directory in your project folder.
+
+Now, everytime you launch `R` from this directory or run `install.packages()`, `packrat` will automatically keep track of your packages and versions. You are no longer in an ordinary R project; you’re in a Packrat project. The main difference is that a packrat project has its own private package library. Any packages you install from inside a packrat project are only available to that project; and packages you install outside of the project are not available to the project.
+
+Likely, we won't need to do anymore than this, but some [additional functions exist](https://rstudio.github.io/packrat/commands.html), that are useful if we need to move our project to a new disk/computer.
+
+
 ## Step 4: Run and summarize analyses.
 
 ### Part A: Setup drake and execute plan.
