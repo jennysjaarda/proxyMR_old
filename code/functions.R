@@ -1,10 +1,153 @@
-### File A1 ----
+pairs_only <- function(household_info){
 
+  household_info <- household_info %>% mutate(group_count = ave(household_info$group, household_info$group,  FUN = length))
+  #table(household_info$group_count) ## number of individuals in each group household sizes
+  household_info <- household_info[which(household_info$group_count==2),]
+  return(household_info)
+}
+
+find_kinship <- function(household_pairs, relatives){
+
+
+  household_list <- unique(household_pairs$group)
+  pairs <- numeric()
+  for(house in household_list)
+  {
+
+    house_ids <- household_pairs[which(household_pairs$group==house),]
+    for(i in 1:(dim(house_ids)[1]-1))
+    {
+      for(j in i:dim(house_ids)[1])
+      {
+        if (i==j) next
+        else     (pairs <- rbind(pairs,cbind(house_ids[i,1],house_ids[j,1], house)))
+      }
+    }
+  }
+
+  colnames(pairs)[1] <- "HOUSEHOLD_MEMBER1"  ##Index
+  colnames(pairs)[2] <- "HOUSEHOLD_MEMBER2"  ##Household member
+  colnames(pairs)[3] <- "HOUSE_ID"  ##Household member
+
+  pairs <- as.data.frame(pairs)
+  pairs$kinship <- 0
+  for (i in 1:dim(relatives)[1])
+  {
+    ind1 <- relatives[i,1]
+    ind2 <- relatives[i,2]
+    if(any((pairs[,1]==ind1 & pairs[,2]==ind2) | (pairs[,2]==ind1 & pairs[,1]==ind2)))
+      {
+        index <- which((pairs[,1]==ind1 & pairs[,2]==ind2) | (pairs[,2]==ind1 & pairs[,1]==ind2))
+        pairs$kinship[index] <- relatives[i,5]
+        print(i)
+      }
+  }
+  return(pairs)
+}
+
+
+
+
+filter_pairs <- function(pairs,household_relationships,field){
+  pairs$sex1 <- household_relationships[["sex"]][match(pairs[["HOUSEHOLD_MEMBER1"]], household_relationships$userId)]
+  pairs$sex2 <- household_relationships[["sex"]][match(pairs[["HOUSEHOLD_MEMBER2"]], household_relationships$userId)]
+
+  #merge(pairs, household_relationships, by.x=, by.y=)
+  pairs_full_sex <- pairs[which(!is.na(pairs$sex1) & !is.na(pairs$sex2)),]
+
+  pairs_unrelated <- subset(pairs_full_sex, pairs_full_sex$kinship<0.05)
+
+  pairs_unrelated_hetero <- pairs_unrelated[-which(pairs_unrelated$sex1==pairs_unrelated$sex2),]
+  pairs_unrelated_hetero2 <- pairs_unrelated_hetero[-which(is.na(pairs_unrelated_hetero$sex1) | is.na(pairs_unrelated_hetero$sex2)),]
+
+  temp1 <- pairs_unrelated_hetero[which(pairs_unrelated_hetero$sex1==0),c(2,1,3,4,6,5)]
+  colnames(temp1) <- colnames(pairs_unrelated_hetero)
+
+  temp2 <- pairs_unrelated_hetero[which(pairs_unrelated_hetero$sex1==1),]
+  pairs_filter <- rbind(temp2, temp1)
+  ## 79150      6
+
+  pairs_filter$house_rel_member1 <- household_relationships[[field]][match(pairs_filter[["HOUSEHOLD_MEMBER1"]], household_relationships$userId)]
+  pairs_filter$house_rel_member2 <- household_relationships[[field]][match(pairs_filter[["HOUSEHOLD_MEMBER2"]], household_relationships$userId)]
+  pairs_filter2 <- pairs_unrelated_hetero[which(pairs_filter$house_rel_member1==TRUE & pairs_filter$house_rel_member2==TRUE ) ,]
+  ## 75048     6
+
+  colnames(pairs_filter2)[5] <- "HOUSEHOLD_MEMBER1_sex"
+  colnames(pairs_filter2)[6] <- "HOUSEHOLD_MEMBER2_sex"
+  return(pairs_filter2)
+
+}
+
+munge_sqc <- function(sqc,fam){
+  sqc_sub <- sqc[,c(26:65)]
+  colnames(sqc_sub) <- c(sapply(1:40, function(x) {paste0("PC_",x)}))
+  sqc_sub$ID <- fam[,1]
+  return(sqc_sub)
+}
+
+add_pcs <- function(pairs,pheno,sqc_sub){
+  out <- list()
+  for(i in 1:dim(pairs)[1])
+  {
+    if(pairs[["HOUSEHOLD_MEMBER1_sex"]][i]==0)
+    {
+      male_ID <-pairs[["HOUSEHOLD_MEMBER2"]] [i]
+      female_ID <-pairs[["HOUSEHOLD_MEMBER1"]] [i]
+      pairs[["HOUSEHOLD_MEMBER1"]][i] <-male_ID
+      pairs[["HOUSEHOLD_MEMBER2"]][i] <-female_ID
+    }
+
+  }
+  pairs[["HOUSEHOLD_MEMBER1_sex"]] <- 1
+  pairs[["HOUSEHOLD_MEMBER2_sex"]] <- 0
+
+  for(merge_by in c("HOUSEHOLD_MEMBER1", "HOUSEHOLD_MEMBER2"))
+  {
+
+    merge1_temp <- merge(pairs, pheno, by.x=merge_by, by.y="userId")
+    #length(which(!pairs[,1] %in% pheno1_sub[,1]))
+    ### when merge_by="HOUSEHOLD_MEMBER1" -> 3 people were in household file and not pheno
+    #length(which(!pairs[,2] %in% pheno1_sub[,1]))
+    ### when merge_by="HOUSEHOLD_MEMBER2" -> 1 person were in household file and not pheno
+
+    merge2_temp <- merge(merge1_temp, sqc_sub, by.x=merge_by, by.y="ID")
+    #length(which(!merge1_temp[,"HOUSEHOLD_MEMBER1"] %in% sqc_sub[,"ID"]))
+    ### when merge_by="INDEX" -> 2009 people were in household file and not geno PC file
+    #length(which(!merge1_temp[,"HOUSEHOLD_MEMBER2"] %in% sqc_sub[,"ID"]))
+    ### when merge_by="HOUSEHOLD_MEMBER" -> 2799 people were in household file and not geno PC file
+
+    colnames(merge2_temp) <- c(colnames(merge2_temp)[1:6], paste0(merge_by, "_", colnames(merge2_temp)[-c(1:6)]))
+
+    out[[paste0(merge_by, "_pheno_data")]] <- merge2_temp
+    #write.csv(merge2_temp, paste0("pipeline/data_setup/", merge_by,"_pheno_model_adjustments", ".csv"),row.names=F, quote=T )
+
+  }
+
+return(out)
+}
+
+
+calc_time_together <- function(pheno_cov,time_at_household,time_at_household_raw){
+
+  households_temp <- pheno_cov[,1:3]
+
+  households_temp$house_time_member1 <- time_at_household[[time_at_address_field]][match(households_temp[["HOUSEHOLD_MEMBER1"]], time_at_household$userId)]
+  households_temp$house_time_member2 <- time_at_household[[time_at_address_field]][match(households_temp[["HOUSEHOLD_MEMBER2"]], time_at_household$userId)]
+  households_temp$house_time_raw_member1 <- time_at_household_raw[[time_at_address_raw_field]][match(households_temp[["HOUSEHOLD_MEMBER1"]], time_at_household_raw$eid)]
+  households_temp$house_time_raw_member2 <- time_at_household_raw[[time_at_address_raw_field]][match(households_temp[["HOUSEHOLD_MEMBER2"]], time_at_household_raw$eid)]
+
+  households_temp <- transform(households_temp, time_together = pmin(house_time_member1, house_time_member2))
+  households_temp <- transform(households_temp, time_together_raw = pmin(house_time_raw_member1, house_time_raw_member2))
+  return(households_temp)
+}
+
+
+### File A1 ----
 ## Description: tests phenotypic correlations between household pairs that have been
 ## filtered for kinship < 0.05, and to be opposite-sex pairs
 ## run within project folder: /data/sgg2/jenny/projects/MR_Shared_Environment
 
-compute_trait_corr <- function(phesant_directory){
+compute_trait_corr <- function(phesant_directory,UKBB_directory,pairs_filter){
   unique_phes_ids <- unique(phesant_directory[,2])
   trait_corr <- numeric()
   prev_file <- ""
