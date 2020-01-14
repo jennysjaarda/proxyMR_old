@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --partition sgg
-#SBATCH --workdir /data/sgg2/jenny/projects/MR_Shared_Environment
+#SBATCH --workdir /data/sgg2/jenny/projects/proxyMR
 #SBATCH --job-name process_Neale
-#SBATCH --output pipeline/A4.process_Neale.out
+#SBATCH --output analysis/process_Neale.out
 
 process_IV_extractions=$(sbatch $SGG_generic/scripts/UKBB/gen_rslurm_Neale_extraction.sh | cut -f 4 -d' ')
 until [[ -f ${SGG_generic}/_rslurm_Neale_extraction/submit.sh ]];
