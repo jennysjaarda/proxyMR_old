@@ -49,25 +49,47 @@ filter_traits <- drake_plan(
     #unique_phes_ids <- unique(phesant_directory[,2])
   UKBB_directory = read.csv(file_in(!!paste0(UKBB_processed,"/UKBB_pheno_directory.csv")), header=T),
   #pairs_filter = hh_pairs_filter
-  trait_corr = {
-    compute_trait_corr(phesant_directory,UKBB_directory,hh_pairs_filter)
+  trait_corrs = {
+
     file_in(unique(phesant_directory$File))
+    compute_trait_corr(phesant_directory,UKBB_directory,hh_pairs_filter)
   },
-  trait_corr_out = write.csv(trait_corr, file_out( "output/tables/1.household_correlations.csv"), row.names=F),
+  write_traits_corr = write.csv(trait_corrs, file_out( "output/tables/1.household_correlations.csv"), row.names=F),
 
   ## old A2 - to modify
   Neale_SGG_dir =  read.csv(file_in(!!paste0(Neale_summary_dir,"/Neale_SGG_directory.csv")), header=T),
-  Neale_SGG_dir_filt2 = link_with_Neale(Neale_SGG_dir),
-  traits_corr_filter = filter_by_corr(Neale_SGG_dir_filt2,traits),
-  #write.csv(traits_corr_filter, "output/tables/2.household_correlations.corr_filter.csv", row.names=F)
-  Neale_to_process = organize_Neale(traits_corr_filter),
-  write.csv(Neale_to_process$define_cats2, paste0("output/tables/define_Neale_categories.csv"), row.names=F),
-  write.csv(Neale_to_process$download_rest, paste0("pipeline/download_Neale_list.csv"), row.names=F),
+  Neale_SGG_dir_filt = SGG_link_with_Neale(Neale_SGG_dir),
+  traits_corr2 = filter_by_corr(trait_corrs,Neale_SGG_dir_filt,!!household_correlation_threshold),
+  Neale_to_process = organize_Neale(traits_corr2),
+  write_define_cats = write.csv(Neale_to_process$define_cats, file_out("output/tables/define_Neale_categories.csv"), row.names=F),
+  write_download_list = write.csv(Neale_to_process$download_rest, file_out("analysis/download_Neale_list.csv"), row.names=F),
 
   ## old A3 - to modify
-  filled_cats <- read.csv("output/tables/define_Neale_categories_filled.csv", check.names=F),
-  traits_corr_filter2 = download_Neale(filled_cats,Neale_to_process$download_rest,traits_corr_filter),
-  write.csv(traits_corr_filter2, "output/tables/2.household_correlations.corr_filter.csv", row.names=F),
+  filled_cats = read.csv(file_in("output/tables/define_Neale_categories_filled.csv"), check.names=F),
+  traits_corr2_filled = download_Neale(filled_cats,Neale_to_process$download_rest,traits_corr2),
+  write_traits_corr2 = write.csv(traits_corr2_filled, "output/tables/2.household_correlations.corr_filter.csv", row.names=F),
+  run_process_Neale = processx::run(command = "sbatch", c("code/process_Neale.sh")),
+  IV_list = { while (lenght(.....))
+    
+
+
+  }
+  ## need to find a way to track this job
+  stat <- suppressWarnings(system(paste("squeue -n", "clump_Neale_IVs")))
+#check if length(stat) >1
+
+stat <- suppressWarnings(system(paste("squeue -n", slr_job$jobname),
+        intern = TRUE))
+    if (length(stat) > 1) {
+        cat(paste(c("Job running or in queue. Status:", stat),
+            collapse = "\n"))
+
+
+)
+
+
+
+
 
   ## old A4 - to modify: add A5 sbatch script
   processx::run(sbatch "scripts/A4.process_Neale.sh"),

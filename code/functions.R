@@ -211,7 +211,7 @@ compute_trait_corr <- function(phesant_directory,UKBB_directory,pairs_filter){
 ## Manually categorize this list and save as: "output/tables/define_Neale_categories_filled.csv"
 ## run within project folder: /data/sgg2/jenny/projects/MR_Shared_Environment
 
-link_with_Neale <- function(Neale_SGG_dir){
+SGG_link_with_Neale <- function(Neale_SGG_dir){
 
   Neale_SGG_dir_filt <- subset(Neale_SGG_dir, Neale_SGG_dir$phesant_processed=="YES")
   unique_Neale_ids <- unique((Neale_SGG_dir_filt[,"phenotype"]))
@@ -229,10 +229,10 @@ link_with_Neale <- function(Neale_SGG_dir){
   cat(paste0("There are: ", length(both_sex_avail), " phenotypes with Neale summary stats with joint
   and sex-specific data that have also been processed in the SGG database.\n\n")) ###1243 traits
   Neale_SGG_dir_filt2 <- subset(Neale_SGG_dir_filt, Neale_SGG_dir_filt$phenotype %in% both_sex_avail)
-
+  return(Neale_SGG_dir_filt2)
 }
 
-filter_by_corr <- function(trait_corr,Neale_SGG_dir_filt2){
+filter_by_corr <- function(trait_corr,Neale_SGG_dir_filt2,household_correlation_threshold){
 
   merge_temp <- merge(trait_corr, Neale_SGG_dir_filt2, by.x="ID", by.y="sgg_phesant_name", fill=T)
   merge_temp$r2 <- as.numeric(as.character(merge_temp$r2))
@@ -243,6 +243,7 @@ filter_by_corr <- function(trait_corr,Neale_SGG_dir_filt2){
               "variable_type", "SGG_request", "PHESANT_processed", "SGG_location",
               "Neale_downloaded","category","define_category:T/F",
               "v2_exists", "v2_downloaded")
+  return(corr_traits)
 }
 
 organize_Neale <- function(traits_corr_filter){
@@ -281,7 +282,7 @@ organize_Neale <- function(traits_corr_filter){
   "filtered phenotypic correlations have been saved to:
   'output/tables/2.household_correlations.corr_filter.csv'.\n\n"))
 
-  return(list(download, define_cats))
+  return(list("download_rest"=download_rest, "define_cats"=define_cats2))
 }
 
 ### File A3 ----
@@ -303,7 +304,7 @@ download_Neale <- function(filled_cats,download_rest,traits_corr_filter){
                       category = category , reference_file=paste0(Neale_output_path, "/", Neale_manifest_file_name))
   }
 
-  traits_corr_filter <-corr_traits
+  corr_traits <- traits_corr_filter
   levels(corr_traits$category) <- union (levels(corr_traits$category), levels(filled_cats$category))
   index <- which(corr_traits[["define_category:T/F"]]==TRUE)
   pheno_missing_cat <- corr_traits[index,"Neale_pheno_ID"]
@@ -312,5 +313,5 @@ download_Neale <- function(filled_cats,download_rest,traits_corr_filter){
   cat(paste0("Missing Neale files have been successfully downloaded and categorized,\n",
   "now they need to be processed (clumped for LD and extracted for p<0.1).\n"))
 
-
+  return(corr_traits)
 }
