@@ -39,7 +39,7 @@ phesant_directory <- read.table(paste0(UKBB_processed,"/PHESANT/","PHESANT_file_
 # limit to only individuals who responded YES to husband, wife, or partner
 
 relatedness_field <- "6141_1"
-relations_file <- as.character(phesant_directory[which(phesant_directory[,2]==relations_field),"File"])
+relations_file <- as.character(phesant_directory[which(phesant_directory[,2]==relatedness_field),"File"])
 
 # name of first phesant file
 first_phesant_file <- as.character(phesant_directory[1,"File"])
