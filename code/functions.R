@@ -119,7 +119,7 @@ add_pcs <- function(pairs,pheno,sqc_sub){
     colnames(merge2_temp) <- c(colnames(merge2_temp)[1:6], paste0(merge_by, "_", colnames(merge2_temp)[-c(1:6)]))
 
     out[[paste0(merge_by, "_pheno_data")]] <- merge2_temp
-    #write.csv(merge2_temp, paste0("pipeline/data_setup/", merge_by,"_pheno_model_adjustments", ".csv"),row.names=F, quote=T )
+    #write.csv(merge2_temp, paste0("analysis/data_setup/", merge_by,"_pheno_model_adjustments", ".csv"),row.names=F, quote=T )
 
   }
 
@@ -257,7 +257,7 @@ organize_Neale <- function(traits_corr_filter){
   if(dim(define_cats2)[1]==0 & dim(download_rest)[1]==0)
   {
 
-      cat("All necessary Neale files have been downloaded, proceed in pipeline.\n\n")
+      cat("All necessary Neale files have been downloaded, proceed in analysis.\n\n")
   }
   if(dim(define_cats2)[1]!=0)
   {
@@ -270,7 +270,7 @@ organize_Neale <- function(traits_corr_filter){
   {
 
       cat(paste0("Some Neale files need to be downloaded, but have been categorized previously,
-      likely they were updated based on Neale modifications to the PHESANT pipeline.
+      likely they were updated based on Neale modifications to the PHESANT analysis.
       See here: https://www.dropbox.com/s/ayto55r0z1eigwa/phenotype_update_note.txt?dl=0, for details.\n\n"))
   }
 
@@ -292,7 +292,7 @@ organize_Neale <- function(traits_corr_filter){
 ## Update categories in phenotypic correlations file: output/tables/pheno_household_filter_corr.csv
 ## run within project folder: /data/sgg2/jenny/projects/MR_Shared_Environment
 
-download_Neale <- function(filled_cats,download_rest,traits_corr_filter, reference_file){
+download_Neale <- function(filled_cats,download_rest,traits_corr_filter, reference_file_name){
   full_dl_list <- rbind(filled_cats, download_rest)
   select <- dplyr::select
 
@@ -301,7 +301,7 @@ download_Neale <- function(filled_cats,download_rest,traits_corr_filter, referen
   {
     IDs <- as.character(full_dl_list[which(full_dl_list[,"category"]==category),"Neale_pheno_ID"])
     download_neale_files( IDs,
-                      category = category , reference_file=reference_file)
+                      category = category , reference_file=reference_file_name)
   }
 
   corr_traits <- traits_corr_filter
@@ -385,7 +385,7 @@ get_IV_list <- function(corr_traits, i, reference_file) #
           clump_data <- read.table(paste0(folder,"/", name,"_unpruned_chr", chr, ".clumped"),he=T)
           clumped_SNPs <- clump_data[,"SNP"]
           IV_temp <- original_data[which(original_data[["P"]]<threshold & original_data[["SNP"]] %in% clumped_SNPs),"SNP"]
-          write.table(IV_temp, paste0( project_dir,"/pipeline/data_setup/IV_lists/", Neale_id, "_IVs_", threshold,"_both_sexes.txt"), append=T, row.names=F, col.names=F, quote=F)
+          write.table(IV_temp, paste0( project_dir,"/analysis/data_setup/IV_lists/", Neale_id, "_IVs_", threshold,"_both_sexes.txt"), append=T, row.names=F, col.names=F, quote=F)
         }
 
     }
@@ -419,7 +419,7 @@ summarize_IVs <- function(corr_traits, i, reference_file)
   name <- IVs[which(grepl(file_name, IVs) & grepl("both_sexes", IVs))]
   IV_snp_list <- numeric()
   threshold <- IV_threshold
-  #if(file.exists(paste0( "pipeline/data_setup/IV_lists/", Neale_id, "_IVs_", threshold,"_both_sexes.txt")))
+  #if(file.exists(paste0( "analysis/data_setup/IV_lists/", Neale_id, "_IVs_", threshold,"_both_sexes.txt")))
   if(file.info(paste0( "analysis/data_setup/IV_lists/", Neale_id, "_IVs_", threshold,"_both_sexes.txt"))$size!=0)
   {
     GW_ivs <- fread( paste0( "analysis/data_setup/IV_lists/", Neale_id, "_IVs_", threshold,"_both_sexes.txt"),data.table=F, header=F)
@@ -447,6 +447,24 @@ IV_filter <- function(corr_traits, IV_summary, num_IVs_threshold){
 
 }
 
+reduce_variant_data <- function(traits,variant_data){
+
+  total_SNP_rows <- numeric()
+  for (i in 1:dim(traits)[1])
+  {
+    trait_ID <- as.character(traits[i,"Neale_pheno_ID"])
+    IV_list_both_sexes <- fread(paste0( project_dir,"/analysis/data_setup/IV_lists/", trait_ID, "_IVs_", IV_threshold,"_both_sexes.txt"), data.table=F, header=F)
+    SNP_rows <- which(variant_data[,"rsid"] %in% IV_list_both_sexes[,1])
+    rbind(total_SNP_rows, SNP_rows)
+  }
+
+  reduced_data <- variant_data[total_SNP_rows,]
+
+  return(reduced_data)
+
+}
+
+
 calc_sex_het <- function(traits,i,variant_data,output_folder){
 
   irnt=TRUE
@@ -472,7 +490,7 @@ calc_sex_het <- function(traits,i,variant_data,output_folder){
 
   #trait_info <- read.table(paste0(pheno_dir,"/trait_info.txt"), header=F, row.names=1)
 
-  IV_list_both_sexes <- fread(paste0( project_dir,"/pipeline/data_setup/IV_lists/", trait_ID, "_IVs_", IV_threshold,"_both_sexes.txt"), data.table=F, header=F)
+  IV_list_both_sexes <- fread(paste0( project_dir,"/analysis/data_setup/IV_lists/", trait_ID, "_IVs_", IV_threshold,"_both_sexes.txt"), data.table=F, header=F)
   SNP_rows <- which(variant_data[,"rsid"] %in% IV_list_both_sexes[,1])
   IV_folder <- IVs_full[which(grepl(paste0("/",file_name ,"\\."), IVs_full) & grepl("both_sexes", IVs))]
   IV_file_name <- IVs[which(grepl(paste0("^", file_name ,"\\."), IVs) & grepl("both_sexes", IVs))]
@@ -555,4 +573,94 @@ sex_het_filter <- function(corr_traits, sex_het_summary, num_IVs_threshold){
   with significant evidence of heterogeneity between sexes (p<0.05/[number of GW-sig IVs]),
   filtered phenotypic correlations have been saved to:
   'output/tables/4.household_correlations.sexhet_filter.csv'.\n"))
+}
+
+check_valid_GRS_input <- function(traits,reference_file){
+
+  irnt=TRUE
+  existing_files_full <- list()
+  existing_files_full  =  list.files( Neale_output_path,
+                                     recursive = TRUE,
+                                     pattern = '[.]gz' )
+  result <- NA
+  for(i in 1:dim(traits)[1])
+  {
+
+    trait_ID <- as.character(traits[i,"Neale_pheno_ID"])
+    phenotype_ids  =  paste0( '^', trait_ID, ifelse( irnt, '(_irnt|)$', '(_raw|)$' ) ) %>%
+       paste( collapse = '|' )
+    file_name_temp  =  reference_file %>%
+       filter( str_detect( .$'Phenotype Code', phenotype_ids ) & Sex=="both_sexes")
+    file_name <- file_name_temp[["Phenotype Code"]][1]
+
+    #trait_info <- read.table(paste0(pheno_dir,"/trait_info.txt"), header=F, row.names=1)
+
+    IV_folder <- IVs_full[which(grepl(paste0("/",file_name ,"\\."), IVs_full) & grepl("both_sexes", IVs))]
+    IV_file_name <- IVs[which(grepl(paste0("^", file_name ,"\\."), IVs) & grepl("both_sexes", IVs))]
+
+    if(length(IV_folder)==2){IV_folder <- IV_folder[grep("v2",IV_folder)]} ## use version 2 if it exists
+    if(length(IV_file_name)==2){IV_file_name <- IV_file_name[grep("v2",IV_file_name)]} ## use version 2 if it exists
+
+    for(exposure_sex in c("both_sexes", "male", "female"))
+    {
+
+      specific_IV_folder <- IVs_full[which(grepl(paste0("/",file_name ,"\\."), IVs_full) & grepl(paste0("[.]",exposure_sex), IVs))]
+      specific_IV_name <- IVs[which(grepl(paste0("^", file_name ,"\\."), IVs) & grepl(paste0("[.]",exposure_sex), IVs))]
+      if(length(specific_IV_folder)==2){specific_IV_folder <- specific_IV_folder[grep("v2",specific_IV_folder)]} ## use version 2 if it exists
+      if(length(specific_IV_name)==2){specific_IV_name <- specific_IV_name[grep("v2",specific_IV_name)]} ## use version 2 if it exists
+
+      original_neale_temp <- existing_files_full[which(grepl(paste0("/",gsub(".IVs", "",specific_IV_name)), existing_files_full))]
+      original_neale_file <- paste0(Neale_output_path, "/", original_neale_temp)
+      assign(paste0(exposure_sex, "_IV_folder"), specific_IV_folder)
+      assign(paste0(exposure_sex, "_original_Neale_file"), original_neale_file)
+
+    }
+
+    no_GRS_snps <- FALSE
+
+    GRS_length <- numeric()
+    for(file in c("male", "female"))
+    {
+      specific_IV_folder <- IVs_full[which(grepl(paste0("/",file_name ,"\\."), IVs_full) & grepl(paste0("[.]",file), IVs))]
+      specific_IV_name <- IVs[which(grepl(paste0("^", file_name ,"\\."), IVs) & grepl(paste0("[.]",file), IVs))]
+      if(length(specific_IV_folder)==2){specific_IV_folder <- specific_IV_folder[grep("v2",specific_IV_folder)]} ## use version 2 if it exists
+      if(length(specific_IV_name)==2){specific_IV_name <- specific_IV_name[grep("v2",specific_IV_name)]} ## use version 2 if it exists
+
+      temp <- fread(paste0(get(paste0(file,"_IV_folder")), "/",specific_IV_name, "_unpruned.txt"), data.table=F, nrow=5)
+      GRS_length <- c(GRS_length, dim(temp)[1])
+
+    }
+    if(any(GRS_length==0))
+    {
+      no_GRS_snps <- TRUE
+    }
+
+    out <- cbind(i,no_GRS_snps)
+    result <- rbind(out, result)
+  }
+
+  return(result)
+}
+
+valid_GRS_filter <- function(traits,valid_GRS_summary){
+
+
+  result <- valid_GRS_summary[order(valid_GRS_summary[,1]),]
+  traits$GRS_list <- result[,2]
+
+  to_run <- traits[-which(result[,2]==1),]
+
+
+  cat(paste0("The following trait ID(s): ", paste(as.character(traits[which(result[,2]==1),"Neale_pheno_ID"]), collapse="; "), ",
+  with pheno description(s): ", paste(as.character(traits[which(result[,2]==1),"description"]), collapse="; "), ",
+  do not have any SNPs that pass the clump/GRS filters in at least one sex (p<0.1 and 'low_quality_SNP'==FALSE),
+  and have been removed from all subsequent analyses.\n\n"))
+
+  cat(paste0("Household phenotypic correlations have been filtered to include only phenotypes
+  which have a valid sex-specific input for the GRS calculation (p<0.1 and 'low_quality_SNP'==FALSE),
+  filtered phenotypic correlations have been saved to:
+  'output/tables/5.household_correlations.baseGRS_filter.csv'.\n"))
+
+  return(to_run)
+
 }

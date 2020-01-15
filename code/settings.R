@@ -13,8 +13,12 @@
 
 ### Set data and project directories
 
-project_dir <- "/data/sgg2/jenny/projects/MR_Shared_Environment/"
+project_dir <- "/data/sgg2/jenny/projects/proxyMR/"
 SGG_generic <- "/data/sgg2/jenny/SGG_generic/"
+
+## register clustermq and future plans
+options(clustermq.scheduler = "slurm", clustermq.template = "slurm_clustermq.tmpl")
+future::plan(batchtools_slurm, template = "slurm_batchtools.tmpl")
 
 source(paste0(SGG_generic,"/scripts/settings.r"))
 source(paste0(project_dir,"/scripts/functions.r"))
@@ -43,7 +47,6 @@ relations_file <- as.character(phesant_directory[which(phesant_directory[,2]==re
 
 # name of first phesant file
 first_phesant_file <- as.character(phesant_directory[1,"File"])
-
 
 
 time_at_address_file <- "/data/sgg2/jenny/data/UKBB_processed/PHESANT/ukb31459/bin1/out_bin1..tsv"

@@ -46,9 +46,9 @@ tidy <- drake_plan(
 filter_traits <- drake_plan(
 
   ## old A1
-    #unique_phes_ids <- unique(phesant_directory[,2])
+
   UKBB_directory = read.csv(file_in(!!paste0(UKBB_processed,"/UKBB_pheno_directory.csv")), header=T),
-  #pairs_filter = hh_pairs_filter
+
   trait_corrs = {
 
     file_in(unique(phesant_directory$File))
@@ -56,49 +56,94 @@ filter_traits <- drake_plan(
   },
   write_traits_corr = write.csv(trait_corrs, file_out( "output/tables/1.household_correlations.csv"), row.names=F),
 
-  ## old A2 - to modify
-  Neale_SGG_dir =  read.csv(file_in(!!paste0(Neale_summary_dir,"/Neale_SGG_directory.csv")), header=T),
+  ## old A2
+  Neale_SGG_dir =  read.csv(!!paste0(Neale_summary_dir,"/Neale_SGG_directory.csv"), header=T), ## not tracking this as input because it changes overtime
   Neale_SGG_dir_filt = SGG_link_with_Neale(Neale_SGG_dir),
   traits_corr2 = filter_by_corr(trait_corrs,Neale_SGG_dir_filt,!!household_correlation_threshold),
   Neale_to_process = organize_Neale(traits_corr2),
   write_define_cats = write.csv(Neale_to_process$define_cats, file_out("output/tables/define_Neale_categories.csv"), row.names=F),
   write_download_list = write.csv(Neale_to_process$download_rest, file_out("analysis/download_Neale_list.csv"), row.names=F),
 
-  ## old A3 - to modify
+  ## old A3
   filled_cats = read.csv(file_in("output/tables/define_Neale_categories_filled.csv"), check.names=F),
-  traits_corr2_filled = download_Neale(filled_cats,Neale_to_process$download_rest,traits_corr2),
-  write_traits_corr2 = write.csv(traits_corr2_filled, "output/tables/2.household_correlations.corr_filter.csv", row.names=F),
-  run_process_Neale = processx::run(command = "sbatch", c("code/process_Neale.sh")),
-  IV_list = { while (lenght(.....))
-    
+  reference_file_name = file_in(!!file.path(Neale_output_path,Neale_manifest_file_name)),
+  reference_file = read_tsv(reference_file_name, col_types = cols()),
+  traits_corr2_filled = download_Neale(filled_cats,Neale_to_process$download_rest,traits_corr2, reference_file_name),
+  #write_traits_corr2 = write.csv(traits_corr2_filled, "output/tables/2.household_correlations.corr_filter.csv", row.names=F),
 
+  ## old A4
+  run_process_Neale = processx::run(command = "sbatch", c(file_in("code/process_Neale.sh"))),
+  # this script wil update the `Neale_SGG_directory` which will make this file outdate
 
-  }
-  ## need to find a way to track this job
-  stat <- suppressWarnings(system(paste("squeue -n", "clump_Neale_IVs")))
-#check if length(stat) >1
+  ## old A5
+  traits_corr2_update = {
+    stats1 <- 2
+    stats2 <- 2
+    while ( (stats1 > 1 | stats2 > 1)){
+      stats1 <- suppressWarnings(system(paste("squeue -n", "process_Neale"), intern = TRUE))
+      stats2 <- suppressWarnings(system(paste("squeue -n", "clump_Neale_IVs"), intern = TRUE))
+      print("Still running...")
+      Sys.sleep(60)
+    }
 
-stat <- suppressWarnings(system(paste("squeue -n", slr_job$jobname),
-        intern = TRUE))
-    if (length(stat) > 1) {
-        cat(paste(c("Job running or in queue. Status:", stat),
-            collapse = "\n"))
+     update_download_info(traits_corr2_filled,Neale_SGG_dir)
+  },
+  traits_to_count_IVs = tibble(
+      i = 1:dim(traits_corr2_update[which(traits_corr2_update[["Neale_file_sex"]]=="both"),])[1],
+    ),
+  IV_list = target({
 
-
-)
-
-
-
-
-
-  ## old A4 - to modify: add A5 sbatch script
-  processx::run(sbatch "scripts/A4.process_Neale.sh"),
+      #file_in(!!Neale_output_path)
+      #file_in(!!paste0(Neale_summary_dir,"/IVs/clump/" ))
+      get_IV_list(traits_corr2_update,traits_to_process$i,reference_file)},
+      dynamic = map(traits_to_count_IVs)
+    ),
 
   ## old A6
+  IV_summary = target({
+
+    #file_in(!!Neale_summary_dir)
+    summarize_IVs(traits_corr2_update,traits_to_process$i,reference_file)},
+    dynamic = map(traits_to_count_IVs)
+  ), ## the output of IV_summary is a matrix
+
+  traits_corr3 = IV_filter(traits_corr2_update, IV_summary, !!num_IVs_threshold),
+  write_traits_corr2 = write.csv(traits_corr3$non_filtered,file_out("output/tables/2.household_correlations.corr_filter.csv"), row.names=F),
+
+  ## old A7
+  variant_data = fread(file_in(!!variant_file_full_name),data.table=F),
+  variant_data_reduced = reduce_variant_data(variant_data)
+  traits_to_calc_het = tibble(
+      i = 1:dim(traits_corr3$to_run)[1],
+    ),
+  sex_het_summary = target({
+    calc_sex_het(traits_corr3$to_run,i,variant_data_reduced,output_folder = file_out("analysis/data_setup/sex_heterogeneity/"))
+
+  }, dynamic = map(traits_to_calc_het)
+  ),
+  traits_corr4 = sex_het_filter(traits_corr3$to_run,sex_het_summary,!!num_IVs_threshold),
+  write_traits_corr3 = write.csv(traits_corr4$non_filtered, file_out("3.household_correlations.numIVs_filter.csv"), row.names=F),
+  write_traits_corr4 = write.csv(traits_corr4$to_run, file_out("4.household_correlations.sexhet_filter.csv"), row.names=F),
+
+  ## old A8
+  valid_GRS_summary = check_valid_GRS_input(traits_corr4$to_run,reference_file)
+  traits_corr5 = valid_GRS_filter(traits_corr4$to_run,valid_GRS_summary)
+  write.csv(traits_corr5, file_out("output/tables/5.household_correlations.baseGRS_filter.csv"), row.names=F)
 
 )
 
+errorFile <- paste0("get_IV_list", "_errors.txt")
+if(file.exists(errorFile)) {file.remove(errorFile)}
+
 join_ <- bind_plans(tidy,filter_traits)
-make(join_)
+#make(join_)
+
+make(join_,memory_strategy = "lookahead", garbage_collection = TRUE, parallelism = "clustermq",console_log_file = "pipeline_prep.out", jobs = 20, template = list(cpus = 1, partition = "sgg"))
+make(join_,memory_strategy = "lookahead", garbage_collection = TRUE, parallelism = "future",console_log_file = "pipeline_prep.out", jobs = 20)
+
+pipeline <- drake_plan(
+
+
+)
 
 #vis_drake_graph(drake_config(filter_traits))
