@@ -21,7 +21,6 @@ options(clustermq.scheduler = "slurm", clustermq.template = "slurm_clustermq.tmp
 future::plan(batchtools_slurm, template = "slurm_batchtools.tmpl")
 
 source(paste0(SGG_generic,"/scripts/settings.r"))
-source(paste0(project_dir,"/scripts/functions.r"))
 
 traits <- c()
 MR_method_list <- c("mr_wald_ratio","mr_ivw","mr_ivw_fe","mr_egger_regression","mr_weighted_median")
