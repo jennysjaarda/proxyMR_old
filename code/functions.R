@@ -348,8 +348,8 @@ get_IV_list <- function(corr_traits, i, reference_file) #
   IVs <- list.files(path=paste0(Neale_summary_dir,"/IVs/clump/" ))
   irnt=TRUE
 
-  tryCatch(
-  {
+  #tryCatch(
+  #{
 
 
     category <- corr_traits_both[i,"category"]
@@ -391,10 +391,10 @@ get_IV_list <- function(corr_traits, i, reference_file) #
     }
 
 
-  },
-    error = function(e) {cat(c(i, paste0(as.character(e),"\n")), file=paste0(project_dir,"/",errorFile), append=T)},
-    warning = function(w) {cat(c(i, paste0(as.character(w),"\n")), file=paste0(project_dir,"/",errorFile), append=T)}
-  )
+  #},
+    #error = function(e) {cat(c(i, paste0(as.character(e),"\n")), file=paste0(project_dir,"/",errorFile), append=T)},
+    #warning = function(w) {cat(c(i, paste0(as.character(w),"\n")), file=paste0(project_dir,"/",errorFile), append=T)}
+  #)
 
 }
 
