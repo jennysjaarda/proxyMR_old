@@ -331,12 +331,30 @@ update_download_info <- function(corr_traits,Neale_SGG_dir){
 }
 
 
+file_in_out <- function(traits_corr2_update,i,reference_file,IV_threshold){
 
-get_IV_list <- function(corr_traits, i, reference_file,GRS_thresholds) #
+  IVs_full <- list.files(path=paste0(Neale_summary_dir,"/IVs/clump/" ), full.names=T)
+  IVs <- list.files(path=paste0(Neale_summary_dir,"/IVs/clump/" ))
+
+  file_name_temp  =  reference_file %>%
+      filter( str_detect( .$'Phenotype Code', phenotype_ids ) & Sex=="both_sexes")
+
+  file_name <- file_name_temp[["Phenotype Code"]][1]
+
+  folder <- IVs_full[which(grepl(paste0("/",file_name ,"\\."), IVs_full) & grepl("both_sexes", IVs))]
+
+  corr_traits_both <- traits_corr2_update[which(traits_corr2_update[["Neale_file_sex"]]=="both"),]
+  Neale_id <- corr_traits_both[i,"Neale_pheno_ID"]
+  out_file <- paste0("analysis/data_setup/IV_lists/", Neale_id, "_IVs_", IV_threshold,"_both_sexes.txt")
+
+  return(list(in_file = folder, out_file = out_file))
+
+}
+
+get_IV_list <- function(corr_traits, i, reference_file,IV_threshold,file_out) #
 {
-  errorFile <- paste0("get_IV_list", "_errors.txt")
 
-  corr_traits <- read.csv("output/tables/2.household_correlations.corr_filter.csv", header=T, check.names=F)
+
   corr_traits_both <- corr_traits[which(corr_traits[["Neale_file_sex"]]=="both"),]
 
 
@@ -348,54 +366,43 @@ get_IV_list <- function(corr_traits, i, reference_file,GRS_thresholds) #
   IVs <- list.files(path=paste0(Neale_summary_dir,"/IVs/clump/" ))
   irnt=TRUE
 
-  #tryCatch(
-  #{
 
+  category <- corr_traits_both[i,"category"]
+  Neale_id <- corr_traits_both[i,"Neale_pheno_ID"]
+  ID <- corr_traits_both[i,"Neale_pheno_ID"]
+  phenotype_ids  =  paste0( '^', ID, ifelse( irnt, '(_irnt|)$', '(_raw|)$' ) ) %>%
+      paste( collapse = '|' )
 
-    category <- corr_traits_both[i,"category"]
-    Neale_id <- corr_traits_both[i,"Neale_pheno_ID"]
-    ID <- corr_traits_both[i,"Neale_pheno_ID"]
-    phenotype_ids  =  paste0( '^', ID, ifelse( irnt, '(_irnt|)$', '(_raw|)$' ) ) %>%
-        paste( collapse = '|' )
+  file_name_temp  =  reference_file %>%
+      filter( str_detect( .$'Phenotype Code', phenotype_ids ) & Sex=="both_sexes")
 
-    file_name_temp  =  reference_file %>%
-        filter( str_detect( .$'Phenotype Code', phenotype_ids ) & Sex=="both_sexes")
+  file_name <- file_name_temp[["Phenotype Code"]][1]
+  folder <- IVs_full[which(grepl(paste0("/",file_name ,"\\."), IVs_full) & grepl("both_sexes", IVs))]
+  #folder <- IVs_full[which(grepl(paste0(file_name ), IVs_full) & grepl("both_sexes", IVs))]
+  if(length(folder)==2){folder <- folder[grep("v2",folder)]} ## use version 2 if it exists
+  name <- IVs[which(grepl(paste0("^", file_name ,"\\."), IVs) & grepl("both_sexes", IVs))]
+  if(length(name)==2){name <- name[grep("v2",name)]} ## use version 2 if it exists
 
-    file_name <- file_name_temp[["Phenotype Code"]][1]
-    folder <- IVs_full[which(grepl(paste0("/",file_name ,"\\."), IVs_full) & grepl("both_sexes", IVs))]
-    #folder <- IVs_full[which(grepl(paste0(file_name ), IVs_full) & grepl("both_sexes", IVs))]
-    if(length(folder)==2){folder <- folder[grep("v2",folder)]} ## use version 2 if it exists
-    name <- IVs[which(grepl(paste0("^", file_name ,"\\."), IVs) & grepl("both_sexes", IVs))]
-    if(length(name)==2){name <- name[grep("v2",name)]} ## use version 2 if it exists
+  IV_snp_list <- numeric()
 
-    IV_snp_list <- numeric()
-    for(threshold in c(IV_threshold,GRS_thresholds))
-    {
-    if(file.exists(paste0( project_dir,"/analysis/data_setup/IV_lists/", Neale_id, "_IVs_", threshold,"_both_sexes.txt")))
-      {file.remove(paste0( project_dir,"/analysis/data_setup/IV_lists/", Neale_id, "_IVs_", threshold,"_both_sexes.txt"))}
-    }
-    threshold <- IV_threshold ## only extract IVs
-    for(chr in 1:22)
+  if(file.exists(file_out)) {file.remove(file_out)}
 
-    {
+  threshold <- IV_threshold ## only extract IVs
+  for(chr in 1:22)
 
-        original_data <- read.table(paste0(folder,"/", name,"_unpruned_chr", chr, ".txt"), header=T)
-        if(file.exists(paste0(folder,"/", name,"_unpruned_chr", chr, ".clumped")))
-        {
-          clump_data <- read.table(paste0(folder,"/", name,"_unpruned_chr", chr, ".clumped"),he=T)
-          clumped_SNPs <- clump_data[,"SNP"]
-          IV_temp <- original_data[which(original_data[["P"]]<threshold & original_data[["SNP"]] %in% clumped_SNPs),"SNP"]
-          write.table(IV_temp, paste0( project_dir,"/analysis/data_setup/IV_lists/", Neale_id, "_IVs_", threshold,"_both_sexes.txt"), append=T, row.names=F, col.names=F, quote=F)
-        }
+  {
 
-    }
+      original_data <- read.table(paste0(folder,"/", name,"_unpruned_chr", chr, ".txt"), header=T)
+      if(file.exists(paste0(folder,"/", name,"_unpruned_chr", chr, ".clumped")))
+      {
+        clump_data <- read.table(paste0(folder,"/", name,"_unpruned_chr", chr, ".clumped"),he=T)
+        clumped_SNPs <- clump_data[,"SNP"]
+        IV_temp <- original_data[which(original_data[["P"]]<threshold & original_data[["SNP"]] %in% clumped_SNPs),"SNP"]
+        write.table(IV_temp, file_out, append=T, row.names=F, col.names=F, quote=F)
+      }
 
+  }
 
-  #},
-    #error = function(e) {cat(c(i, paste0(as.character(e),"\n")), file=paste0(project_dir,"/",errorFile), append=T)},
-    #warning = function(w) {cat(c(i, paste0(as.character(w),"\n")), file=paste0(project_dir,"/",errorFile), append=T)}
-  #)
-  return(Sys.info())
 
 }
 
