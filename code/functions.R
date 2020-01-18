@@ -473,14 +473,16 @@ reduce_variant_data <- function(traits,variant_file_full_name){
     }
 
   }
-
+  total_SNP_rows <- unique(total_SNP_row)
   reduced_data <- variant_data[total_SNP_rows,]
+
   return(reduced_data)
 
 }
 
 
-calc_sex_het <- function(traits,i,variant_data,output_folder){
+calc_sex_het <- function(traits,i,variant_data,reference_file,
+  male_out_file, female_out_file, het_output_file){
 
   irnt=TRUE
   existing_files_full <- list()
@@ -533,14 +535,19 @@ calc_sex_het <- function(traits,i,variant_data,output_folder){
   {
 
     temp <- fread(get(paste0(file,"_original_Neale_file")), data.table=F)
-    temp <- temp[SNP_rows,]
-    exp_var_merge <- cbind(temp,variant_data[SNP_rows,])
-    IV_cols <- c("rsid", "chr", "beta", "se", "pval", "ref", "alt", "AF","n_complete_samples")
-    exp_var_merge <- exp_var_merge[,IV_cols]
+    variants <- variant_data[SNP_rows,"variant"]
+    temp <- temp[which(temp$variant %in% variants),]
+    exp_var_merge <- cbind(temp,variant_data[which(temp$variant %in% variants),])
+    #IV_cols <- c("rsid", "chr", "beta", "se", "pval", "ref", "alt", "AF","n_complete_samples")
+    #exp_var_merge <- exp_var_merge[,IV_cols]
 
     assign(paste0(file, "_IV_data"), exp_var_merge)
 
   }
+
+  write.table(male_IV_data, male_out_file,row.names=F, col.names=T, quote=F)
+  write.table(female_IV_data, female_out_file,row.names=F, col.names=T, quote=F)
+
 
   IV_list_both_sexes$p_het <- NA
   for(snp in 1:length(SNP_rows))
@@ -566,7 +573,7 @@ calc_sex_het <- function(traits,i,variant_data,output_folder){
 
 
   colnames(IV_list_both_sexes) <- c("SNP", "P-het")
-  write.table(IV_list_both_sexes, paste0( output_folder, trait_ID, "_sex_het.txt"), row.names=F, col.names=T, quote=F)
+  write.table(IV_list_both_sexes, het_output_file, row.names=F, col.names=T, quote=F)
 
   char_row <- data.frame(lapply(traits[i,], as.character), stringsAsFactors=FALSE)
 
