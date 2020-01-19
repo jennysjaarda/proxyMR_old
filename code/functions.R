@@ -696,7 +696,7 @@ valid_GRS_filter <- function(traits,valid_GRS_summary){
 
 }
 
-prep_data <- function(traits,i,phesant_directory,GRS_thresholds,reference_file,sqc,fam,out_files){
+prep_data <- function(traits,i,phesant_directory,GRS_thresholds,reference_file,sqc,fam){
 
   category <- as.character(traits[i,"category"])
   trait_ID <- as.character(traits[i,"Neale_pheno_ID"]) ## this is the Neale_id, used to be pheno_description
@@ -842,15 +842,14 @@ prep_data <- function(traits,i,phesant_directory,GRS_thresholds,reference_file,s
 
 }
 
-create_summary_stats <- function(traits,i,phesant_directory,GRS_thresholds,reference_file,sqc,fam,out_files){
+create_summary_stats <- function(traits,i,phesant_directory,GRS_thresholds,reference_file,variant_data){
 
 
   trait_ID <- as.character(traits[i,"Neale_pheno_ID"]) ## this is the Neale_id, used to be pheno_description
   pheno_dir <- paste0(project_dir, "/analysis/traitMR/", trait_ID)
-
   trait_info <-  read.table(paste0(pheno_dir,"/trait_info.txt"), header=F, row.names=1,check.names=F)
 
-  variant_data <- fread(variant_file_full_name,data.table=F)
+  #variant_data <- fread(variant_file_full_name,data.table=F)
 
   het_stats <- fread(paste0( project_dir,"/analysis/data_setup/sex_heterogeneity/", trait_ID, "_sex_het.txt"), header=T, data.table=F)
   IV_list_filter <- het_stats[which(het_stats[["P-het"]] > 0.05/dim(het_stats)[1]),]
@@ -858,17 +857,11 @@ create_summary_stats <- function(traits,i,phesant_directory,GRS_thresholds,refer
 
   for(file in c("male", "female"))
   {
-
-    temp <- read.table(male_IV_data, male_out_file,header=T)
-
-    temp <- fread(as.character(trait_info[paste0(file,"_original_Neale_file"),1]), data.table=F)
-    temp <- temp[SNP_rows,]
-    exp_var_merge <- cbind(temp,variant_data[SNP_rows,])
+    file_name <- paste0( "analysis/data_setup/IV_lists/", trait_ID, "_IVs_5e-08_", file,".txt")
+    temp <- read.table(file_name,header=T)
     IV_cols <- c("rsid", "chr", "beta", "se", "pval", "ref", "alt", "AF","n_complete_samples")
     exp_var_merge <- temp[,IV_cols]
-
     assign(paste0(file, "_IV_data"), exp_var_merge)
-
   }
 
 
@@ -918,6 +911,11 @@ create_summary_stats <- function(traits,i,phesant_directory,GRS_thresholds,refer
     }
 
   }
+
+  cat(paste0("Successfully prepared MR and GRS inputs from Neale summary stats.
+  MR inputs are sex-specific but based on GW-significance in both-sex file
+  (only including SNPs which passed filters - see pipeline part A).
+  GRS thresholds are sex-specific, filtered for low-quality==FALSE and p<0.1.\n"))
 
 
 }
