@@ -584,38 +584,50 @@ calc_sex_het <- function(traits,i,variant_data,reference_file){
 write_IV_list <- function(traits_corr2_update, traits_to_count_IVs, IV_lists,
   sex_het_summary, IV_threshold, traits_to_calc_het, traits_corr3, dir) {
 
+  corr_traits_both <- traits_corr2_update[which(traits_corr2_update[["Neale_file_sex"]]=="both"),]
+
   for(i in 1:dim(traits_to_count_IVs)){
 
-    corr_traits_both <- traits_corr2_update[which(traits_corr2_update[["Neale_file_sex"]]=="both"),]
     Neale_id <- corr_traits_both[i,"Neale_pheno_ID"]
     out_file <- paste0("analysis/data_setup/IV_lists/", Neale_id, "_IVs_", IV_threshold,"_both_sexes.txt")
-    if(file.exists(file_out)) {file.remove(file_out)}
+    if(file.exists(out_file)) {file.remove(out_file)}
     write.table(IV_lists[[i]], out_file, append=F, row.names=F, col.names=F, quote=F)
 
   }
 
   for(i in 1:dim(traits_to_calc_het)){
+    list_length <- 4
     trait_ID <- as.character(traits_corr3$to_run[i,"Neale_pheno_ID"])
     male_out_file <- paste0( "analysis/data_setup/IV_lists/", trait_ID, "_IVs_5e-08_male.txt")
     female_out_file <- paste0( "analysis/data_setup/IV_lists/", trait_ID, "_IVs_5e-08_female.txt")
-    write.table(sex_het_summary[[i]]$male_IV_data, male_out_file,row.names=F, col.names=T, quote=F)
-    write.table(sex_het_summary[[i]]$female_IV_data, female_out_file,row.names=F, col.names=T, quote=F)
+    write.table(sex_het_summary[[(i-1)*list_length+1]], male_out_file,row.names=F, col.names=T, quote=F)
+    write.table(sex_het_summary[[(i-1)*list_length+2]], female_out_file,row.names=F, col.names=T, quote=F)
+    #male_IV_data and female_IV_data is in spots 1 and 2
   }
 
 }
 
 write_sex_het <- function(sex_het_summary, traits_to_calc_het, traits_corr3,dir){
   for(i in 1:dim(traits_to_calc_het)){
+    list_length <- 4
     trait_ID <- as.character(traits_corr3$to_run[i,"Neale_pheno_ID"])
     output_file <- paste0( "analysis/data_setup/sex_heterogeneity/", trait_ID, "_sex_het.txt")
-    write.table(sex_het_summary[[i]]$IV_list_both_sexes, output_file, row.names=F, col.names=T, quote=F)
+    write.table(sex_het_summary[[(i-1)*list_length+3]], output_file, row.names=F, col.names=T, quote=F)
+    #IV_list_both_sexes is in spot 3
   }
 }
 
-sex_het_filter <- function(corr_traits, sex_het_summary, num_IVs_threshold){
+sex_het_filter <- function(corr_traits, sex_het_summary, traits_to_calc_het, num_IVs_threshold){
+  list_length <- 4
+  build_df <- numeric()
+  for(i in 1:dim(traits_to_calc_het)[1]){
 
-  colnames(sex_het_summary) <- c(colnames(corr_traits),"num_IVs_pass_het")
-  result_df <- as.data.frame(sex_het_summary)
+    row <- sex_het_summary[[(i-1)*list_length+4]]
+    build_df <- rbind(build_df, row)
+  }
+  colnames(build_df) <- c(colnames(corr_traits),"num_IVs_pass_het")
+  #sex_het_summary is in spot 4
+  result_df <- as.data.frame(build_df)
   result_df$num_IVs_pass_het <- as.numeric(as.character(result_df$num_IVs_pass_het))
   to_run <- result_df[which(result_df$num_IVs_pass_het >=num_IVs_threshold),]
   removed <- result_df[-which(result_df$num_IVs_pass_het >=num_IVs_threshold),]
