@@ -477,8 +477,7 @@ reduce_variant_data <- function(traits,variant_file_full_name){
 
 }
 
-calc_sex_het <- function(traits,i,variant_data,reference_file,
-  male_out_file, female_out_file, het_output_file){
+calc_sex_het <- function(traits,i,variant_data,reference_file){
 
   irnt=TRUE
   existing_files_full <- list()
@@ -545,8 +544,8 @@ calc_sex_het <- function(traits,i,variant_data,reference_file,
 
   }
 
-  write.table(male_IV_data, male_out_file,row.names=F, col.names=T, quote=F)
-  write.table(female_IV_data, female_out_file,row.names=F, col.names=T, quote=F)
+  #write.table(male_IV_data, male_out_file,row.names=F, col.names=T, quote=F)
+  #write.table(female_IV_data, female_out_file,row.names=F, col.names=T, quote=F)
 
 
   IV_list_both_sexes$p_het <- NA
@@ -573,7 +572,7 @@ calc_sex_het <- function(traits,i,variant_data,reference_file,
 
 
   colnames(IV_list_both_sexes) <- c("SNP", "P-het")
-  write.table(IV_list_both_sexes, het_output_file, row.names=F, col.names=T, quote=F)
+  #write.table(IV_list_both_sexes, het_output_file, row.names=F, col.names=T, quote=F)
 
   char_row <- data.frame(lapply(traits[i,], as.character), stringsAsFactors=FALSE)
   sex_het_summary <- as.data.frame(t(unlist(c(char_row, num_pass_filter))))
@@ -582,8 +581,8 @@ calc_sex_het <- function(traits,i,variant_data,reference_file,
 
 }
 
-write_IV_list <- function(traits_corr2_update, traits_to_count_IVs, IV_lists, sex_het_summary, IV_threshold,
-  sex_het_summary, traits_to_calc_het, traits_corr3, dir) {
+write_IV_list <- function(traits_corr2_update, traits_to_count_IVs, IV_lists,
+  sex_het_summary, IV_threshold, traits_to_calc_het, traits_corr3, dir) {
 
   for(i in 1:dim(traits_to_count_IVs)){
 
