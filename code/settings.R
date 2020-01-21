@@ -36,6 +36,7 @@ household_correlation_threshold <-0.1
 irnt=TRUE
 
 phesant_directory <- read.table(paste0(UKBB_processed,"/PHESANT/","PHESANT_file_directory.txt"), header=T)
+phesant_file_list <- unique(phesant_directory$File)
 
 # Data-Field 6141
 # Description:	How are people in household related to participant
@@ -52,4 +53,11 @@ time_at_address_file <- "/data/sgg2/jenny/data/UKBB_processed/PHESANT/ukb31459/b
 time_at_address_raw_file <- "/data/sgg2/jenny/data/UKBB_raw/pheno/ukb31459.csv"
 time_at_address_field <- "699"
 time_at_address_raw_field <- "699-0.0"
+
+# -10 represents "Less than a year"
+# -1 represents "Do not know"
+# -3 represents "Prefer not to answer"
+time_together_min <- 0
+time_together_max <- 50
+time_together_interval <- 5
 ## functions to fit:
