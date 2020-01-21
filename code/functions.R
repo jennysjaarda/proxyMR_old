@@ -397,7 +397,8 @@ get_IV_list <- function(corr_traits, i, reference_file,IV_threshold){
       {
         clump_data <- read.table(paste0(folder,"/", name,"_unpruned_chr", chr, ".clumped"),he=T)
         clumped_SNPs <- clump_data[,"SNP"]
-        build_data <- cbind(build_data, IV_temp) # <- original_data[which(original_data[["P"]]<threshold & original_data[["SNP"]] %in% clumped_SNPs),"SNP"]
+        IV_temp <- <- original_data[which(original_data[["P"]]<threshold & original_data[["SNP"]] %in% clumped_SNPs),"SNP"]
+        build_data <- cbind(build_data, IV_temp) #
         #write.table(IV_temp, file_out, append=T, row.names=F, col.names=F, quote=F)
       }
 
