@@ -45,9 +45,6 @@ find_kinship <- function(household_pairs, relatives){
   return(pairs)
 }
 
-
-
-
 filter_pairs <- function(pairs,household_relationships,field){
   pairs$sex1 <- household_relationships[["sex"]][match(pairs[["HOUSEHOLD_MEMBER1"]], household_relationships$userId)]
   pairs$sex2 <- household_relationships[["sex"]][match(pairs[["HOUSEHOLD_MEMBER2"]], household_relationships$userId)]
@@ -123,13 +120,16 @@ add_pcs <- function(pairs,pheno,sqc_sub){
 
   }
 
-return(out)
+  return(out)
 }
-
 
 calc_time_together <- function(pheno_cov,time_at_household,time_at_household_raw){
 
   households_temp <- pheno_cov[,1:3]
+
+  time_at_household_raw[[time_at_address_raw_field]][time_at_household_raw[[time_at_address_raw_field]] == -10 ] <- NA
+  time_at_household_raw[[time_at_address_raw_field]][time_at_household_raw[[time_at_address_raw_field]] == -3 ] <- NA
+  time_at_household_raw[[time_at_address_raw_field]][time_at_household_raw[[time_at_address_raw_field]] == -1 ] <- 0 #less than 1 year
 
   households_temp$house_time_member1 <- time_at_household[[time_at_address_field]][match(households_temp[["HOUSEHOLD_MEMBER1"]], time_at_household$userId)]
   households_temp$house_time_member2 <- time_at_household[[time_at_address_field]][match(households_temp[["HOUSEHOLD_MEMBER2"]], time_at_household$userId)]
@@ -201,7 +201,6 @@ compute_trait_corr <- function(phesant_directory,UKBB_directory,pairs_filter){
   "'output/tables/1.household_correlations.csv'.\n"))
   return(trait_corr)
 }
-
 
 ## File A2 ----
 
@@ -330,7 +329,6 @@ update_download_info <- function(corr_traits,Neale_SGG_dir){
 
 }
 
-
 file_in_out <- function(traits_corr2_update,i,reference_file,IV_threshold){
 
   corr_traits_both <- traits_corr2_update[which(traits_corr2_update[["Neale_file_sex"]]=="both"),]
@@ -357,12 +355,9 @@ file_in_out <- function(traits_corr2_update,i,reference_file,IV_threshold){
 
 }
 
-get_IV_list <- function(corr_traits, i, reference_file,IV_threshold,file_out) #
-{
-
+get_IV_list <- function(corr_traits, i, reference_file,IV_threshold){
 
   corr_traits_both <- corr_traits[which(corr_traits[["Neale_file_sex"]]=="both"),]
-
 
   existing_files_full <- list()
   existing_files_full  =  list.files( Neale_output_path,
@@ -391,31 +386,27 @@ get_IV_list <- function(corr_traits, i, reference_file,IV_threshold,file_out) #
 
   IV_snp_list <- numeric()
 
-  if(file.exists(file_out)) {file.remove(file_out)}
-
   threshold <- IV_threshold ## only extract IVs
   for(chr in 1:22)
 
   {
 
       original_data <- read.table(paste0(folder,"/", name,"_unpruned_chr", chr, ".txt"), header=T)
+      build_data <- numeric()
       if(file.exists(paste0(folder,"/", name,"_unpruned_chr", chr, ".clumped")))
       {
         clump_data <- read.table(paste0(folder,"/", name,"_unpruned_chr", chr, ".clumped"),he=T)
         clumped_SNPs <- clump_data[,"SNP"]
-        IV_temp <- original_data[which(original_data[["P"]]<threshold & original_data[["SNP"]] %in% clumped_SNPs),"SNP"]
-        write.table(IV_temp, file_out, append=T, row.names=F, col.names=F, quote=F)
+        build_data <- cbind(build_data, IV_temp) # <- original_data[which(original_data[["P"]]<threshold & original_data[["SNP"]] %in% clumped_SNPs),"SNP"]
+        #write.table(IV_temp, file_out, append=T, row.names=F, col.names=F, quote=F)
       }
 
   }
 
-
+  return(build_data)
 }
 
-
-
-summarize_IVs <- function(corr_traits, i, reference_file)
-{
+summarize_IVs <- function(corr_traits, i, reference_file){
 
   corr_traits_both <- corr_traits[which(corr_traits[["Neale_file_sex"]]=="both"),]
   IVs_full <- list.files(path=paste0(Neale_summary_dir,"/IVs/clump/" ), full.names=T)
@@ -486,7 +477,6 @@ reduce_variant_data <- function(traits,variant_file_full_name){
 
 }
 
-
 calc_sex_het <- function(traits,i,variant_data,reference_file,
   male_out_file, female_out_file, het_output_file){
 
@@ -509,7 +499,7 @@ calc_sex_het <- function(traits,i,variant_data,reference_file,
      paste( collapse = '|' )
   file_name_temp  =  reference_file %>%
      filter( str_detect( .$'Phenotype Code', phenotype_ids ) & Sex=="both_sexes")
-  file_name <- file_name_temp[["Phenotype Code"]][1]
+    file_name <- file_name_temp[["Phenotype Code"]][1]
 
   #trait_info <- read.table(paste0(pheno_dir,"/trait_info.txt"), header=F, row.names=1)
 
@@ -536,14 +526,18 @@ calc_sex_het <- function(traits,i,variant_data,reference_file,
 
   }
 
-
   for(file in c("male", "female"))
   {
 
     temp <- fread(get(paste0(file,"_original_Neale_file")), data.table=F)
+    temp <- temp %>% rename(minor_allele_Neale = minor_allele) %>% rename(AC_Neale  = AC) %>%
+      rename(minor_AF_Neale = minor_AF)
+
+
     variants <- variant_data[SNP_rows,"variant"]
-    temp <- temp[which(temp$variant %in% variants),]
-    exp_var_merge <- cbind(temp,variant_data[which(temp$variant %in% variants),])
+    neale_data_temp <- temp[which(temp$variant %in% variants),]
+    var_data_temp <- variant_data[SNP_rows,]
+    exp_var_merge <- merge(neale_data_temp,var_data_temp,by="variant")
     #IV_cols <- c("rsid", "chr", "beta", "se", "pval", "ref", "alt", "AF","n_complete_samples")
     #exp_var_merge <- exp_var_merge[,IV_cols]
 
@@ -582,9 +576,41 @@ calc_sex_het <- function(traits,i,variant_data,reference_file,
   write.table(IV_list_both_sexes, het_output_file, row.names=F, col.names=T, quote=F)
 
   char_row <- data.frame(lapply(traits[i,], as.character), stringsAsFactors=FALSE)
+  sex_het_summary <- as.data.frame(t(unlist(c(char_row, num_pass_filter))))
+  output <- list(male_IV_data = male_IV_data, female_IV_data = female_IV_data, IV_list_both_sexes = IV_list_both_sexes, sex_het_summary = sex_het_summary)
+  return(output)
 
-  return(as.data.frame(t(unlist(c(char_row, num_pass_filter)))))
+}
 
+write_IV_list <- function(traits_corr2_update, traits_to_count_IVs, IV_lists, sex_het_summary, IV_threshold,
+  sex_het_summary, traits_to_calc_het, traits_corr3, dir) {
+
+  for(i in 1:dim(traits_to_count_IVs)){
+
+    corr_traits_both <- traits_corr2_update[which(traits_corr2_update[["Neale_file_sex"]]=="both"),]
+    Neale_id <- corr_traits_both[i,"Neale_pheno_ID"]
+    out_file <- paste0("analysis/data_setup/IV_lists/", Neale_id, "_IVs_", IV_threshold,"_both_sexes.txt")
+    if(file.exists(file_out)) {file.remove(file_out)}
+    write.table(IV_lists[[i]], out_file, append=F, row.names=F, col.names=F, quote=F)
+
+  }
+
+  for(i in 1:dim(traits_to_calc_het)){
+    trait_ID <- as.character(traits_corr3$to_run[i,"Neale_pheno_ID"])
+    male_out_file <- paste0( "analysis/data_setup/IV_lists/", trait_ID, "_IVs_5e-08_male.txt")
+    female_out_file <- paste0( "analysis/data_setup/IV_lists/", trait_ID, "_IVs_5e-08_female.txt")
+    write.table(sex_het_summary[[i]]$male_IV_data, male_out_file,row.names=F, col.names=T, quote=F)
+    write.table(sex_het_summary[[i]]$female_IV_data, female_out_file,row.names=F, col.names=T, quote=F)
+  }
+
+}
+
+write_sex_het <- function(sex_het_summary, traits_to_calc_het, traits_corr3,dir){
+  for(i in 1:dim(traits_to_calc_het)){
+    trait_ID <- as.character(traits_corr3$to_run[i,"Neale_pheno_ID"])
+    output_file <- paste0( "analysis/data_setup/sex_heterogeneity/", trait_ID, "_sex_het.txt")
+    write.table(sex_het_summary$IV_list_both_sexes, output_file, row.names=F, col.names=T, quote=F)
+  }
 }
 
 sex_het_filter <- function(corr_traits, sex_het_summary, num_IVs_threshold){
@@ -702,30 +728,22 @@ prep_data <- function(traits,i,phesant_directory,GRS_thresholds,reference_file,s
   trait_ID <- as.character(traits[i,"Neale_pheno_ID"]) ## this is the Neale_id, used to be pheno_description
   phes_ID <- as.character(traits[i,"SGG_PHESANT_ID"])
   print(trait_ID)
+  dir.create(paste0("output/tables/traitMR/", trait_ID), showWarnings = FALSE)
+  dir.create(paste0("output/figures/traitMR/", trait_ID), showWarnings = FALSE)
+
+  pheno_dir <- paste0(project_dir, "/analysis/traitMR")
 
   ### create_relevant directories
-  dir.create(paste0(project_dir, "/analysis/traitMR/", trait_ID), showWarnings = FALSE)
-  pheno_dir <- paste0(project_dir, "/analysis/traitMR/", trait_ID)
+  dir.create(paste0(pheno_dir, "/household_MR/", trait_ID), showWarnings = FALSE)
+  dir.create(paste0(pheno_dir, "/household_GWAS/", trait_ID), showWarnings = FALSE)
+  dir.create(paste0(pheno_dir, "/GRS/male/", trait_ID), showWarnings = FALSE)
+  dir.create(paste0(pheno_dir, "/GRS/female/", trait_ID), showWarnings = FALSE)
+  dir.create(paste0(pheno_dir, "/IVs/", trait_ID), showWarnings = FALSE)
+  dir.create(paste0(pheno_dir,"/household_GWAS/", trait_ID, "/outcome_male"), showWarnings = FALSE)
+  dir.create(paste0(pheno_dir,"/household_GWAS/", trait_ID, "/outcome_female"), showWarnings = FALSE)
+  dir.create(paste0(pheno_dir,"/household_MR/", trait_ID, "/exposure_male"), showWarnings = FALSE)
+  dir.create(paste0(pheno_dir,"/household_MR/", trait_ID, "/exposure_female"), showWarnings = FALSE)
 
-  dir.create(paste0(pheno_dir,"/IVs"), showWarnings = FALSE)
-  dir.create(paste0(pheno_dir,"/GRS"), showWarnings = FALSE)
-  dir.create(paste0(pheno_dir,"/household_MR"), showWarnings = FALSE)
-  dir.create(paste0(pheno_dir,"/household_GWAS"), showWarnings = FALSE)
-  dir.create(paste0(pheno_dir,"/neighborhood_MR"), showWarnings = FALSE)
-  dir.create(paste0(pheno_dir,"/neighborhood_GWAS"), showWarnings = FALSE)
-
-  dir.create(paste0(pheno_dir,"/GRS/male"), showWarnings = FALSE)
-  dir.create(paste0(pheno_dir,"/GRS/female"), showWarnings = FALSE)
-
-  dir.create(paste0(pheno_dir,"/household_MR/exposure_male"), showWarnings = FALSE)
-  dir.create(paste0(pheno_dir,"/household_MR/exposure_female"), showWarnings = FALSE)
-
-  dir.create(paste0(pheno_dir,"/household_GWAS"), showWarnings = FALSE)
-  dir.create(paste0(pheno_dir,"/household_GWAS/outcome_male"), showWarnings = FALSE)
-  dir.create(paste0(pheno_dir,"/household_GWAS/outcome_female"), showWarnings = FALSE)
-
-  dir.create(paste0(project_dir,"/output/figures/traitMR/", trait_ID), showWarnings = FALSE)
-  dir.create(paste0(project_dir,"/output/tables/traitMR/", trait_ID), showWarnings = FALSE)
 
   folder_list <- c("/GRS/male", "/GRS/female")
 
@@ -733,15 +751,10 @@ prep_data <- function(traits,i,phesant_directory,GRS_thresholds,reference_file,s
   {
     for (threshold in GRS_thresholds)
     {
-      dir.create(paste0(pheno_dir,folder,"/", threshold), showWarnings = FALSE)
+      dir.create(paste0(pheno_dir,folder,"/", trait_ID, threshold), showWarnings = FALSE)
     }
   }
 
-  dir.create(paste0(pheno_dir,"/household_MR/exposure_male/pheno_household/"), showWarnings = FALSE)
-  dir.create(paste0(pheno_dir,"/household_MR/exposure_female/pheno_household/"), showWarnings = FALSE)
-
-  dir.create(paste0(pheno_dir,"/household_MR/exposure_male/PRS_household/"), showWarnings = FALSE)
-  dir.create(paste0(pheno_dir,"/household_MR/exposure_female/PRS_household/"), showWarnings = FALSE)
 
 
   ## process pheno data to have IID column and no quotes.
@@ -784,8 +797,8 @@ prep_data <- function(traits,i,phesant_directory,GRS_thresholds,reference_file,s
   unrelated_male_data <- pheno_male_full[-which(pheno_male_full$IID %in% related_males ),]
   unrelated_female_data <- pheno_female_full[-which(pheno_female_full$IID %in% related_females ),]
 
-  write.table(unrelated_male_data, paste0(pheno_dir,"/pheno_male.txt"),row.names=F, quote=F)
-  write.table(unrelated_female_data, paste0(pheno_dir,"/pheno_female.txt"), row.names=F, quote=F)
+  write.table(unrelated_male_data, paste0(pheno_dir,"/pheno_files/", trait_ID, "/pheno_male.txt"),row.names=F, quote=F)
+  write.table(unrelated_female_data, paste0(pheno_dir,"/pheno_files/", trait_ID, "/pheno_female.txt"), row.names=F, quote=F)
 
   ## find Neale file names and IV folder:
 
@@ -827,16 +840,11 @@ prep_data <- function(traits,i,phesant_directory,GRS_thresholds,reference_file,s
 
   num_IVs <- traits[i,"num_IVs"]
   description <- as.character(traits[i,"description"])
-  processed <- FALSE
   trait_info <- rbind(i,trait_ID,phes_ID,phesant_file,category,description, num_IVs,
     both_sexes_original_Neale_file, male_original_Neale_file, female_original_Neale_file,
-    both_sexes_IV_folder, male_IV_folder, female_IV_folder, processed)
+    both_sexes_IV_folder, male_IV_folder, female_IV_folder)
 
-  write.table(trait_info, paste0(pheno_dir,"/trait_info.txt"), row.names=T, col.names=F, quote=T)
-
-  ### write GRS thresholds to file
-  GRS_thresholds_df <- as.data.frame(GRS_thresholds)
-  write.table(GRS_thresholds_df, paste0(pheno_dir,"/GRS_thresholds.txt"), row.names=F, col.names=F, quote=F)
+  write.table(trait_info, paste0(pheno_dir,"/trait_info/", trait_ID, "/trait_info.txt"), row.names=T, col.names=F, quote=T)
 
   cat(paste0("Successfully prepared phenotype for processing (created directories, phenotype file inputs, trait summary, etc).\n"))
 
@@ -844,9 +852,8 @@ prep_data <- function(traits,i,phesant_directory,GRS_thresholds,reference_file,s
 
 create_summary_stats <- function(traits,i,phesant_directory,GRS_thresholds,reference_file,variant_data){
 
-
   trait_ID <- as.character(traits[i,"Neale_pheno_ID"]) ## this is the Neale_id, used to be pheno_description
-  pheno_dir <- paste0(project_dir, "/analysis/traitMR/", trait_ID)
+  pheno_dir <- paste0(project_dir, "/analysis/traitMR/")
   trait_info <-  read.table(paste0(pheno_dir,"/trait_info.txt"), header=F, row.names=1,check.names=F)
 
   #variant_data <- fread(variant_file_full_name,data.table=F)
@@ -865,8 +872,8 @@ create_summary_stats <- function(traits,i,phesant_directory,GRS_thresholds,refer
   }
 
 
-  write.table(male_IV_data,paste0(pheno_dir,"/IVs/male_IVs.txt"), row.names=F, col.names=T, quote=F)
-  write.table(female_IV_data,paste0(pheno_dir,"/IVs/female_IVs.txt"), row.names=F, col.names=T, quote=F)
+  write.table(male_IV_data,paste0(pheno_dir,"/IVs/", trait_ID, "/male_IVs.txt"), row.names=F, col.names=T, quote=F)
+  write.table(female_IV_data,paste0(pheno_dir,"/IVs/", trait_ID, "/female_IVs.txt"), row.names=F, col.names=T, quote=F)
 
   ###############################
 
@@ -892,8 +899,8 @@ create_summary_stats <- function(traits,i,phesant_directory,GRS_thresholds,refer
       for(GRS_threshold in GRS_thresholds)
       {
         GRS_temp <- original_data[which(original_data[["PVAL"]]<GRS_threshold & original_data[["SNP"]] %in% clumped_SNPs),]
-        write.table(GRS_temp, paste0( pheno_dir,"/GRS/", sex, "/", GRS_threshold,"/", sex,"_GRS_",GRS_threshold,"_chr",chr,".txt"), append=F, row.names=F, col.names=T, quote=F)
-        write.table(GRS_temp, paste0( pheno_dir,"/GRS/", sex, "/", GRS_threshold,"/", sex,"_GRS_",GRS_threshold,".txt"), append=T, row.names=F, col.names=F, quote=F)
+        write.table(GRS_temp, paste0( pheno_dir,"/GRS/", sex, "/", trait_ID, "/", GRS_threshold,"/", sex,"_GRS_",GRS_threshold,"_chr",chr,".txt"), append=F, row.names=F, col.names=T, quote=F)
+        write.table(GRS_temp, paste0( pheno_dir,"/GRS/", sex, "/", trait_ID, "/", GRS_threshold,"/", sex,"_GRS_",GRS_threshold,".txt"), append=T, row.names=F, col.names=F, quote=F)
       }
 
     }
@@ -907,7 +914,7 @@ create_summary_stats <- function(traits,i,phesant_directory,GRS_thresholds,refer
     {
       file <- read.table(paste0( pheno_dir,"/GRS/", sex, "/", GRS_threshold,"/", sex,"_GRS_",GRS_threshold,".txt"), header=F)
       colnames(file) <- colnames_GRS
-      write.table(file, paste0( pheno_dir,"/GRS/", sex, "/", GRS_threshold,"/", sex,"_GRS_",GRS_threshold,".txt"), row.names=F, col.names=T, quote=F)
+      write.table(file, paste0( pheno_dir,"/GRS/", sex, "/", trait_ID, "/", GRS_threshold,"/", sex,"_GRS_",GRS_threshold,".txt"), row.names=F, col.names=T, quote=F)
     }
 
   }
@@ -917,5 +924,586 @@ create_summary_stats <- function(traits,i,phesant_directory,GRS_thresholds,refer
   (only including SNPs which passed filters - see pipeline part A).
   GRS thresholds are sex-specific, filtered for low-quality==FALSE and p<0.1.\n"))
 
+
+}
+
+### FUNCTION LIST:
+
+#1 extract_Neale_IV
+## Description: extract IV's from Neale files and clump
+
+#2 extract_Neale_outcome
+## Description: extract statistics for a given set of SNPs from Neale files
+
+#3 extract_bgen
+## Description: extract genotypes from bgen files
+
+#4 proper_sex_pairs
+## Description: returns list of rows to be included given a sex pairing (eg. male/female)
+
+#5 full_model_summary
+## Description: returns summary of model with removed rows previously removed because of NA
+
+#6 extract_model_stats
+## Description: returns single row of beta, se, pval for given set coefficients
+
+#7 pretty_round
+## Description: rounds to 2 decimal places if >1, keeps 2 significant figures if <1,
+## and uses scientific notation if <0.001
+
+#8 make_beta_95ci
+## Description: returns character in the form: "beta (95ci)"
+
+#9 include_MR_NA
+## Description: include NA rows in MR output
+
+#10 summarize_mr_result
+## Description: summarizes mr_results
+
+#11 plink_clump
+## Description: runs plink clumping function in shell
+
+#12 load_IV_geno
+## Description: loads genotype data for a list of IVs with input (i) which corresponds to row in traits file.
+
+#13 meta
+## Description: meta analyzes a list of effects/se's that are organized into a df and removes any
+## "problem rows", uses 'rmeta' pacakge, outputs a list containing: effect, se, ci, pval
+#####################################################################################
+
+
+### extract independent set of IVs from Neale_files
+### first remove any duplicated SNP and SNP not in HRC SNP list
+extract_Neale_IV <- function(Neale_file, variant_file, filter_in,pval_threshold,prune_threshold){
+  exposure_raw <- fread(paste0(Neale_file),data.table=F)
+  exposure_cols  <- c("variant","beta","se","pval","n_complete_samples")
+  exposure_raw <- exposure_raw[, exposure_cols]
+
+  variant_data <- fread(paste0(variant_file),data.table=F)
+  variant_cols <- c("rsid", "ref", "alt", "AF","chr")
+  variant_data <- variant_data[,variant_cols]
+
+  exp_var_merge <- cbind(exposure_raw,variant_data)
+
+  data_IV_no_duplicates <- exp_var_merge[!(duplicated(exp_var_merge$rsid) | duplicated(exp_var_merge$rsid, fromLast=TRUE)),]
+  data_IV_filter <- data_IV_no_duplicates[which(data_IV_no_duplicates$rsid %in% filter_in), ]
+
+  data_IV <- data_IV_filter[which(data_IV_filter[["pval"]] < pval_threshold),]
+  IV_cols <- c("rsid", "chr", "beta", "se", "pval", "ref", "alt", "AF","n_complete_samples")
+  data_IV <- data_IV[,IV_cols]
+
+  colnames(data_IV) <- c("SNP", "chr", "beta", "se", "pval", "other_allele", "effect_allele","eaf","samplesize")
+  data_IV_format <- format_data(data_IV, type="exposure")
+
+  data_prune <- numeric()
+  for(chr in 1:22)
+  {
+  data_IV_temp <- data_IV_format[which(data_IV_format[["chr.exposure"]]==chr),]
+  fn <- tempfile(tmpdir = tempdir())
+  snps <- data_IV_temp$SNP
+  if(length(snps)==0) next
+  pvals <- data_IV_temp$pval.exposure
+  write.table(data.frame(SNP=snps, P=pvals), file=fn, row=F, col=T, qu=F)
+  refdat=paste0("/data/sgg2/jenny/data/1000G/chr",chr,"/1000G_EUR_chr",chr,"_filt")
+
+  snp_clump <- plink_clump(refdat, fn, prune_threshold)
+
+  data_prune_temp <- data_IV_temp[which(data_IV_temp$SNP %in% snp_clump),]
+  data_prune <- rbind(data_prune, data_prune_temp)
+  }
+  return(data_prune)
+}
+
+extract_Neale_outcome <- function(Neale_file, variant_file, IVs){
+  outcome_raw <- fread(paste0(Neale_file),data.table=F)
+  outcome_cols  <- c("variant","beta","se","pval","n_complete_samples")
+  outcome_raw <- outcome_raw[, outcome_cols]
+
+  variant_data <- fread(paste0(variant_file),data.table=F)
+  variant_cols <- c("rsid", "ref", "alt", "AF","chr")
+  variant_data <- variant_data[,variant_cols]
+
+  outcome_var_merge <- cbind(outcome_raw,variant_data)
+
+  outcome_filter <- outcome_var_merge[which(outcome_var_merge$rsid %in% IVs), ]
+
+  cols <- c("rsid", "chr", "beta", "se", "pval", "ref", "alt", "AF", "n_complete_samples")
+  outcome_filter <- outcome_filter[,cols]
+  colnames(outcome_filter) <- c("SNP", "chr", "beta", "se", "pval", "other_allele", "effect_allele","eaf", "samplesize")
+  outcome_format <- format_data(outcome_filter, type="outcome")
+
+  return(outcome_format)
+}
+
+extract_bgen <- function(snps, file){
+
+  num_snps <- length(snps)
+  bgen_data <- bgen.load(file=file, rsids = snps)
+  snp_map <- bgen_data$variants
+  snp_map$AF <- NA
+  geno <- numeric()
+
+  for(i in 1:dim(snp_map)[1])
+  {
+      snp <- as.character(snp_map[["rsid"]][i])
+      snp_temp <- bgen_data$data[snp,,]
+      snp_temp <- as.data.frame(snp_temp)
+      snp_temp[,4] <- snp_temp[,2]+2*snp_temp[,3]
+      snp_map$AF[i] <- mean(snp_temp[,4], rm.na=T)/2
+      snp_out <- snp_temp[,4]
+      geno <- cbind(geno, snp_out)
+  }
+  colnames(geno) <- bgen_data$variants$rsid
+  return(list(geno_data=geno,snp_map=snp_map))
+}
+
+proper_sex_pairs <- function(pheno,exposure_sex,outcome_sex,index,opp_index){
+    sex_exp_index <- rep(FALSE,dim(pheno)[1])
+    if(exposure_sex=="female"){sex_exp_index[which(pheno[[paste0(opp_index, "_sex")]]==0)] <- TRUE}
+    if(exposure_sex=="male"){sex_exp_index[which(pheno[[paste0(opp_index, "_sex")]]==1)] <- TRUE}
+    if(exposure_sex=="both_sexes"){sex_exp_index[] <- TRUE}
+
+    sex_outcome_index <- rep(FALSE,dim(pheno)[1])
+    if(outcome_sex=="female"){sex_outcome_index[which(pheno[[paste0(index, "_sex")]]==0)] <- TRUE}
+    if(outcome_sex=="male"){sex_outcome_index[which(pheno[[paste0(index, "_sex")]]==1)] <- TRUE}
+    if(outcome_sex=="both_sexes"){sex_outcome_index[] <- TRUE}
+
+    sex_joint_index <- sex_exp_index & sex_outcome_index
+    return(sex_joint_index)
+}
+
+full_model_summary <- function(model){
+
+  nr <- length(which(is.na(coef(model))))
+  nc <- 4
+  rnames <- names(which(summary(model)$aliased))
+  cnames <- colnames(summary(model)$coefficients)
+  mat_na <- matrix(data = NA,nrow = nr,ncol = nc,
+         dimnames = list(rnames,cnames))
+  mat_coef <- rbind(summary(model)$coefficients,mat_na)
+  return(mat_coef)
+
+}
+
+extract_model_stats <- function(model_summary, coef_list){
+  summary <- numeric()
+  for(coef in coef_list)
+  {
+    beta <- model_summary[coef,1]
+    se <- model_summary[coef,2]
+    pval <- model_summary[coef,4]
+    temp <- cbind(beta, se, pval)
+    colnames(temp) <- paste0(coef, c("_beta", "_se","_pval"))
+    summary <- cbind (summary,  temp)
+  }
+  return(summary)
+
+}
+
+pretty_round <- function(x){
+  x <- as.numeric(x)
+  if(!is.na(x))
+  {
+  if(abs(x)>1) {out<- sprintf("%.2f", round(x,2))}
+  if(abs(x)<=1 & abs(x)>=0.001) {
+    om = floor(log10(abs(x)))
+    dp = 2-om-1
+    out<- sprintf(paste("%.",dp,"f", sep=""), signif(x,2))}
+  if(abs(x)<0.001) {out <- sprintf("%.1e", signif(x, 2))}
+  } else out <- NA
+  return(out)
+}
+
+make_beta_95ci <- function(beta, se){
+  beta <- as.numeric(beta)
+  se <- as.numeric(se)
+  beta_round <- pretty_round(beta)
+  lower_ci <- pretty_round(beta-(1.96*se))
+  upper_ci <- pretty_round(beta+(1.96*se))
+  out <- paste0(beta_round," (",lower_ci,", ", upper_ci, ")")
+  return(out)
+}
+
+summarize_mr_result <- function(exposure, outcome, exposure_sex, outcome_sex, nsnps, MR_res, het_test, egger_test,n_exposure,n_outcome)
+{
+  out <- cbind(exposure, outcome, exposure_sex, outcome_sex, nsnps, n_exposure,n_outcome)
+  if(nsnps==1)
+  {
+    egger_pval <- NA
+    het_IVW_pval <- NA
+    for(method in c("Wald ratio","MR Egger"))
+    {
+    row <- which(MR_res[,"method"]==method)
+    if(any(is.na(MR_res[row,c("b","se","pval")])))
+    {
+      out <- cbind(out, NA, NA)
+    } else {
+    b.ci <- make_beta_95ci(MR_res[row,"b"],MR_res[row,"se"])
+    pval <- pretty_round(MR_res[row,"pval"])
+    out <- cbind(out, b.ci, pval)
+    }
+    }
+    out <- cbind(out, egger_pval,het_IVW_pval)
+  }
+  if(nsnps>1)
+  {
+
+  for(method in c("Inverse variance weighted","MR Egger"))
+  {
+  row <- which(MR_res[,"method"]==method)
+  b.ci <- make_beta_95ci(MR_res[row,"b"],MR_res[row,"se"])
+  pval <- pretty_round(MR_res[row,"pval"])
+  out <- cbind(out, b.ci, pval)
+  }
+  het_IVW_pval <- pretty_round(het_test[which(het_test[,"method"]=="Inverse variance weighted"),"Q_pval"])
+  egger_pval <- pretty_round(egger_test[1,"pval"])
+  out <- cbind(out, egger_pval,het_IVW_pval)
+  }
+  colnames(out) <- c("exposure", "outcome", "exposure_sex","outcome_sex","N_snps", "N_exposure_GWAS", "N_outcome_GWAS",
+  "IVW/Wald_summary", "IVW/Wald_pval","Egger_summary", "Egger_pval", "Egger_int_pval", "Het_IVW_Qpval")
+  return(out)
+}
+
+plink_clump <- function(bfile, fn, prune_threshold)
+{
+
+  fun2 <- paste0(
+		"plink",
+		" --bfile ", bfile,
+		" --clump ", fn,
+		" --clump-p1 ", clump_p1,
+		" --clump-p2 ", clump_p2,
+		" --clump-r2 ", prune_threshold,
+		" --clump-kb ", clump_kb,
+		" --out ", fn
+	)
+  system(fun2)
+  a <- read.table(paste(fn, ".clumped", sep=""), he=T)
+  unlink(paste(fn, "*", sep=""))
+  a_out <- a[,"SNP"]
+	return(a_out)
+}
+
+load_IV_geno <- function(i,sample_file,pheno_dir){
+
+  ####### load IV list
+  IV_data <- fread(paste0(pheno_dir,"/IVs/", "male","_IVs.txt"), header=T, data.table=F) ## IV list is the same for males and females, but the effects will be different
+
+  ####### Extract SNP froms bgen files
+  snp_map <- numeric()
+  IV_geno <- numeric()
+  for(chr in 1:22)
+  {
+    snps <- IV_data[which(IV_data[,"chr"]==chr),"rsid"]
+    if(length(snps)==0) next
+    bgen_file=paste(UKBB_dir, "/imp/", "_001_ukb_imp_chr", chr, "_v2.bgen", sep="")
+    bgen_chr_extract <- extract_bgen(snps,bgen_file)
+    IV_geno <- cbind(IV_geno, bgen_chr_extract$geno_data)
+    snp_map <- rbind(snp_map,bgen_chr_extract$snp_map)
+    cat(paste0("Finished loading chr: ", chr, ".\n"))
+
+  }
+  row.names(IV_geno) <- sample_file[,1]
+  return(list(IV_geno, snp_map))
+}
+
+meta <- function(result_data, remove_rows, effect_col, se_col,n)
+{
+
+  if(length(remove_rows)!=0)
+  {
+    result_data <- result_data[-remove_rows,]
+  }
+
+  effects <- result_data[,effect_col]
+  ses <- result_data[,se_col]
+  meta.result=meta.summaries(d=effects, se=ses,method=c("fixed"), conf.level=0.95)
+  b_meta=round(meta.result[3]$summary,digits=10)
+  b_meta_se=round(meta.result[4]$se.summary,digits=10)
+  lowerbound=b_meta-b_meta_se*1.96
+  upperbound=b_meta+b_meta_se*1.96
+  meta_p=round(2*(pt(abs(b_meta/b_meta_se),((n)-meta.result$het[2]),lower.tail=FALSE)),digits=10)
+
+  return(list(effect=b_meta, se=b_meta_se,
+  lower_ci=lowerbound, upper_ci=upperbound,
+  pval=meta_p))
+
+}
+
+interval_labels <- function(intervals){
+
+  labels <- numeric()
+  for(j in 1:length(intervals))
+  {
+      if(j!=length(intervals))
+      {
+        label_j <- paste0(intervals[j],"-",(intervals[j+1]-1))
+      }
+      if(j==length(intervals))
+      {
+        label_j <- paste0(intervals[j],"+")
+      }
+      labels <- c(labels, label_j)
+
+  }
+  return(labels)
+}
+
+define_models <- function(traits){
+
+  i_col <- numeric()
+  exposure_sex_col <- numeric()
+  trait_ID_col <- numeric()
+  phenotype_file <- numeric()
+  phenotype <- numeric()
+  phenotype_description <- numeric()
+  IV_file <- numeric()
+  output_file <- numeric()
+  for(i in 1:dim(traits)[1]){
+
+    trait_ID <- as.character(traits[i,"Neale_pheno_ID"])
+    pheno_dir <- paste0("analysis/traitMR/" )
+    trait_info <-  read.table(paste0(pheno_dir,"/trait_info.txt"), header=F, row.names=1,check.names=F)
+    phesant_ID <- as.character(trait_info["phes_ID",1])
+
+    for(exposure_sex in c("male", "female")){
+      i_col <- c(i_col,i)
+      trait_ID_col <- c(trait_ID_col, trait_ID)
+      if(exposure_sex=="male"){outcome_sex="female"}
+      if(exposure_sex=="female"){outcome_sex="male"}
+      exposure_sex_col <- c(exposure_sex_col, exposure_sex)
+      IV_file <- c(IV_file, paste0(pheno_dir,"/IVs/", exposure_sex,"_IVs.txt"))
+
+      phenotype_file <- c(phenotype_file,paste0(pheno_dir,"/pheno_",outcome_sex,".txt"))
+      phenotype = c(phenotype,phesant_ID)
+      phenotype_description = c(phenotype_description,"phesant")
+      output_file = c(output_file, paste0(pheno_dir, "/household_GWAS/outcome_",outcome_sex,"/", "phesant","_" ,exposure_sex, "-",outcome_sex, "_GWAS.csv"))
+
+    }
+  }
+  output <- tibble(
+    i = i_col,
+    trait_ID = trait_ID_col,
+    exposure_sex = exposure_sex_col,
+    phenotype_file = phenotype_file,
+    phenotype_col = phenotype,
+    phenotype_description = phenotype_description,
+    IV_file = IV_file,
+    gwas_outcome_file = output_file)
+  return(output)
+
+}
+
+household_GWAS <- function(i,trait_ID,exposure_sex, phenotype_file,phenotype_col,phenotype_description,IV_file,sample_file,pheno_cov,household_intervals,household_time,output){
+
+  cat(paste0("Loading genotype data...\n"))
+  pheno_dir <- paste0("analysis/traitMR/", trait_ID)
+  IV_geno_out <- load_IV_geno(i,sample_file,pheno_dir)
+  IV_geno <- IV_geno_out[[1]]
+  snp_map <- IV_geno_out[[2]]
+
+  trait_info <-  read.table(paste0(pheno_dir,"/trait_info.txt"), header=F, row.names=1,check.names=F)
+  phesant_ID <- as.character(trait_info["phes_ID",1])
+
+  cat(paste0("Processing ", exposure_sex, "s...\n"))
+  if(exposure_sex=="male"){outcome_sex="female"}
+  if(exposure_sex=="female"){outcome_sex="male"}
+  if(exposure_sex=="male"){index="HOUSEHOLD_MEMBER1"}
+  if(exposure_sex=="female"){index="HOUSEHOLD_MEMBER2"}
+  opp_index <- ifelse(index=="HOUSEHOLD_MEMBER1", "HOUSEHOLD_MEMBER2", "HOUSEHOLD_MEMBER1")
+
+  ####### load IV list
+  IV_data <- fread(IV_file, header=T, data.table=F)
+
+  ####### load phenotypes: GRS and raw
+  phenotype <- fread( phenotype_file,header=T, data.table=F, select=c("IID",phenotype_col))
+  # grs_pheno <- fread( paste0(pheno_dir,"/GRS/",outcome_sex, "/",trait_ID,"_",outcome_sex,".best"),header=T, data.table=F)
+
+  ## extract best threshold found by PRSice
+  # grs_summary <- read.table(paste0(pheno_dir,"/GRS/",outcome_sex, "/",trait_ID,"_",outcome_sex,".summary"), header=T)
+  # grs_best <- grs_summary[["Threshold"]][1]
+  # joint_pheno <- merge(raw_pheno, grs_pheno, by="IID")
+  # cat(paste0("The best threshold chosen by PRSice was: ", grs_best, "\n"))
+
+  outcome_GWAS <- numeric()
+
+  cat(paste0("Running regression for each GWAS in all participants and bins of household pairs
+  (divided by length of time in household) using raw phenotype and GRS as outcomes...\n"))
+
+  for(k in 1:dim(IV_data)[1])
+  {
+    snp <- IV_data[["rsid"]][k]
+    geno_sub <- as.data.frame(IV_geno[,which(colnames(IV_geno)==snp)])
+    colnames(geno_sub)[1] <- "geno"
+    geno_sub$IID <- as.numeric(row.names(geno_sub))
+    temp1 <- merge(pheno_cov,geno_sub, by.x=index, by.y="IID")
+    temp2 <- merge(temp1, phenotype, by.x=opp_index, by.y="IID")
+    temp3 <- merge(temp2, household_time[,c("HOUSEHOLD_MEMBER1","time_interval_factor")], by="HOUSEHOLD_MEMBER1")
+    # final_data <- merge(temp3, grs_pheno[,c("IID","PRS")], by.x=opp_index, by.y="IID")
+    final_data <- temp3
+    # colnames(final_data) <- c(colnames(pheno_cov), "geno_index", "pheno_household", "time_together_bin", "PRS_household"  )###,"GRS_0.01_household","GRS_0.001_household")
+    colnames(final_data) <- c(colnames(pheno_cov), "geno_index", "phenotype", "time_together_bin" )###,"GRS_0.01_household","GRS_0.001_household")
+
+    outcome <- "phenotype"
+    pheno_run <- final_data[,c(grep("_age", names(final_data)),grep("_PC_", names(final_data)), which(names(final_data)=="geno_index" |names(final_data)==outcome))]
+    colnames(pheno_run)[which(colnames(pheno_run)==outcome)] <- "outcome"
+    pheno_run$outcome <- scale(pheno_run$outcome)
+    mod <- glm(outcome ~ ., data=pheno_run, family="gaussian")
+
+    model_summary <- full_model_summary(mod)
+
+    mod_extract <- extract_model_stats(model_summary, c("geno_index"))
+    n <- length(fitted(mod))
+
+    k_GWAS <- numeric()
+    k_GWAS <- rbind(k_GWAS,cbind(phenotype_file, outcome, as.character(snp), "all", mod_extract,n))
+
+    for(bin in household_intervals)
+    {
+      bin_sub <- final_data[which(final_data[["time_together_bin"]]==bin),]
+      bin_pheno_run <- bin_sub[,c(grep("_age", names(bin_sub)),grep("_PC_", names(bin_sub)), which(names(bin_sub)=="geno_index" |names(bin_sub)==outcome))]
+      colnames(bin_pheno_run)[which(colnames(bin_pheno_run)==outcome)] <- "outcome"
+      bin_pheno_run$outcome <- scale(bin_pheno_run$outcome)
+      bin_pheno_run <- bin_pheno_run[complete.cases(bin_pheno_run),] #if all values are the same then NA's will be produced
+      if(dim(bin_pheno_run)[1]!=0){
+        bin_mod <- glm(outcome ~ ., data=bin_pheno_run, family="gaussian")
+
+        bin_model_summary <- full_model_summary(bin_mod)
+
+        bin_mod_extract <- extract_model_stats(bin_model_summary, c("geno_index"))
+        bin_n <- length(fitted(bin_mod))
+        bin_row_summary <- cbind(phenotype_file, outcome, as.character(snp), bin, bin_mod_extract,bin_n)
+
+      } else bin_row_summary <- cbind(phenotype_file, outcome, as.character(snp), bin, NA,NA,NA,0)
+
+      k_GWAS <- rbind(k_GWAS, bin_row_summary)
+
+      #assign(paste0("outcome_GWAS_bin",bin), rbind(get(paste0("outcome_GWAS_bin",bin)), bin_row_summary))
+
+    }
+
+    outcome_GWAS <- rbind(outcome_GWAS, k_GWAS)
+    cat(paste0("Finished running regression for ", k, " of ", dim(IV_data)[1], " SNPs.\n"))
+
+  }
+
+  outcome_GWAS <- as.data.frame(outcome_GWAS)
+  colnames(outcome_GWAS)[2] <- "phenotype_file"
+  colnames(outcome_GWAS)[2] <- "outcome"
+  colnames(outcome_GWAS)[3] <- "SNP"
+  outcome_GWAS$outcome <- phenotype_col
+  colnames(outcome_GWAS)[4] <- "years_together_bin"
+  outcome_gwas_out <- merge(outcome_GWAS, snp_map,by.x="SNP", by.y="rsid")
+
+  write.csv(outcome_gwas_out, paste0(pheno_dir, "/household_GWAS/outcome_",outcome_sex,"/", phenotype_description,"_" ,exposure_sex, "-",outcome_sex, "_GWAS.csv"), row.names=F)
+  cat(paste0("Finished processing and writing GWAS files for ", outcome_sex, "s.\n"))
+
+}
+
+household_MR <- function(i,trait_ID,phenotype_description,exposure_sex,outcome_gwas_file,IV_file,pheno_cov,household_intervals) {
+  pheno_dir <- paste0("analysis/traitMR/", trait_ID)
+  trait_info <-  read.table(paste0(pheno_dir,"/trait_info.txt"), header=F, row.names=1,check.names=F)
+  phesant_ID <- as.character(trait_info["phes_ID",1])
+
+  full_MR_summary <-  numeric()
+  bin_summary <- numeric()
+
+  if(exposure_sex=="male"){outcome_sex="female"}
+  if(exposure_sex=="female"){outcome_sex="male"}
+  if(exposure_sex=="male"){index="HOUSEHOLD_MEMBER1"}
+  if(exposure_sex=="female"){index="HOUSEHOLD_MEMBER2"}
+  opp_index <- ifelse(index=="HOUSEHOLD_MEMBER1", "HOUSEHOLD_MEMBER2", "HOUSEHOLD_MEMBER1")
+  ####### load IV list
+  IV_data <- fread(IV_file, header=T, data.table=F)
+
+
+  colnames(IV_data) <- c("SNP", "chr", "beta", "se", "pval", "other_allele", "effect_allele","eaf","samplesize")
+  data_IV_format <- format_data(IV_data, type="exposure")
+  outcome <- "phenotype"
+  for(bin in c("all", household_intervals)){
+    outcome_gwas <- read.csv(outcome_gwas_file, header=T)
+
+    gwas_sub <- outcome_gwas[which(outcome_gwas[["years_together_bin"]]==bin),]
+    GWAS_name <- paste0(pheno_dir, "/household_GWAS/outcome_",outcome_sex,"/", phenotype_description,"_" ,exposure_sex, "-",outcome_sex, "_GWAS_bin_", bin, ".csv")
+
+    write.csv(gwas_sub, GWAS_name,row.names=F)
+    outcome_dat <- read_outcome_data(
+        snps = data_IV_format$SNP,
+        filename = paste0(GWAS_name) ,
+        sep = ",",
+        snp_col = "SNP",
+        beta_col = paste0("geno_index_beta"),
+        se_col = paste0("geno_index_se"),
+        effect_allele_col = "allele1",
+        other_allele_col = "allele0",
+        pval_col = paste0("geno_index_pval")
+    )
+
+    harmonise_dat <- harmonise_data(
+      exposure_dat = data_IV_format,
+      outcome_dat = outcome_dat, action=1
+    )
+
+    original_MR <- mr(harmonise_dat, method=MR_method_list)
+    if(dim(original_MR)[1]!=0){
+      MR_res <- include_MR_NA(original_MR)
+      MR_ivw_row <- which(MR_res[,"method"]=="Inverse variance weighted")
+      MR_wald_row <- which(MR_res[,"method"]=="Wald ratio")
+      MR_dir <- paste0(pheno_dir, "/household_MR/exposure_", exposure_sex)
+      write.csv(MR_res, paste0(MR_dir, "/", phenotype_description, "_", exposure_sex,"-",outcome_sex, "_MR_bin_",bin, ".csv"), row.names=F)
+
+      bin_result <- c(bin, outcome, exposure_sex, outcome_sex, MR_res[MR_ivw_row,"b"],MR_res[MR_ivw_row,"se"], MR_res[MR_ivw_row,"pval"])
+    } else bin_result <- c(bin, outcome, exposure_sex, outcome_sex, NA,NA, NA)
+    bin_summary <- rbind(bin_summary, bin_result)
+
+    if(bin=="all")
+    {
+      het_test <- mr_heterogeneity(harmonise_dat, method_list=c("mr_egger_regression", "mr_ivw"))
+      egger_test <- mr_pleiotropy_test(harmonise_dat)
+      leave1out_test <- mr_leaveoneout(harmonise_dat)
+
+      write.csv(het_test, paste0(MR_dir, "/", phenotype_description, "_", exposure_sex,"-",outcome_sex, "_MR-het.csv"), row.names=F)
+      write.csv(egger_test, paste0(MR_dir, "/", phenotype_description, "_", exposure_sex,"-",outcome_sex, "_MR-Egger.csv"), row.names=F)
+      write.csv(leave1out_test, paste0(MR_dir, "/", phenotype_description, "_", exposure_sex,"-",outcome_sex, "_MR-leave_out.csv"), row.names=F)
+
+      outcome_gwas <- fread(GWAS_name, header=T, data.table=F)
+      ngwas <- max(gwas_sub$n, na.rm=T)
+      nsnps <- dim(harmonise_dat)[1]
+      n_neale <- max(data_IV_format$samplesize.exposure, na.rm=T)
+      temp_summary <- summarize_mr_result (paste0(trait_ID,"_INDEX"), paste0(trait_ID,"_HOUSEHOLD"), exposure_sex, outcome_sex, nsnps,MR_res, het_test, egger_test,n_neale, ngwas)
+
+      ## Test for reverse causality
+      harmonise_dat_sensitivity <- harmonise_dat[which(harmonise_dat[["pval.exposure"]] < harmonise_dat[["pval.outcome"]]),]
+      MR_res <- include_MR_NA(mr(harmonise_dat_sensitivity, method=MR_method_list))
+      write.csv(MR_res, paste0(MR_dir, "/", phenotype_description, "_", exposure_sex,"-",outcome_sex, "_MR-sensitivity.csv"), row.names=F)
+
+      MR_ivw_row <- which(MR_res[,"method"]=="Inverse variance weighted")
+      MR_wald_row <- which(MR_res[,"method"]=="Wald ratio")
+      nsnps_sensitivity <- dim(harmonise_dat_sensitivity)[1]
+      correct_row <- ifelse(nsnps_sensitivity==1, MR_wald_row, MR_ivw_row)
+      sensitivity_result <- cbind(nsnps_sensitivity, make_beta_95ci(MR_res[correct_row,"b"],MR_res[correct_row,"se"]),pretty_round(MR_res[correct_row,"pval"]))
+      temp_summary <- cbind(temp_summary, sensitivity_result)
+
+      ## Make MR plot
+      output_figure_dir <- paste0(project_dir, "/output/figures/traitMR/",trait_ID)
+      pdf(file=paste0(output_figure_dir,"/", trait_ID, "_", exposure_sex, "-",outcome_sex, "_household_MR", ".pdf"))
+      print(mr_scatter_plot(original_MR, harmonise_dat))
+      dev.off()
+
+      MR_summary <- cbind(outcome, temp_summary)
+      full_MR_summary <- rbind(full_MR_summary, MR_summary)
+    }
+  }
+
+  num_cols <- length(colnames(full_MR_summary))
+
+  colnames(full_MR_summary)[num_cols-1] <- "IVW/Wald_summary_sensitivity"
+  colnames(full_MR_summary)[num_cols] <- "IVW/Wald_pval_sensitivity"
+  colnames(full_MR_summary)[num_cols-2] <- "N_snps_sensitivity" #test for reverse causation
+  output_table_dir <- paste0(project_dir, "/output/tables/traitMR/", trait_ID)
+  write.csv(full_MR_summary, paste0(output_table_dir, "/", trait_ID, "_household_MR.csv"), row.names=F, quote=T)
+
+  colnames(bin_summary) <- c("bin","outcome","exposure_sex","outcome_sex", "IVW_beta", "IVW_se", "IVW_pval")
+  write.csv(bin_summary, paste0(pheno_dir, "/household_MR/", phenotype_description,"_", exposure_sex, "-",outcome_sex, "_household_MR_bin.csv"), row.names=F, quote=T)
 
 }
