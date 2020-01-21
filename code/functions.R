@@ -581,8 +581,7 @@ calc_sex_het <- function(traits,i,variant_data,reference_file){
 
 }
 
-write_IV_list <- function(traits_corr2_update, traits_to_count_IVs, IV_lists,
-  sex_het_summary, IV_threshold, traits_to_calc_het, traits_corr3, dir) {
+write_IV_list <- function(traits_corr2_update, traits_to_count_IVs, IV_lists, IV_threshold, dir) {
 
   corr_traits_both <- traits_corr2_update[which(traits_corr2_update[["Neale_file_sex"]]=="both"),]
 
@@ -595,11 +594,15 @@ write_IV_list <- function(traits_corr2_update, traits_to_count_IVs, IV_lists,
 
   }
 
+}
+
+write_IV_info <- function(sex_het_summary, traits_to_calc_het, traits_corr3, dir) {
+
   for(i in 1:dim(traits_to_calc_het)){
     list_length <- 4
     trait_ID <- as.character(traits_corr3$to_run[i,"Neale_pheno_ID"])
-    male_out_file <- paste0( "analysis/data_setup/IV_lists/", trait_ID, "_IVs_5e-08_male.txt")
-    female_out_file <- paste0( "analysis/data_setup/IV_lists/", trait_ID, "_IVs_5e-08_female.txt")
+    male_out_file <- paste0( "analysis/data_setup/IV_info/", trait_ID, "_IVs_5e-08_male.txt")
+    female_out_file <- paste0( "analysis/data_setup/IV_info/", trait_ID, "_IVs_5e-08_female.txt")
     write.table(sex_het_summary[[(i-1)*list_length+1]], male_out_file,row.names=F, col.names=T, quote=F)
     write.table(sex_het_summary[[(i-1)*list_length+2]], female_out_file,row.names=F, col.names=T, quote=F)
     #male_IV_data and female_IV_data is in spots 1 and 2
