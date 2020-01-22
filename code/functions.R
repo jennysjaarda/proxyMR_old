@@ -389,7 +389,6 @@ get_IV_list <- function(corr_traits, i, reference_file,IV_threshold){
   for(chr in 1:22)
 
   {
-
       original_data <- read.table(paste0(folder,"/", name,"_unpruned_chr", chr, ".txt"), header=T)
 
       if(file.exists(paste0(folder,"/", name,"_unpruned_chr", chr, ".clumped")))
@@ -420,7 +419,7 @@ summarize_IVs <- function(corr_traits, i, reference_file){
   file_name_temp  =  reference_file %>%
       filter( str_detect( .$'Phenotype Code', phenotype_ids ) & Sex=="both_sexes")
 
-  file_name <- file_name_temp[["Phenotype Code"]]
+  file_name <- file_name_temp[["Phenotype Code"]][1]
   folder <- IVs_full[which(grepl(file_name, IVs_full) & grepl("both_sexes", IVs))]
   name <- IVs[which(grepl(file_name, IVs) & grepl("both_sexes", IVs))]
   IV_snp_list <- numeric()
@@ -432,7 +431,7 @@ summarize_IVs <- function(corr_traits, i, reference_file){
     out <- cbind(i,dim(GW_ivs)[1])
   } else out <- cbind(i,0)
 
-  return(out)
+  return(as.data.frame(out))
 
 }
 
@@ -585,7 +584,7 @@ write_IV_list <- function(traits_corr2_update, traits_to_count_IVs, IV_lists, IV
 
   corr_traits_both <- traits_corr2_update[which(traits_corr2_update[["Neale_file_sex"]]=="both"),]
 
-  for(i in 1:dim(traits_to_count_IVs)){
+  for(i in 1:dim(traits_to_count_IVs)[1]){
 
     Neale_id <- corr_traits_both[i,"Neale_pheno_ID"]
     out_file <- paste0("analysis/data_setup/IV_lists/", Neale_id, "_IVs_", IV_threshold,"_both_sexes.txt")
@@ -598,7 +597,7 @@ write_IV_list <- function(traits_corr2_update, traits_to_count_IVs, IV_lists, IV
 
 write_IV_info <- function(sex_het_summary, traits_to_calc_het, traits_corr3, dir) {
 
-  for(i in 1:dim(traits_to_calc_het)){
+  for(i in 1:dim(traits_to_calc_het)[1]){
     list_length <- 4
     trait_ID <- as.character(traits_corr3$to_run[i,"Neale_pheno_ID"])
     male_out_file <- paste0( "analysis/data_setup/IV_info/", trait_ID, "_IVs_5e-08_male.txt")
@@ -611,7 +610,7 @@ write_IV_info <- function(sex_het_summary, traits_to_calc_het, traits_corr3, dir
 }
 
 write_sex_het <- function(sex_het_summary, traits_to_calc_het, traits_corr3,dir){
-  for(i in 1:dim(traits_to_calc_het)){
+  for(i in 1:dim(traits_to_calc_het)[1]){
     list_length <- 4
     trait_ID <- as.character(traits_corr3$to_run[i,"Neale_pheno_ID"])
     output_file <- paste0( "analysis/data_setup/sex_heterogeneity/", trait_ID, "_sex_het.txt")
@@ -741,6 +740,8 @@ prep_data <- function(traits,i,phesant_directory,GRS_thresholds,reference_file,s
   category <- as.character(traits[i,"category"])
   trait_ID <- as.character(traits[i,"Neale_pheno_ID"]) ## this is the Neale_id, used to be pheno_description
   phes_ID <- as.character(traits[i,"SGG_PHESANT_ID"])
+  variable_type <- as.character(traits[i,"variable_type"])
+
   print(trait_ID)
   dir.create(paste0("output/tables/traitMR/", trait_ID), showWarnings = FALSE)
   dir.create(paste0("output/figures/traitMR/", trait_ID), showWarnings = FALSE)
@@ -749,9 +750,12 @@ prep_data <- function(traits,i,phesant_directory,GRS_thresholds,reference_file,s
 
   ### create_relevant directories
   dir.create(paste0(pheno_dir, "/household_MR/", trait_ID), showWarnings = FALSE)
+  dir.create(paste0(pheno_dir, "/pheno_files/", trait_ID), showWarnings = FALSE)
   dir.create(paste0(pheno_dir, "/household_GWAS/", trait_ID), showWarnings = FALSE)
-  dir.create(paste0(pheno_dir, "/GRS/male/", trait_ID), showWarnings = FALSE)
-  dir.create(paste0(pheno_dir, "/GRS/female/", trait_ID), showWarnings = FALSE)
+  dir.create(paste0(pheno_dir, "/GRS/", trait_ID), showWarnings = FALSE)
+  dir.create(paste0(pheno_dir, "/GRS/", trait_ID, "/male"), showWarnings = FALSE)
+  dir.create(paste0(pheno_dir, "/GRS/", trait_ID, "/female"), showWarnings = FALSE)
+
   dir.create(paste0(pheno_dir, "/IVs/", trait_ID), showWarnings = FALSE)
   dir.create(paste0(pheno_dir,"/household_GWAS/", trait_ID, "/outcome_male"), showWarnings = FALSE)
   dir.create(paste0(pheno_dir,"/household_GWAS/", trait_ID, "/outcome_female"), showWarnings = FALSE)
@@ -759,13 +763,13 @@ prep_data <- function(traits,i,phesant_directory,GRS_thresholds,reference_file,s
   dir.create(paste0(pheno_dir,"/household_MR/", trait_ID, "/exposure_female"), showWarnings = FALSE)
 
 
-  folder_list <- c("/GRS/male", "/GRS/female")
+  folder_list <- c(paste0("GRS/", trait_ID, "/male"), paste0("GRS/", trait_ID, "/female"))
 
   for(folder in folder_list)
   {
     for (threshold in GRS_thresholds)
     {
-      dir.create(paste0(pheno_dir,folder,"/", trait_ID, threshold), showWarnings = FALSE)
+      dir.create(paste0(pheno_dir,"/", folder,"/", threshold), showWarnings = FALSE)
     }
   }
 
@@ -852,7 +856,7 @@ prep_data <- function(traits,i,phesant_directory,GRS_thresholds,reference_file,s
 
   num_IVs <- traits[i,"num_IVs"]
   description <- as.character(traits[i,"description"])
-  trait_info <- rbind(i,trait_ID,phes_ID,phesant_file,category,description, num_IVs,
+  trait_info <- rbind(i,trait_ID,phes_ID,phesant_file,category,description, variable_type, num_IVs,
     both_sexes_original_Neale_file, male_original_Neale_file, female_original_Neale_file,
     both_sexes_IV_folder, male_IV_folder, female_IV_folder)
 
@@ -860,20 +864,22 @@ prep_data <- function(traits,i,phesant_directory,GRS_thresholds,reference_file,s
 
   cat(paste0("Successfully prepared phenotype for processing (created directories, phenotype file inputs, trait summary, etc).\n"))
 
-  write_files = list(trait_info = trait_info, unrelated_male_data = unrelated_male_data, unrelated_female_data = unrelated_female_data)
+  write_files = list(list(trait_info = trait_info, unrelated_male_data = unrelated_male_data, unrelated_female_data = unrelated_female_data))
   return(write_files)
 }
 
-write_data_prep <- function(data_prep, traits, traits_to_run, out1, out2){
+write_data_prep <- function(traits, traits_to_run, out1, out2){
 
-  for(i in 1:dim(traits_to_run)){
+  for(i in 1:dim(traits_to_run)[1]){
+    print(i)
+    data_out <- readd(data_prep, subtargets=i)
     category <- as.character(traits[i,"category"])
     trait_ID <- as.character(traits[i,"Neale_pheno_ID"]) ## this is the Neale_id, used to be pheno_description
     pheno_dir <- paste0("analysis/traitMR")
     pheno_dir <- paste0(project_dir, "/analysis/traitMR")
-    write.table(data_prep[[i]]$unrelated_male_data, paste0(pheno_dir,"/pheno_files/", trait_ID, "/pheno_male.txt"),row.names=F, quote=F)
-    write.table(data_prep[[i]]$unrelated_female_data, paste0(pheno_dir,"/pheno_files/", trait_ID, "/pheno_female.txt"), row.names=F, quote=F)
-    write.table(data_prep[[i]]$trait_info, paste0(pheno_dir,"/trait_info/", trait_ID, "/trait_info.txt"), row.names=T, col.names=F, quote=T)
+    write.table(data_out[[1]]$unrelated_male_data, paste0(pheno_dir,"/pheno_files/", trait_ID, "/pheno_male.txt"),row.names=F, quote=F)
+    write.table(data_out[[1]]$unrelated_female_data, paste0(pheno_dir,"/pheno_files/", trait_ID, "/pheno_female.txt"), row.names=F, quote=F)
+    write.table(data_out[[1]]$trait_info, paste0(pheno_dir,"/trait_info/", trait_ID, "_trait_info.txt"), row.names=T, col.names=F, quote=T)
   }
 }
 
@@ -939,7 +945,7 @@ create_summary_stats <- function(traits,i,phesant_directory,GRS_thresholds,refer
   (only including SNPs which passed filters - see pipeline part A).
   GRS thresholds are sex-specific, filtered for low-quality==FALSE and p<0.1.\n"))
   output = list(male_IV_data = male_IV_data, female_IV_data = female_IV_data, GRS_list = GRS_list)
-  return(output)
+  return(list(output))
 
 }
 
