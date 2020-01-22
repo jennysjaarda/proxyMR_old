@@ -85,9 +85,25 @@ mkdir $project_dir/docs/assets
 mkdir $project_dir/docs/generated_reports
 mkdir $project_dir/analysis/data_setup
 mkdir $project_dir/analysis/data_setup/IV_lists
+mkdir $project_dir/analysis/data_setup/IV_info
 mkdir $project_dir/analysis/data_setup/sex_heterogeneity
+mkdir $project_dir/analysis/traitMR
+mkdir $project_dir/analysis/traitMR/IVs
+mkdir $project_dir/analysis/traitMR/IVs/Neale
+mkdir $project_dir/analysis/traitMR/GRS
+mkdir $project_dir/analysis/traitMR/household_MR
+mkdir $project_dir/analysis/traitMR/household_GWAS
+mkdir $project_dir/analysis/traitMR/GRS/male
+mkdir $project_dir/analysis/traitMR/GRS/female
+mkdir $project_dir/analysis/traitMR/trait_info
+mkdir $project_dir/analysis/traitMR/pheno_files
+mkdir $project_dir/analysis/traitMR/pheno_files/phesant
 mkdir $project_dir/output/figures
 mkdir $project_dir/output/tables
+mkdir $project_dir/output/figures/traitMR
+mkdir $project_dir/output/tables/traitMR
+
+
 
 
 ```

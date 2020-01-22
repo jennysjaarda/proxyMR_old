@@ -761,7 +761,7 @@ prep_data <- function(traits,i,phesant_directory,GRS_thresholds,reference_file,s
   dir.create(paste0(pheno_dir, "/GRS/", trait_ID, "/male"), showWarnings = FALSE)
   dir.create(paste0(pheno_dir, "/GRS/", trait_ID, "/female"), showWarnings = FALSE)
 
-  dir.create(paste0(pheno_dir, "/IVs/", trait_ID), showWarnings = FALSE)
+  dir.create(paste0(pheno_dir, "/IVs/Neale/", trait_ID), showWarnings = FALSE)
   dir.create(paste0(pheno_dir,"/household_GWAS/", trait_ID, "/outcome_male"), showWarnings = FALSE)
   dir.create(paste0(pheno_dir,"/household_GWAS/", trait_ID, "/outcome_female"), showWarnings = FALSE)
   dir.create(paste0(pheno_dir,"/household_MR/", trait_ID, "/exposure_male"), showWarnings = FALSE)
@@ -958,8 +958,8 @@ write_summ_stats <- function(traits, traits_to_run, GRS_thresholds, out1, out2){
     trait_ID <- as.character(traits[i,"Neale_pheno_ID"]) ## this is the Neale_id, used to be pheno_description
 
 
-    write.table(data_out[[1]][["male_IV_data"]],paste0(pheno_dir,"/IVs/", trait_ID, "/male_IVs.txt"), row.names=F, col.names=T, quote=F)
-    write.table(data_out[[1]][["female_IV_data"]],paste0(pheno_dir,"/IVs/", trait_ID, "/female_IVs.txt"), row.names=F, col.names=T, quote=F)
+    write.table(data_out[[1]][["male_IV_data"]],paste0(pheno_dir,"/IVs/Neale/", trait_ID, "/male_IVs.txt"), row.names=F, col.names=T, quote=F)
+    write.table(data_out[[1]][["female_IV_data"]],paste0(pheno_dir,"/IVs/Neale/", trait_ID, "/female_IVs.txt"), row.names=F, col.names=T, quote=F)
 
 
     for(sex in c("male", "female")){
