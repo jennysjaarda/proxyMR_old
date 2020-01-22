@@ -856,7 +856,7 @@ prep_data <- function(traits,i,phesant_directory,GRS_thresholds,reference_file,s
 
   }
 
-  num_IVs <- traits[i,"num_IVs"]
+  num_IVs <- traits[i,"num_IVs_pass_het"]
   description <- as.character(traits[i,"description"])
   trait_info <- rbind(i,trait_ID,phes_ID,phesant_file,category,description, variable_type, num_IVs,
     both_sexes_original_Neale_file, male_original_Neale_file, female_original_Neale_file,
