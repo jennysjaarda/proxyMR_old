@@ -548,19 +548,23 @@ calc_sex_het <- function(traits,i,variant_data,reference_file){
 
 
   IV_list_both_sexes$p_het <- NA
-  for(snp in 1:length(SNP_rows))
+  colnames(IV_list_both_sexes)[1] <- "SNP"
+  for(k in 1:length(SNP_rows))
   {
-    beta_F <-  female_IV_data[snp,"beta"]
-    beta_M <-  male_IV_data[snp,"beta"]
-    SE_F <- female_IV_data[snp,"se"]
-    SE_M <- male_IV_data[snp,"se"]
-    n_M <- male_IV_data[snp,"n_complete_samples"]
-    n_F <- female_IV_data[snp,"n_complete_samples"]
+    m_snp <- which(male_IV_data[["rsid"]]==IV_list_both_sexes[["SNP"]][k])
+    f_snp <- which(female_IV_data[["rsid"]]==IV_list_both_sexes[["SNP"]][k])
+
+    beta_F <-  female_IV_data[f_snp,"beta"]
+    beta_M <-  male_IV_data[m_snp,"beta"]
+    SE_F <- female_IV_data[f_snp,"se"]
+    SE_M <- male_IV_data[m_snp,"se"]
+    n_M <- male_IV_data[m_snp,"n_complete_samples"]
+    n_F <- female_IV_data[f_snp,"n_complete_samples"]
     #  se <- sqrt( (SE_F^2/n_F) + (SE_M^2/n_M) )
     se <- sqrt( (SE_F^2) + (SE_M^2) )
     t <- (beta_F-beta_M)/se
     p_het <- 2*pnorm(-abs(t))
-    IV_list_both_sexes$p_het[snp] <- p_het
+    IV_list_both_sexes$p_het[k] <- p_het
   }
 
 
@@ -569,13 +573,14 @@ calc_sex_het <- function(traits,i,variant_data,reference_file){
 
   num_pass_filter <- length(which(IV_list_both_sexes$p_het > 0.05/length(SNP_rows)))
 
+  colnames(IV_list_both_sexes)[1] <- c("SNP", "P-het")
 
-  colnames(IV_list_both_sexes) <- c("SNP", "P-het")
+
   #write.table(IV_list_both_sexes, het_output_file, row.names=F, col.names=T, quote=F)
 
   char_row <- data.frame(lapply(traits[i,], as.character), stringsAsFactors=FALSE)
   sex_het_summary <- as.data.frame(t(unlist(c(char_row, num_pass_filter))))
-  output <- list(male_IV_data = male_IV_data, female_IV_data = female_IV_data, IV_list_both_sexes = IV_list_both_sexes, sex_het_summary = sex_het_summary)
+  output <- list(list(male_IV_data = male_IV_data, female_IV_data = female_IV_data, IV_list_both_sexes = IV_list_both_sexes, sex_het_summary = sex_het_summary))
   return(output)
 
 }
@@ -598,23 +603,24 @@ write_IV_list <- function(traits_corr2_update, traits_to_count_IVs, IV_lists, IV
 write_IV_info <- function(sex_het_summary, traits_to_calc_het, traits_corr3, dir) {
 
   for(i in 1:dim(traits_to_calc_het)[1]){
+    data_out <- readd(sex_het_summary,subtargets=i)
     list_length <- 4
     trait_ID <- as.character(traits_corr3$to_run[i,"Neale_pheno_ID"])
     male_out_file <- paste0( "analysis/data_setup/IV_info/", trait_ID, "_IVs_5e-08_male.txt")
     female_out_file <- paste0( "analysis/data_setup/IV_info/", trait_ID, "_IVs_5e-08_female.txt")
-    write.table(sex_het_summary[[(i-1)*list_length+1]], male_out_file,row.names=F, col.names=T, quote=F)
-    write.table(sex_het_summary[[(i-1)*list_length+2]], female_out_file,row.names=F, col.names=T, quote=F)
-    #male_IV_data and female_IV_data is in spots 1 and 2
+    write.table(data_out[[1]]$male_IV_data, male_out_file,row.names=F, col.names=T, quote=F)
+    write.table(data_out[[1]]$female_IV_data, female_out_file,row.names=F, col.names=T, quote=F)
   }
 
 }
 
 write_sex_het <- function(sex_het_summary, traits_to_calc_het, traits_corr3,dir){
   for(i in 1:dim(traits_to_calc_het)[1]){
+    data_out <- readd(sex_het_summary,subtargets=i)
     list_length <- 4
     trait_ID <- as.character(traits_corr3$to_run[i,"Neale_pheno_ID"])
     output_file <- paste0( "analysis/data_setup/sex_heterogeneity/", trait_ID, "_sex_het.txt")
-    write.table(sex_het_summary[[(i-1)*list_length+3]], output_file, row.names=F, col.names=T, quote=F)
+    write.table(data_out[[1]]$IV_list_both_sexes, output_file, row.names=F, col.names=T, quote=F)
     #IV_list_both_sexes is in spot 3
   }
 }
@@ -623,8 +629,8 @@ sex_het_filter <- function(corr_traits, sex_het_summary, traits_to_calc_het, num
   list_length <- 4
   build_df <- numeric()
   for(i in 1:dim(traits_to_calc_het)[1]){
-
-    row <- sex_het_summary[[(i-1)*list_length+4]]
+    data_out <- readd(sex_het_summary,subtargets=i)
+    row <- data_out[[1]]$sex_het_summary
     build_df <- rbind(build_df, row)
   }
   colnames(build_df) <- c(colnames(corr_traits),"num_IVs_pass_het")
@@ -750,7 +756,6 @@ prep_data <- function(traits,i,phesant_directory,GRS_thresholds,reference_file,s
 
   ### create_relevant directories
   dir.create(paste0(pheno_dir, "/household_MR/", trait_ID), showWarnings = FALSE)
-  dir.create(paste0(pheno_dir, "/pheno_files/", trait_ID), showWarnings = FALSE)
   dir.create(paste0(pheno_dir, "/household_GWAS/", trait_ID), showWarnings = FALSE)
   dir.create(paste0(pheno_dir, "/GRS/", trait_ID), showWarnings = FALSE)
   dir.create(paste0(pheno_dir, "/GRS/", trait_ID, "/male"), showWarnings = FALSE)
@@ -813,9 +818,6 @@ prep_data <- function(traits,i,phesant_directory,GRS_thresholds,reference_file,s
   unrelated_male_data <- pheno_male_full[-which(pheno_male_full$IID %in% related_males ),]
   unrelated_female_data <- pheno_female_full[-which(pheno_female_full$IID %in% related_females ),]
 
-  #write.table(unrelated_male_data, paste0(pheno_dir,"/pheno_files/", trait_ID, "/pheno_male.txt"),row.names=F, quote=F)
-  #write.table(unrelated_female_data, paste0(pheno_dir,"/pheno_files/", trait_ID, "/pheno_female.txt"), row.names=F, quote=F)
-
   ## find Neale file names and IV folder:
 
   IVs_full <- list.files(path=paste0(Neale_summary_dir,"/IVs/clump/" ), full.names=T)
@@ -860,8 +862,6 @@ prep_data <- function(traits,i,phesant_directory,GRS_thresholds,reference_file,s
     both_sexes_original_Neale_file, male_original_Neale_file, female_original_Neale_file,
     both_sexes_IV_folder, male_IV_folder, female_IV_folder)
 
-  #write.table(trait_info, paste0(pheno_dir,"/trait_info/", trait_ID, "/trait_info.txt"), row.names=T, col.names=F, quote=T)
-
   cat(paste0("Successfully prepared phenotype for processing (created directories, phenotype file inputs, trait summary, etc).\n"))
 
   write_files = list(list(trait_info = trait_info, unrelated_male_data = unrelated_male_data, unrelated_female_data = unrelated_female_data))
@@ -877,8 +877,8 @@ write_data_prep <- function(traits, traits_to_run, out1, out2){
     trait_ID <- as.character(traits[i,"Neale_pheno_ID"]) ## this is the Neale_id, used to be pheno_description
     pheno_dir <- paste0("analysis/traitMR")
     pheno_dir <- paste0(project_dir, "/analysis/traitMR")
-    write.table(data_out[[1]]$unrelated_male_data, paste0(pheno_dir,"/pheno_files/", trait_ID, "/pheno_male.txt"),row.names=F, quote=F)
-    write.table(data_out[[1]]$unrelated_female_data, paste0(pheno_dir,"/pheno_files/", trait_ID, "/pheno_female.txt"), row.names=F, quote=F)
+    write.table(data_out[[1]]$unrelated_male_data, paste0(pheno_dir,"/pheno_files/phesant/", trait_ID, "_male.txt"),row.names=F, quote=F)
+    write.table(data_out[[1]]$unrelated_female_data, paste0(pheno_dir,"/pheno_files/phesant/", trait_ID, "_female.txt"), row.names=F, quote=F)
     write.table(data_out[[1]]$trait_info, paste0(pheno_dir,"/trait_info/", trait_ID, "_trait_info.txt"), row.names=T, col.names=F, quote=T)
   }
 }
@@ -887,7 +887,7 @@ create_summary_stats <- function(traits,i,phesant_directory,GRS_thresholds,refer
 
   trait_ID <- as.character(traits[i,"Neale_pheno_ID"]) ## this is the Neale_id, used to be pheno_description
   pheno_dir <- paste0("analysis/traitMR/")
-  trait_info <-  read.table(paste0(pheno_dir,"/trait_info.txt"), header=F, row.names=1,check.names=F)
+  trait_info <-  read.table(paste0(pheno_dir,"/trait_info/", trait_ID, "_trait_info.txt"), header=F, row.names=1,check.names=F)
 
   #variant_data <- fread(variant_file_full_name,data.table=F)
 
@@ -897,7 +897,7 @@ create_summary_stats <- function(traits,i,phesant_directory,GRS_thresholds,refer
 
   for(file in c("male", "female"))
   {
-    file_name <- paste0( "analysis/data_setup/IV_lists/", trait_ID, "_IVs_5e-08_", file,".txt")
+    file_name <- paste0( "analysis/data_setup/IV_info/", trait_ID, "_IVs_5e-08_", file,".txt")
     temp <- read.table(file_name,header=T)
     IV_cols <- c("rsid", "chr", "beta", "se", "pval", "ref", "alt", "AF","n_complete_samples")
     exp_var_merge <- temp[,IV_cols]
@@ -949,40 +949,50 @@ create_summary_stats <- function(traits,i,phesant_directory,GRS_thresholds,refer
 
 }
 
-write_summ_stats <- function(traits, traits_to_run, summ_stats_create, out1, out2){
+write_summ_stats <- function(traits, traits_to_run, GRS_thresholds, out1, out2){
+
   pheno_dir <- paste0("analysis/traitMR/")
-  for(i in 1:dim(summ_stats_create, traits, traits_to_run, GRS_thresholds)){
+  for(i in 1:dim(traits)[1]){
+    print(i)
+    data_out <- readd(summ_stats_create, subtargets=i)
     trait_ID <- as.character(traits[i,"Neale_pheno_ID"]) ## this is the Neale_id, used to be pheno_description
 
 
-    write.table(summ_stats_create[[i]][["male_IV_data"]],paste0(pheno_dir,"/IVs/", trait_ID, "/male_IVs.txt"), row.names=F, col.names=T, quote=F)
-    write.table(summ_stats_create[[i]][["female_IV_data"]],paste0(pheno_dir,"/IVs/", trait_ID, "/female_IVs.txt"), row.names=F, col.names=T, quote=F)
+    write.table(data_out[[1]][["male_IV_data"]],paste0(pheno_dir,"/IVs/", trait_ID, "/male_IVs.txt"), row.names=F, col.names=T, quote=F)
+    write.table(data_out[[1]][["female_IV_data"]],paste0(pheno_dir,"/IVs/", trait_ID, "/female_IVs.txt"), row.names=F, col.names=T, quote=F)
+
 
     for(sex in c("male", "female")){
 
-      if(file.exists(paste0( pheno_dir,"/GRS/", sex, "/", GRS_threshold,"/", sex,"_GRS_",GRS_threshold,".txt")))
-      {file.remove(paste0( pheno_dir,"/GRS/", sex, "/", GRS_threshold,"/", sex,"_GRS_",GRS_threshold,".txt"))}
+      for(GRS_threshold in GRS_thresholds){
+
+        if(file.exists(paste0( pheno_dir,"/GRS/",trait_ID, "/", sex,"/", GRS_threshold,"/", sex,"_GRS_",GRS_threshold,".txt")))
+        {file.remove(paste0( pheno_dir,"/GRS/",trait_ID, "/", sex, "/", GRS_threshold,"/", sex,"_GRS_",GRS_threshold,".txt"))}
+      }
 
       for (chr in 1:22){
+
         for(GRS_threshold in GRS_thresholds){
+
+
           list_name <- paste0(sex, "_chr", chr, "_GRSthresh_", GRS_threshold)
 
-          write.table(summ_stats_create[[i]][[GRS_list]][[list_name]], paste0( pheno_dir,"/GRS/", sex, "/", trait_ID, "/", GRS_threshold,"/", sex,"_GRS_",GRS_threshold,"_chr",chr,".txt"), append=F, row.names=F, col.names=T, quote=F)
-          write.table(summ_stats_create[[i]][[GRS_list]][[list_name]], paste0( pheno_dir,"/GRS/", sex, "/", trait_ID, "/", GRS_threshold,"/", sex,"_GRS_",GRS_threshold,".txt"), append=T, row.names=F, col.names=F, quote=F)
+          write.table(data_out[[1]][["GRS_list"]][[list_name]], paste0( pheno_dir,"/GRS/", trait_ID, "/", sex, "/", GRS_threshold,"/", sex,"_GRS_",GRS_threshold,"_chr",chr,".txt"), append=F, row.names=F, col.names=T, quote=F)
+          write.table(data_out[[1]][["GRS_list"]][[list_name]], paste0( pheno_dir,"/GRS/", trait_ID, "/", sex, "/", GRS_threshold,"/", sex,"_GRS_",GRS_threshold,".txt"), append=T, row.names=F, col.names=F, quote=F)
         }
 
       }
     }
 
     ## add colnames
-    colnames_GRS <- colnames(summ_stats_create[[i]][[GRS_list]][[list_name]])
+    colnames_GRS <- colnames(summ_stats_create[[i]][["GRS_list"]][[list_name]])
     for(sex in c("male", "female"))
     {
       for(GRS_threshold in GRS_thresholds)
       {
-        file <- read.table(paste0( pheno_dir,"/GRS/", sex, "/", GRS_threshold,"/", sex,"_GRS_",GRS_threshold,".txt"), header=F)
+        file <- read.table(paste0( pheno_dir, "/GRS/", trait_ID, "/", sex, "/", GRS_threshold, "/", sex, "_GRS_", GRS_threshold, ".txt"), header=F)
         colnames(file) <- colnames_GRS
-        write.table(file, paste0( pheno_dir,"/GRS/", sex, "/", trait_ID, "/", GRS_threshold,"/", sex,"_GRS_",GRS_threshold,".txt"), row.names=F, col.names=T, quote=F)
+        write.table(file, paste0( pheno_dir, "/GRS/", trait_ID, "/", sex, "/", GRS_threshold, "/", sex, "_GRS_", GRS_threshold, ".txt"), row.names=F, col.names=T, quote=F)
       }
 
     }
