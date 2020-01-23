@@ -573,7 +573,7 @@ calc_sex_het <- function(traits,i,variant_data,reference_file){
 
   num_pass_filter <- length(which(IV_list_both_sexes$p_het > 0.05/length(SNP_rows)))
 
-  colnames(IV_list_both_sexes)[1] <- c("SNP", "P-het")
+  colnames(IV_list_both_sexes) <- c("SNP", "P-het")
 
 
   #write.table(IV_list_both_sexes, het_output_file, row.names=F, col.names=T, quote=F)
