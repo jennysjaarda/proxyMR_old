@@ -893,12 +893,13 @@ create_summary_stats <- function(traits,i,phesant_directory,GRS_thresholds,refer
 
   het_stats <- fread(paste0( project_dir,"/analysis/data_setup/sex_heterogeneity/", trait_ID, "_sex_het.txt"), header=T, data.table=F)
   IV_list_filter <- het_stats[which(het_stats[["P-het"]] > 0.05/dim(het_stats)[1]),]
-  SNP_rows <- which(variant_data[,"rsid"] %in% IV_list_filter[,1])
 
   for(file in c("male", "female"))
   {
     file_name <- paste0( "analysis/data_setup/IV_info/", trait_ID, "_IVs_5e-08_", file,".txt")
     temp <- read.table(file_name,header=T)
+    SNP_rows <- which(temp[,"rsid"] %in% IV_list_filter[,1])
+    temp <- temp[SNP_rows,]
     IV_cols <- c("rsid", "chr", "beta", "se", "pval", "ref", "alt", "AF","n_complete_samples")
     exp_var_merge <- temp[,IV_cols]
     assign(paste0(file, "_IV_data"), exp_var_merge)
@@ -949,7 +950,7 @@ create_summary_stats <- function(traits,i,phesant_directory,GRS_thresholds,refer
 
 }
 
-write_summ_stats <- function(traits, traits_to_run, GRS_thresholds, out1, out2){
+write_summ_stats <- function(summ_stats_create, traits, traits_to_run, GRS_thresholds, out1, out2){
 
   pheno_dir <- paste0("analysis/traitMR/")
   for(i in 1:dim(traits)[1]){
@@ -1262,10 +1263,10 @@ plink_clump <- function(bfile, fn, prune_threshold)
 	return(a_out)
 }
 
-load_IV_geno <- function(i,sample_file,pheno_dir){
+load_IV_geno <- function(i,sample_file,pheno_dir, IV_data_file){
 
   ####### load IV list
-  IV_data <- fread(paste0(pheno_dir,"/IVs/", "male","_IVs.txt"), header=T, data.table=F) ## IV list is the same for males and females, but the effects will be different
+  IV_data <- fread(IV_data_file, header=T, data.table=F) ## IV list is the same for males and females, but the effects will be different
 
   ####### Extract SNP froms bgen files
   snp_map <- numeric()
@@ -1341,7 +1342,7 @@ define_models <- function(traits){
 
     trait_ID <- as.character(traits[i,"Neale_pheno_ID"])
     pheno_dir <- paste0("analysis/traitMR/" )
-    trait_info <-  read.table(paste0(pheno_dir,"/trait_info.txt"), header=F, row.names=1,check.names=F)
+    trait_info <-  read.table(paste0(pheno_dir,"/trait_info/", trait_ID, "_trait_info.txt"), header=F, row.names=1,check.names=F)
     phesant_ID <- as.character(trait_info["phes_ID",1])
 
     for(exposure_sex in c("male", "female")){
@@ -1350,12 +1351,12 @@ define_models <- function(traits){
       if(exposure_sex=="male"){outcome_sex="female"}
       if(exposure_sex=="female"){outcome_sex="male"}
       exposure_sex_col <- c(exposure_sex_col, exposure_sex)
-      IV_file <- c(IV_file, paste0(pheno_dir,"/IVs/", exposure_sex,"_IVs.txt"))
+      IV_file <- c(IV_file, paste0(pheno_dir,"/IVs/Neale/",trait_ID,"/", exposure_sex,"_IVs.txt"))
 
-      phenotype_file <- c(phenotype_file,paste0(pheno_dir,"/pheno_",outcome_sex,".txt"))
+      phenotype_file <- c(phenotype_file,paste0(pheno_dir,"/pheno_files/phesant/", trait_ID, "_", outcome_sex,".txt"))
       phenotype = c(phenotype,phesant_ID)
       phenotype_description = c(phenotype_description,"phesant")
-      output_file = c(output_file, paste0(pheno_dir, "/household_GWAS/outcome_",outcome_sex,"/", "phesant","_" ,exposure_sex, "-",outcome_sex, "_GWAS.csv"))
+      output_file = c(output_file, paste0(pheno_dir, "/household_GWAS/", trait_ID, "/outcome_",outcome_sex,"/", "phesant","_" ,exposure_sex, "-",outcome_sex, "_GWAS.csv"))
 
     }
   }
@@ -1375,12 +1376,12 @@ define_models <- function(traits){
 household_GWAS <- function(i,trait_ID,exposure_sex, phenotype_file,phenotype_col,phenotype_description,IV_file,sample_file,pheno_cov,household_intervals,household_time,output){
 
   cat(paste0("Loading genotype data...\n"))
-  pheno_dir <- paste0("analysis/traitMR/", trait_ID)
-  IV_geno_out <- load_IV_geno(i,sample_file,pheno_dir)
+  pheno_dir <- paste0("analysis/traitMR/")
+  IV_geno_out <- load_IV_geno(i,sample_file,pheno_dir,IV_file)
   IV_geno <- IV_geno_out[[1]]
   snp_map <- IV_geno_out[[2]]
 
-  trait_info <-  read.table(paste0(pheno_dir,"/trait_info.txt"), header=F, row.names=1,check.names=F)
+  trait_info <- read.table(paste0(pheno_dir,"/trait_info/", trait_ID, "_trait_info.txt"), header=F, row.names=1,check.names=F)
   phesant_ID <- as.character(trait_info["phes_ID",1])
 
   cat(paste0("Processing ", exposure_sex, "s...\n"))
@@ -1473,8 +1474,10 @@ household_GWAS <- function(i,trait_ID,exposure_sex, phenotype_file,phenotype_col
   colnames(outcome_GWAS)[4] <- "years_together_bin"
   outcome_gwas_out <- merge(outcome_GWAS, snp_map,by.x="SNP", by.y="rsid")
 
-  write.csv(outcome_gwas_out, paste0(pheno_dir, "/household_GWAS/outcome_",outcome_sex,"/", phenotype_description,"_" ,exposure_sex, "-",outcome_sex, "_GWAS.csv"), row.names=F)
-  cat(paste0("Finished processing and writing GWAS files for ", outcome_sex, "s.\n"))
+  out <- list(list(outcome_gwas_out = outcome_gwas_out))
+  return(out)
+  #write.csv(outcome_gwas_out, paste0(pheno_dir, "/household_GWAS/outcome_",outcome_sex,"/", phenotype_description,"_" ,exposure_sex, "-",outcome_sex, "_GWAS.csv"), row.names=F)
+  #cat(paste0("Finished processing and writing GWAS files for ", outcome_sex, "s.\n"))
 
 }
 
