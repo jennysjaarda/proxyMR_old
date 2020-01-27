@@ -1,0 +1,10 @@
+name: proxymr
+title: proxyMR
+username:
+account: jennysjaarda
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 1712856
+bundleId: 2757032
+url: https://jennysjaarda.shinyapps.io/proxymr/
+when: 1580167083.86099
