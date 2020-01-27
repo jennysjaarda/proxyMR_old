@@ -1,7 +1,7 @@
 
 library(drake)
 
-loadd(gwas_results)
+loadd(gwas)
 loadd(traits)
 loadd(data_prep)
 loadd(summ_stats_create)
