@@ -1,3 +1,88 @@
+
+download_neale_files  <-  function( phenotype_ids,
+                                   irnt = TRUE,
+                                   max_regex = 200,
+                                   chunk_size = 10,
+                                   max_downloads = 500,
+                                   output_path = '/data/sgg3/data/neale_files',
+                                   reference_file = list.files(
+                                           path = output_path,
+                                           pattern = 'UKBB.*Manifest.*[.]tsv'
+                                       )[ 2 ],
+                                   sex = c( 'both_sexes', 'female', 'male' ),
+                                   category = 'unsorted' ){
+
+    if (length( phenotype_ids ) > max_regex) {
+        n_downloads  =  download_neale_files( phenotype_ids[ 1:max_regex ],
+                                              irnt = irnt,
+                                              max_regex = max_regex,
+                                              chunk_size = chunk_size,
+                                              max_downloads = max_downloads,
+                                              output_path = output_path,
+                                              reference_file = reference_file,
+                                              sex = sex,
+                                              category = category )
+
+        download_neale_files( phenotype_ids[ (max_regex+1):length( phenotype_ids ) ],
+                              irnt = irnt,
+                              max_regex = max_regex,
+                              chunk_size = chunk_size,
+                              max_downloads = max_downloads - n_downloads,
+                              output_path = output_path,
+                              reference_file = reference_file,
+                              sex = sex,
+                              category = category )
+    }
+    if (length( sex ) > 1)
+        sex = paste( sex, collapse = '|') %>%
+            paste0( '(', ., ')' )
+
+    phenotype_ids  =  paste0( '^', phenotype_ids, ifelse( irnt, '(_irnt|)$', '(_raw|)$' ) ) %>%
+        paste( collapse = '|' )
+
+    existing_files  =  list.files( output_path,
+                                   recursive = TRUE,
+                                   pattern = '[.]gz' ) %>%
+        str_match( '[^/]+$' ) %>%
+        c
+
+    to_download  =  read_tsv( reference_file ) %>%
+        filter( str_detect( .$'Phenotype Code', phenotype_ids ) ) %>%
+        dplyr::select( wget = 'wget command' ) %>%
+        mutate( wget = str_replace( wget, '[.]bgz$', '.gz' ) ) %>%
+        filter( str_detect( .$wget, paste0( '-O .*[.]', sex, '([.]v2)?[.]tsv[.]gz$' ) ) ) %>%
+        transmute( url = str_match( wget, '^wget (http.*) -O' )[ , 2 ],
+                  folder = paste( output_path,
+                                  str_match( wget, '-O .*[.](both_sexes|female|male)([.]v2)?[.]tsv[.]gz$' )[ , 2 ],
+                                  category,
+                                  sep = '/' ),
+                   filename = str_match( wget, '-O (.*[.]gz$)' )[ , 2 ] ) %>%
+        mutate( url = str_replace( url, '[.]bgz.*$', '.bgz?raw=1' ) ) %>%
+
+        filter( !( filename %in% existing_files) | file.info(paste0(folder,"/",filename))$size<5e+8)  %>%
+
+
+        mutate( filename = paste0( folder,
+                                   '/',
+                                   filename ) )
+
+    to_download$folder %>%
+        unique %>%
+        walk( dir.create, showWarnings = FALSE, recursive = TRUE )
+
+    if (nrow( to_download ) != 0) {
+        for (chunk in 1:ceiling( nrow( to_download ) / chunk_size )) {
+            if (chunk * chunk_size > max_downloads)
+                stop( 'Maximum number of downloads reached.' )
+            download.file( to_download[ (( chunk - 1 ) * chunk_size + 1 ):min( nrow( to_download ), (chunk * chunk_size) ), ]$url,
+                           to_download[ (( chunk - 1 ) * chunk_size + 1 ):min( nrow( to_download ), (chunk * chunk_size) ), ]$filename,
+                           method = 'libcurl' )
+        }
+    }
+    nrow( to_download )
+}
+
+
 pairs_only <- function(household_info){
 
   household_info <- household_info %>% mutate(group_count = ave(household_info$group, household_info$group,  FUN = length))
