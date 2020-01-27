@@ -10,10 +10,7 @@
 
 library(shiny)
 
-# source( 'shiny_input.R' )
-# loadd(gwas_results)
-# loadd(gwas_results)
-# loadd(gwas_results)
+source( 'shiny_input.R' )
 
 
 server <- function(input, output) {
@@ -34,7 +31,7 @@ server <- function(input, output) {
     })
 
     output$view <- renderTable({
-        head(faithful)
+        head(traits)
     })
 
     output$view2 <- renderTable({

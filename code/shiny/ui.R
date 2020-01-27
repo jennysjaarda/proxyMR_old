@@ -7,6 +7,7 @@
 #    http://shiny.rstudio.com/
 #
 library(shiny)
+source( 'shiny_input.R' )
 
 trait_list <- c("a", "b", "c")
 phenotype_list <- c("raw", "phesant")
