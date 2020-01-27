@@ -141,6 +141,27 @@ calc_time_together <- function(pheno_cov,time_at_household,time_at_household_raw
   return(households_temp)
 }
 
+munge_household_time <- function(household_time, pheno_cov,
+  time_together_min,time_together_max,time_together_interval,
+  age_min, age_max, age_interval, num_household_bins){
+
+
+
+  household_time[["time_together_even_width"]] <- cutr::smart_cut(household_time[["time_together_raw"]],seq(time_together_min,time_together_max, by=time_together_interval))
+  household_time[["time_together_even_bins"]] <- cutr::smart_cut(household_time[["time_together_raw"]],list(num_household_bins,"balanced"),"groups")
+
+  household_time$age_member1 <- pheno_cov[["HOUSEHOLD_MEMBER1_age"]][match(household_time[["HOUSEHOLD_MEMBER1"]], pheno_cov[["HOUSEHOLD_MEMBER1"]])]
+  household_time$age_member2 <- pheno_cov[["HOUSEHOLD_MEMBER2_age"]][match(household_time[["HOUSEHOLD_MEMBER2"]], pheno_cov[["HOUSEHOLD_MEMBER2"]])]
+
+  household_time[["mean_age"]] <- rowMeans(household_time[c('age_member1', 'age_member2')], na.rm=TRUE)
+
+  household_time[["age_even_width"]] <- cutr::smart_cut(household_time[["mean_age"]],seq(age_min,age_max, by=age_interval))
+  household_time[["age_even_bins"]] <- cutr::smart_cut(household_time[["mean_age"]],list(num_household_bins,"balanced"),"groups")
+
+  return(household_time)
+
+}
+
 
 ### File A1 ----
 ## Description: tests phenotypic correlations between household pairs that have been
@@ -1006,6 +1027,27 @@ write_summ_stats <- function(summ_stats_create, traits, traits_to_run, GRS_thres
 
 
 }
+
+
+find_ntile_groups <- function(ntile_in, ntile_out, n){
+
+  join <- cbind(ntile_in, ntile_out)
+  groups <- unique(ntile_out)
+  out <- numeric()
+  for(i in 1:n){
+    min <- min(join[which(join[,2]==i),1])
+    max <- max(join[which(join[,2]==i),1])
+    temp <- cbind(i, paste0(min, "-", max))
+    out <- rbind(out, temp)
+  }
+
+  full <- out[match(ntile_out, out[,1]),2]
+  return(full)
+
+}
+
+
+
 ### FUNCTION LIST:
 
 #1 extract_Neale_IV
@@ -1373,8 +1415,9 @@ define_models <- function(traits){
 
 }
 
-household_GWAS <- function(i,trait_ID,exposure_sex, phenotype_file,phenotype_col,phenotype_description,IV_file,sample_file,pheno_cov,household_intervals,household_time,output){
+household_GWAS <- function(i,trait_ID,exposure_sex, phenotype_file,phenotype_col,phenotype_description,IV_file,sample_file,pheno_cov,grouping_var,household_time,output){
 
+  cat(paste0("Calculating household GWAS for phenotype: ", trait_ID, "...\n"))
   cat(paste0("Loading genotype data...\n"))
   pheno_dir <- paste0("analysis/traitMR/")
   IV_geno_out <- load_IV_geno(i,sample_file,pheno_dir,IV_file)
@@ -1417,17 +1460,17 @@ household_GWAS <- function(i,trait_ID,exposure_sex, phenotype_file,phenotype_col
     geno_sub$IID <- as.numeric(row.names(geno_sub))
     temp1 <- merge(pheno_cov,geno_sub, by.x=index, by.y="IID")
     temp2 <- merge(temp1, phenotype, by.x=opp_index, by.y="IID")
-    temp3 <- merge(temp2, household_time[,c("HOUSEHOLD_MEMBER1","time_interval_factor")], by="HOUSEHOLD_MEMBER1")
+    temp3 <- merge(temp2, household_time[,c("HOUSEHOLD_MEMBER1",grouping_var)], by="HOUSEHOLD_MEMBER1")
     # final_data <- merge(temp3, grs_pheno[,c("IID","PRS")], by.x=opp_index, by.y="IID")
     final_data <- temp3
     # colnames(final_data) <- c(colnames(pheno_cov), "geno_index", "pheno_household", "time_together_bin", "PRS_household"  )###,"GRS_0.01_household","GRS_0.001_household")
-    colnames(final_data) <- c(colnames(pheno_cov), "geno_index", "phenotype", "time_together_bin" )###,"GRS_0.01_household","GRS_0.001_household")
+    colnames(final_data) <- c(colnames(pheno_cov), "geno_index", "phenotype", grouping_var)###,"GRS_0.01_household","GRS_0.001_household")
 
     outcome <- "phenotype"
     pheno_run <- final_data[,c(grep("_age", names(final_data)),grep("_PC_", names(final_data)), which(names(final_data)=="geno_index" |names(final_data)==outcome))]
     colnames(pheno_run)[which(colnames(pheno_run)==outcome)] <- "outcome"
     pheno_run$outcome <- scale(pheno_run$outcome)
-    mod <- glm(outcome ~ ., data=pheno_run, family="gaussian")
+    mod <- glm(outcome ~ ., data=pheno_run, family="gaussian") # check that "grouping_var" is removed
 
     model_summary <- full_model_summary(mod)
 
@@ -1437,9 +1480,10 @@ household_GWAS <- function(i,trait_ID,exposure_sex, phenotype_file,phenotype_col
     k_GWAS <- numeric()
     k_GWAS <- rbind(k_GWAS,cbind(phenotype_file, outcome, as.character(snp), "all", mod_extract,n))
 
+    household_intervals <- levels(household_time[[grouping_var]])
     for(bin in household_intervals)
     {
-      bin_sub <- final_data[which(final_data[["time_together_bin"]]==bin),]
+      bin_sub <- final_data[which(final_data[[grouping_var]]==bin),]
       bin_pheno_run <- bin_sub[,c(grep("_age", names(bin_sub)),grep("_PC_", names(bin_sub)), which(names(bin_sub)=="geno_index" |names(bin_sub)==outcome))]
       colnames(bin_pheno_run)[which(colnames(bin_pheno_run)==outcome)] <- "outcome"
       bin_pheno_run$outcome <- scale(bin_pheno_run$outcome)
@@ -1471,7 +1515,7 @@ household_GWAS <- function(i,trait_ID,exposure_sex, phenotype_file,phenotype_col
   colnames(outcome_GWAS)[2] <- "outcome"
   colnames(outcome_GWAS)[3] <- "SNP"
   outcome_GWAS$outcome <- phenotype_col
-  colnames(outcome_GWAS)[4] <- "years_together_bin"
+  colnames(outcome_GWAS)[4] <- grouping_var
   outcome_gwas_out <- merge(outcome_GWAS, snp_map,by.x="SNP", by.y="rsid")
 
   out <- list(list(outcome_gwas_out = outcome_gwas_out))
