@@ -29,7 +29,7 @@ MR_method_list <- c("mr_wald_ratio","mr_ivw","mr_ivw_fe","mr_egger_regression","
 IV_threshold <- 5e-08
 prune_threshold <- 0.001
 GRS_thresholds <- c(0.1,0.01,0.001)
-num_couple_length_bins <- 10
+num_household_bins <- 5
 
 num_IVs_threshold <- 5
 household_correlation_threshold <-0.1
@@ -59,5 +59,9 @@ time_at_address_raw_field <- "699-0.0"
 # -3 represents "Prefer not to answer"
 time_together_min <- 0
 time_together_max <- 50
-time_together_interval <- 5
+time_together_interval <- 10
+
+age_min <- 40
+age_max <- 70
+age_interval <- 10
 ## functions to fit:
