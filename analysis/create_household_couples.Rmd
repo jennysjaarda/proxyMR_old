@@ -17,6 +17,7 @@ knitr::opts_chunk$set(
   echo = FALSE
 )
 source(here::here("packages.R"))
+library(drake)
 # load drake objects
 loadd(hh_pairs_filter,
       hh_pairs_kin
