@@ -7,4 +7,15 @@ editor_options:
   chunk_output_type: console
 ---
 
-Describe your project.
+## Rationale 
+
+- It is well known that mating pairs tend to be phenotypically correlated (e.g. BMI, height, intelligence).
+- This observation can partially be explained by assortative mating.
+- However it is unknown how this effect changes with age (e.g. stronger/weaker effect of assortative mating older individuals).
+- It is also unknown if this correlation is partially due to convergence over time (i.e. amount of time couple is together).
+
+## Methods 
+
+- Determine the sex and age (time together and mean age) specific effects of assortative mating 
+
+
