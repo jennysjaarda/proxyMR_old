@@ -1,0 +1,31 @@
+---
+title: "Create household couples"
+author: "Jenny"
+date: "2020-01-28"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  fig.retina = 3,
+  fig.align = "center",
+  out.width = "100%",
+  echo = FALSE
+)
+source(here::here("packages.R"))
+# load drake objects
+loadd(hh_pairs_filter,
+      hh_pairs_kin
+)
+```
+
+
+```{r filter}
+head(hh_pairs_filter)
+
+head(hh_pairs_kin)
+```

@@ -8,4 +8,14 @@ editor_options:
   chunk_output_type: console
 ---
 
-Welcome to my research website.
+This website is used to collaborate and share results.
+
+## Here are some useful links: 
+
+*  For a description and rationale of the project see [about](about.html).
+*  To explore the result interactively see our [shiny application](https://jennysjaarda.shinyapps.io/proxymr/).
+
+## Defining couples in the UKBiobank: 
+
+## 
+
