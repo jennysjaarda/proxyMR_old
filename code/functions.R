@@ -1650,7 +1650,7 @@ household_MR <- function(household_GWAS_result, i,trait_ID,phenotype_description
       other_allele_col = "allele0",
       pval_col = paste0("geno_index_pval"),
       eaf_col = "AF"
-    ),
+    )
 
     harmonise_dat <- harmonise_data(
       exposure_dat = data_IV_format,
