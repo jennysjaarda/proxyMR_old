@@ -83,7 +83,9 @@ filter_traits <- drake_plan(
   #write_traits_corr2 = write.csv(traits_corr2_filled, "output/tables/2.household_correlations.corr_filter.csv", row.names=F),
 
   ## old A4
-  run_process_Neale = processx::run(command = "sbatch", c(file_in("code/process_Neale.sh"))),
+  run_process_Neale = {
+    traits_corr2_filled
+    processx::run(command = "sbatch", c(file_in("code/process_Neale.sh")))},
   # this script wil update the `Neale_SGG_directory` which will make this file outdated
 
   ## old A5
@@ -172,9 +174,11 @@ read_csv("cache_log.csv", col_types = cols()) %>%
   filter(hash.x != hash.y) %>%
   dplyr::select(name, hash.x, hash.y, -type.x, -type.y)
 
+file.remove("proxymr.log")
+
 make(pre_pipeline,parallelism = "clustermq",console_log_file = "proxymr.log", cache_log_file = "cache_log.csv",
   memory_strategy = "lookahead", garbage_collection = TRUE, ## try with preclean ?
-  jobs = 100, template = list(cpus = 1, partition = "sgg",
+  jobs = 5, template = list(cpus = 1, partition = "sgg",
   log_file="/data/sgg2/jenny/projects/proxyMR/proxymr_%a_clustermq.out"))
 
 
@@ -201,10 +205,24 @@ pipeline <- drake_plan(
     }, dynamic = map(traits_to_run)
 
   ),
+
   data_prep_out = target({
     data_prep
     write_data_prep(traits, traits_to_run, file_out("analysis/traitMR/trait_info"), file_out("analysis/traitMR/pheno_files/phesant"))
   },hpc = FALSE),
+
+  trait_info = target({
+
+    for(j in 1:length(data_prep)){
+      head(data_prep[[1]]$trait_info)
+
+    }
+    print("working")
+    #data_out <- readd(data_prep, subtargets=i)
+    head(data_prep[[1]]$trait_info)
+
+
+  }), dynamic = map(data_prep),
 
   ## old create summary stats
   summ_stats_create = target(
@@ -220,6 +238,19 @@ pipeline <- drake_plan(
     write_summ_stats(summ_stats_create, traits, traits_to_run, !!GRS_thresholds, file_out("analysis/traitMR/IVs"),file_out("analysis/traitMR/GRS"))
   },hpc = FALSE),
 
+  IVs_male = target({
+
+    #data_out <- readd(data_prep, subtargets=i)
+    summ_stats_create$male_IV_data
+
+  }), dynamic = map(summ_stats_create),
+
+  IVs_female = target({
+
+    #data_out <- readd(data_prep, subtargets=i)
+    summ_stats_create$female_IV_data
+
+  }), dynamic = map(summ_stats_create),
 
 
 
@@ -231,7 +262,7 @@ pipeline <- drake_plan(
     define_models(traits)},
 
 
-  gwas_age_bins = target(
+  gwas_tt_bins = target(
     {
       summ_stats_create
       # trait_ID <- as.character(traits[models_to_run$i,"Neale_pheno_ID"]) ## this is the Neale_id, used to be pheno_description
@@ -246,7 +277,7 @@ pipeline <- drake_plan(
     }, dynamic = map(models_to_run)
   ),
 
-  gwas_tt_bins = target(
+  gwas_age_bins = target(
     {
       summ_stats_create
       # trait_ID <- as.character(traits[models_to_run$i,"Neale_pheno_ID"]) ## this is the Neale_id, used to be pheno_description
@@ -256,12 +287,19 @@ pipeline <- drake_plan(
       household_GWAS(models_to_run$i,models_to_run$trait_ID, models_to_run$exposure_sex,
         (models_to_run$phenotype_file),models_to_run$phenotype_col,models_to_run$phenotype_description,
         (models_to_run$IV_file),sample_file,pheno_cov=joint_model_adjustments,
-        grouping_var=="age_even_bins",household_time_munge,(models_to_run$gwas_outcome_file))
+        grouping_var="age_even_bins",household_time_munge,(models_to_run$gwas_outcome_file))
 
     }, dynamic = map(models_to_run)
   ),
 
-
+  create_shiny_data = {
+    loadd(traits)
+    loadd(trait_info)
+    loadd(models_to_run)
+    loadd(summ_stats_create)
+    loadd(gwas_age_bins)
+    loadd(gwas_tt_bins)
+    save(traits, trait_info, models_to_run, summ_stats_create, gwas_age_bins, gwas_tt_bins, file = file_out("code/shiny/data.RData"))},
 
   mr = target(
     {
@@ -270,7 +308,7 @@ pipeline <- drake_plan(
       # pheno_dir <- paste0("analysis/traitMR/", trait_ID)
       #IV_file <- paste0(pheno_dir,"/IVs/", exposure_sex,"_IVs.txt")
       #outcome_gwas_file <- paste0(pheno_dir, "/household_GWAS/outcome_",outcome_sex,"/", phenotype_description,"_" ,exposure_sex, "-",outcome_sex, "_GWAS.csv")
-      household_mr(models_to_run$i,traits,models_to_run$exposure_sex,
+      household_mr(household_GWAS_result = gwas_age_bins, models_to_run$i,traits,models_to_run$exposure_sex,
         models_to_run$gwas_outcome_file,models_to_run$IV_file,pheno_cov,household_intervals,outputs)
     }
   )
@@ -283,35 +321,8 @@ pipeline <- drake_plan(
 
 full_proxymr <- bind_plans(pre_pipeline,pipeline)
 
-file.remove("proxymr.log")
-make(full_proxymr,parallelism = "clustermq",console_log_file = "proxymr.log",  cache_log_file = "cache_log.csv",
-  memory_strategy = "lookahead", garbage_collection = TRUE, ## try with preclean ?
-  jobs = 100, template = list(cpus = 1, partition = "sgg",
-  log_file="/data/sgg2/jenny/projects/proxyMR/proxymr_%a_clustermq.out"))
 
-MR <- drake_plan(
-  models_to_run = readd(models_to_run),
-  mr = target(
-    {
-      loadd(joint_model_adjustments)
-      loadd(household_intervals)
-      # trait_ID <- as.character(traits[models_to_run$i,"Neale_pheno_ID"]) ## this is the Neale_id, used to be pheno_description
-      # pheno_dir <- paste0("analysis/traitMR/", trait_ID)
-      #IV_file <- paste0(pheno_dir,"/IVs/", exposure_sex,"_IVs.txt")
-      #outcome_gwas_file <- paste0(pheno_dir, "/household_GWAS/outcome_",outcome_sex,"/", phenotype_description,"_" ,exposure_sex, "-",outcome_sex, "_GWAS.csv")
-      household_MR(models_to_run$i,models_to_run$trait_ID,models_to_run$phenotype_description,
-        models_to_run$exposure_sex,models_to_run$gwas_outcome_file,models_to_run$IV_file,
-        pheno_cov=joint_model_adjustments,household_intervals)
-    }, dynamic = map(models_to_run)
-  )
-)
-
-make(MR,parallelism = "clustermq",console_log_file = "mr.out",
-  memory_strategy = "lookahead", garbage_collection = TRUE, ## try with preclean ?
-  jobs = 100, template = list(cpus = 1, partition = "sgg",
-  log_file="/data/sgg2/jenny/projects/proxyMR/proxymr_%a_clustermq.out"))
-
-  #vis_drake_graph(drake_config(filter_traits))
+#vis_drake_graph(drake_config(filter_traits))
 # make(join_)
 #
 #
@@ -330,8 +341,6 @@ make(MR,parallelism = "clustermq",console_log_file = "mr.out",
 
 #memory_strategy = "lookahead", garbage_collection = TRUE
 
-make(join_,memory_strategy = "lookahead", garbage_collection = TRUE, parallelism = "future",console_log_file = "pipeline_prep.out", jobs = 80)
-
 
 
 
@@ -340,107 +349,3 @@ make(join_,memory_strategy = "lookahead", garbage_collection = TRUE, parallelism
 
 
 ### drake slurm example
-
-
-library(drake)
-
-
-# Configure clustermq.
-options(clustermq.scheduler = "slurm", template = "/data/sgg2/jenny/projects/proxymr/slurm_clustermq.tmpl")
-
-load_mtcars_example()
-make(my_plan, parallelism = "clustermq", jobs = 4,template = list(cpus = 1, partition = "cluster"))
-
-
-
-library(drake)
-library(future.batchtools)
-library(future)
-library(tidyverse)
-future::plan(batchtools_slurm, template = "/data/sgg2/jenny/projects/proxyMR/slurm_batchtools.tmpl")
-
-
-sum_data <- function(x, y){
-  info = Sys.info()
-  out = x + y
-  return(list(sum = out, info = info))
-}
-
-my_plan <- drake_plan(
-  my_grid = tibble(
-    x = c(100, 200, 300,400,500,600,700,800,900,1000),
-    y = c(10, 20, 30,40,50,60,70,80,90,100)
-  ),
-  x = target(
-    sum_data(my_grid$x, my_grid$y),
-    dynamic = map(my_grid)
-  )
-)
-
-make(my_plan, parallelism = "future",jobs=20,console_log_file = "test.out")
-make(my_plan, parallelism = "clustermq",jobs=5,console_log_file = "test2.out",template = list(cpus = 1, partition = "sgg"))`:
-
-simple <- function(a,b){
-Sys.sleep(10)
-print(.libPaths())
-return(a+b)
-
-}
-
-test_plan <- drake_plan(
-x = (fread(file_in(!!variant_file_full_name),data.table=F)),
-y = dim(x)[1],
-traits = tibble(
-    i = 1:5,
-  ),
-IV_list = target({
-
-    #file_in(!!Neale_output_path)
-    #file_in(!!paste0(Neale_summary_dir,"/IVs/clump/" ))
-    simple(traits$i, y)},
-    dynamic = map(traits)
-  ),
-)
-
-#make(test_plan,parallelism = "future",console_log_file = "test.out", jobs = 50)
-make(test_plan,parallelism = "clustermq",console_log_file = "test.out", jobs = 5,
-  template = list(cpus = 1, partition = "cluster",log_file="/data/sgg2/jenny/projects/proxyMR/slurm_clustermq-test%a.out"))
-
-make(join_,memory_strategy = "lookahead", garbage_collection = TRUE, parallelism = "clustermq",console_log_file = "pipeline_prep.out", jobs = 20, template = list(cpus = 1, partition = "sgg"))
-
-
-
-test = tibble(
-    i = 1:5,
-  )
-
-test_plan2 <- drake_plan(
-x = 100,
-out = target({
-    write.table("1", "temp.txt")
-    file_out("temp.txt")
-    simple(i,x)},
-    transform = map(.data = !!test)
-  ),
-
-in_file = file_in("temp.txt"),
-in_file2 = file_in("temp.txt")
-)
-
-make(test_plan2,parallelism = "future",console_log_file = "test.out", jobs = 50)
-
-
-temp <- drake_plan(
-traits_to_count_IVs = tibble(
-    i = 1:50,
-  ),
-IV_list = target({
-
-    #file_in(!!Neale_output_path)
-    #file_in(!!paste0(Neale_summary_dir,"/IVs/clump/" ))
-    get_IV_list(traits_corr2_update,traits_to_count_IVs$i,Neale_manifest)},
-    dynamic = map(traits_to_count_IVs)
-  )
-)
-
-make(temp,parallelism = "future",console_log_file = "test.out", jobs = 50)

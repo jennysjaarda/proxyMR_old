@@ -1535,7 +1535,7 @@ household_GWAS <- function(i,trait_ID,exposure_sex, phenotype_file,phenotype_col
   outcome_GWAS <- numeric()
 
   cat(paste0("Running regression for each GWAS in all participants and bins of household pairs
-  (divided by length of time in household) using raw phenotype and GRS as outcomes...\n"))
+  (divided by length of time in household) using specified phenotype as outcomes...\n"))
 
   for(k in 1:dim(IV_data)[1])
   {
@@ -1610,9 +1610,10 @@ household_GWAS <- function(i,trait_ID,exposure_sex, phenotype_file,phenotype_col
 
 }
 
-household_MR <- function(i,trait_ID,phenotype_description,exposure_sex,outcome_gwas_file,IV_file,pheno_cov,household_intervals) {
-  pheno_dir <- paste0("analysis/traitMR/", trait_ID)
-  trait_info <-  read.table(paste0(pheno_dir,"/trait_info.txt"), header=F, row.names=1,check.names=F)
+
+household_MR <- function(household_GWAS_result, i,trait_ID,phenotype_description,exposure_sex,outcome_gwas_file,IV_file,pheno_cov,household_intervals) {
+  pheno_dir <- paste0("analysis/traitMR/")
+  trait_info <-  read.table(paste0(pheno_dir,"/trait_info/", trait_ID, "_trait_info.txt"), header=F, row.names=1,check.names=F)
   phesant_ID <- as.character(trait_info["phes_ID",1])
 
   full_MR_summary <-  numeric()
@@ -1631,28 +1632,31 @@ household_MR <- function(i,trait_ID,phenotype_description,exposure_sex,outcome_g
   data_IV_format <- format_data(IV_data, type="exposure")
   outcome <- "phenotype"
   for(bin in c("all", household_intervals)){
-    outcome_gwas <- read.csv(outcome_gwas_file, header=T)
+    #outcome_gwas <- read.csv(outcome_gwas_file, header=T)
+    outcome_gwas <- readd(household_GWAS_result, character_only = TRUE, subtargets=i)[[1]][1]$outcome_gwas_out
 
-    gwas_sub <- outcome_gwas[which(outcome_gwas[["years_together_bin"]]==bin),]
+
+    gwas_sub <- outcome_gwas[which(outcome_gwas[[grouping_var]]==bin),] %>% mutate_if(is.factor,as.character) %>%
+      mutate_at(vars(geno_index_beta, geno_index_se, geno_index_pval, AF), as.numeric)
     GWAS_name <- paste0(pheno_dir, "/household_GWAS/outcome_",outcome_sex,"/", phenotype_description,"_" ,exposure_sex, "-",outcome_sex, "_GWAS_bin_", bin, ".csv")
 
-    write.csv(gwas_sub, GWAS_name,row.names=F)
-    outcome_dat <- read_outcome_data(
-        snps = data_IV_format$SNP,
-        filename = paste0(GWAS_name) ,
-        sep = ",",
-        snp_col = "SNP",
-        beta_col = paste0("geno_index_beta"),
-        se_col = paste0("geno_index_se"),
-        effect_allele_col = "allele1",
-        other_allele_col = "allele0",
-        pval_col = paste0("geno_index_pval")
-    )
+    #write.csv(gwas_sub, GWAS_name,row.names=F)
+
+    outcome_dat <- format_data(gwas_sub, type="outcome",
+      snp_col = "SNP",
+      beta_col = paste0("geno_index_beta"),
+      se_col = paste0("geno_index_se"),
+      effect_allele_col = "allele1",
+      other_allele_col = "allele0",
+      pval_col = paste0("geno_index_pval"),
+      eaf_col = "AF"
+    ),
 
     harmonise_dat <- harmonise_data(
       exposure_dat = data_IV_format,
       outcome_dat = outcome_dat, action=1
     )
+
 
     original_MR <- mr(harmonise_dat, method=MR_method_list)
     if(dim(original_MR)[1]!=0){

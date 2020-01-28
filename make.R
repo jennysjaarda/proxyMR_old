@@ -14,6 +14,19 @@ setwd(here::here())
 source("code/packages.R")
 
 # Load functions and plans  ----
-source("code/functions.R")
 source("code/settings.R")
+source("code/functions.R")
 source("code/plan.R")
+
+
+
+make(pre_pipeline,parallelism = "clustermq",console_log_file = "proxymr.log", cache_log_file = "cache_log.csv",
+  memory_strategy = "lookahead", garbage_collection = TRUE, ## try with preclean ?
+  jobs = 5, template = list(cpus = 1, partition = "sgg",
+  log_file="/data/sgg2/jenny/projects/proxyMR/proxymr_%a_clustermq.out"))
+
+
+make(full_proxymr,parallelism = "clustermq",console_log_file = "proxymr.log",  cache_log_file = "cache_log.csv",
+  memory_strategy = "lookahead", garbage_collection = TRUE, ## try with preclean ?
+  jobs = 120, template = list(cpus = 1, partition = "sgg",
+  log_file="/data/sgg2/jenny/projects/proxyMR/proxymr_%a_clustermq.out"))
