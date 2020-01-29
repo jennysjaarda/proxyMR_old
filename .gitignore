@@ -11,3 +11,6 @@ data/*
 analysis/site_libs
 .git/
 .drake/
+packrat/lib*/
+*clustermq.out
+._*
