@@ -9,8 +9,7 @@
 library(shiny)
 source( 'shiny_input.R' )
 
-trait_list <- c("a", "b", "c")
-phenotype_list <- c("raw", "phesant")
+
 
 # Define UI for app that draws a histogram ----
 ui <- fluidPage(
@@ -48,27 +47,35 @@ ui <- fluidPage(
         # Main panel for displaying outputs ----
         mainPanel(
 
+            # tags$head(tags$style(type="text/css", ".dataTables_filter {display: none;    }"
+            #     ))
+
+
             # Output: HTML table with requested number of observations ----
             #tableOutput("view"),
-            fluidRow(
-                splitLayout(cellWidths = c("50%", "50%"), tableOutput("view"), tableOutput("view2"))
+            tabsetPanel(
+                id = 'summary',
+                tabPanel("Trait description", tableOutput("trait_description")),
+                tabPanel("MR summary", DT::dataTableOutput("mr_summary"))
             ),
 
             fluidRow(
-                splitLayout(cellWidths = c("50%", "50%"), plotOutput("distPlot"), plotOutput("simple_xy"))
+                splitLayout(cellWidths = c("50%", "50%"), plotOutput("male_female_mr"), plotOutput("female_male_mr"))
             ),
 
+            tabsetPanel(
+                id = 'binned_results',
+                tabPanel("Male > female, age", DT::dataTableOutput("male_female_age")),
+                tabPanel("Female > male, age", DT::dataTableOutput("female_male_age")),
+                tabPanel("Male > female, time together", DT::dataTableOutput("male_female_tt")),
+                tabPanel("Female > male, time together", DT::dataTableOutput("female_male_tt"))
+            ),
 
-            # Output: Histogram ----
-            #plotOutput(outputId = "distPlot"),
-
-            # Output: Histogram ----
-            #plotOutput(outputId = "simple_xy"),
-
-
-
-
-
+            tabsetPanel(
+                id = 'binned_figures',
+                tabPanel("Binned by age", splitLayout(cellWidths = c("50%", "50%"), plotOutput("male_female_age_fig"), plotOutput("female_male_age_fig"))),
+                tabPanel("Binned by time together", splitLayout(cellWidths = c("50%", "50%"), plotOutput("male_female_tt_fig"), plotOutput("female_male_tt_fig")))
+            ),
 
         ),
 
