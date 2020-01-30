@@ -207,13 +207,6 @@ pipeline <- drake_plan(
     write_summ_stats(summ_stats_create, traits, traits_to_run, !!GRS_thresholds, file_out("analysis/traitMR/IVs"),file_out("analysis/traitMR/GRS"))
   },hpc = FALSE),
 
-  shiny_data = target({
-    file_in("analysis/traitMR/trait_info")
-    file_in("analysis/traitMR/IVs")
-    read_shiny_data(traits,traits_to_run$i)
-
-  },dynamic = map(traits_to_run)),
-
   imp_dir = target(!!paste0(UKBB_dir, "/imp"),
     trigger = trigger(change = file.mtime(!!!paste0(UKBB_dir, "/imp")))),
 
