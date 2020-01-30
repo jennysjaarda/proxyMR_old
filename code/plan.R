@@ -189,7 +189,7 @@ pipeline <- drake_plan(
   data_prep_out = target({
     data_prep
     write_data_prep(traits, traits_to_run, file_out("analysis/traitMR/trait_info"), file_out("analysis/traitMR/pheno_files/phesant"))
-  },hpc = FALSE),
+  }, hpc = FALSE),
 
 
   ## old create summary stats
@@ -218,34 +218,33 @@ pipeline <- drake_plan(
     trigger = trigger(change = file.mtime(!!!paste0(UKBB_dir, "/imp")))),
 
   models_to_run = {
-    #file_in("analysis/traitMR/trait_info")
+    file_in("analysis/traitMR/trait_info")
     summ_stats_out
-    define_models(traits)},
+    define_models(traits)
+  },
 
-  gwas_tt_bins = target(
-    {
-      summ_stats_create
-      #file_in("analysis/traitMR/trait_info")
-      #file_in("analysis/traitMR/IVs")
-      #imp_dir
-      household_GWAS(models_to_run$i,models_to_run$trait_ID, models_to_run$exposure_sex,
-        (models_to_run$phenotype_file),models_to_run$phenotype_col,models_to_run$phenotype_description,
-        (models_to_run$IV_file),sample_file,pheno_cov=joint_model_adjustments,
-        grouping_var="time_together_even_bins",household_time_munge,(models_to_run$gwas_outcome_file))
+  gwas_tt_bins = target({
+    summ_stats_create
+    file_in("analysis/traitMR/trait_info")
+    file_in("analysis/traitMR/IVs")
+    imp_dir
+    household_GWAS(models_to_run$i,models_to_run$trait_ID, models_to_run$exposure_sex,
+      (models_to_run$phenotype_file),models_to_run$phenotype_col,models_to_run$phenotype_description,
+      (models_to_run$IV_file),sample_file,pheno_cov=joint_model_adjustments,
+      grouping_var="time_together_even_bins",household_time_munge,(models_to_run$gwas_outcome_file))
 
     }, dynamic = map(models_to_run)
   ),
 
-  gwas_age_bins = target(
-    {
-      summ_stats_create
-      #file_in("analysis/traitMR/trait_info")
-      #file_in("analysis/traitMR/IVs")
-      #imp_dir
-      household_GWAS(models_to_run$i,models_to_run$trait_ID, models_to_run$exposure_sex,
-        (models_to_run$phenotype_file),models_to_run$phenotype_col,models_to_run$phenotype_description,
-        (models_to_run$IV_file),sample_file,pheno_cov=joint_model_adjustments,
-        grouping_var="age_even_bins",household_time_munge,(models_to_run$gwas_outcome_file))
+  gwas_age_bins = target({
+    summ_stats_create
+    file_in("analysis/traitMR/trait_info")
+    file_in("analysis/traitMR/IVs")
+    imp_dir
+    household_GWAS(models_to_run$i,models_to_run$trait_ID, models_to_run$exposure_sex,
+      (models_to_run$phenotype_file),models_to_run$phenotype_col,models_to_run$phenotype_description,
+      (models_to_run$IV_file),sample_file,pheno_cov=joint_model_adjustments,
+      grouping_var="age_even_bins",household_time_munge,(models_to_run$gwas_outcome_file))
 
     }, dynamic = map(models_to_run)
   ),
