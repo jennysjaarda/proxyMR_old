@@ -1,4 +1,3 @@
-
 #!/bin/bash
 #SBATCH --partition sgg
 #SBATCH --workdir /data/sgg2/jenny/projects/proxyMR
