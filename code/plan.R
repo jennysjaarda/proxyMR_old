@@ -4,9 +4,6 @@
 
 ## Description: creates pheno file and household pairs file for downstream analyses
 
-pre_pipeline <- bind_plans(tidy,filter_traits)
-vis_drake_graph(drake_config(pre_pipeline))
-
 tidy <- drake_plan(
 
   ##################################
@@ -160,27 +157,10 @@ filter_traits <- drake_plan(
 
 )
 
-
-
-
 pre_pipeline <- bind_plans(tidy,filter_traits)
 
 # config <- drake_config(pre_pipeline)
 # vis_drake_graph(config)
-
-
-read_csv("cache_log.csv", col_types = cols()) %>%
-  left_join(drake_cache_log(), by = "name") %>%
-  filter(hash.x != hash.y) %>%
-  dplyr::select(name, hash.x, hash.y, -type.x, -type.y)
-
-file.remove("proxymr.log")
-
-make(pre_pipeline,parallelism = "clustermq",console_log_file = "proxymr.log", cache_log_file = "cache_log.csv",
-  memory_strategy = "lookahead", garbage_collection = TRUE, ## try with preclean ?
-  jobs = 5, template = list(cpus = 1, partition = "sgg",
-  log_file="/data/sgg2/jenny/projects/proxyMR/proxymr_%a_clustermq.out"))
-
 
 
 pipeline <- drake_plan(
@@ -211,64 +191,43 @@ pipeline <- drake_plan(
     write_data_prep(traits, traits_to_run, file_out("analysis/traitMR/trait_info"), file_out("analysis/traitMR/pheno_files/phesant"))
   },hpc = FALSE),
 
-  trait_info = target({
-
-    for(j in 1:length(data_prep)){
-      head(data_prep[[1]]$trait_info)
-
-    }
-    print("working")
-    #data_out <- readd(data_prep, subtargets=i)
-    head(data_prep[[1]]$trait_info)
-
-
-  }), dynamic = map(data_prep),
 
   ## old create summary stats
   summ_stats_create = target(
     {
       data_prep_out
       trait_ID <- as.character(traits[traits_to_run$i,"Neale_pheno_ID"]) ## this is the Neale_id, used to be pheno_description
-      file_in("analysis/traitMR/trait_info", "analysis/data_setup/sex_heterogeneity", "analysis/data_setup/IV_lists", "analysis/traitMR/trait_info")
+      file_in("analysis/traitMR/trait_info", "analysis/data_setup/sex_heterogeneity", "analysis/data_setup/IV_lists")
       create_summary_stats(traits,traits_to_run$i,phesant_directory,!!GRS_thresholds,Neale_manifest,variant_data_reduced)
     }, dynamic = map(traits_to_run)
   ),
+
   summ_stats_out = target({
     summ_stats_create
     write_summ_stats(summ_stats_create, traits, traits_to_run, !!GRS_thresholds, file_out("analysis/traitMR/IVs"),file_out("analysis/traitMR/GRS"))
   },hpc = FALSE),
 
-  IVs_male = target({
+  shiny_data = target({
+    file_in("analysis/traitMR/trait_info")
+    file_in("analysis/traitMR/IVs")
+    read_shiny_data(traits,traits_to_run$i)
 
-    #data_out <- readd(data_prep, subtargets=i)
-    summ_stats_create$male_IV_data
-
-  }), dynamic = map(summ_stats_create),
-
-  IVs_female = target({
-
-    #data_out <- readd(data_prep, subtargets=i)
-    summ_stats_create$female_IV_data
-
-  }), dynamic = map(summ_stats_create),
-
-
+  },dynamic = map(traits_to_run)),
 
   imp_dir = target(!!paste0(UKBB_dir, "/imp"),
     trigger = trigger(change = file.mtime(!!!paste0(UKBB_dir, "/imp")))),
-  #imp_data = file_in(!!paste0(UKBB_dir, "/imp")),
+
   models_to_run = {
+    #file_in("analysis/traitMR/trait_info")
     summ_stats_out
     define_models(traits)},
-
 
   gwas_tt_bins = target(
     {
       summ_stats_create
-      # trait_ID <- as.character(traits[models_to_run$i,"Neale_pheno_ID"]) ## this is the Neale_id, used to be pheno_description
-      # pheno_dir <- paste0("analysis/traitMR/", trait_ID)
-      # trait_info <- paste0(pheno_dir,"/trait_info.txt")
-      # file_in(trait_info)
+      #file_in("analysis/traitMR/trait_info")
+      #file_in("analysis/traitMR/IVs")
+      #imp_dir
       household_GWAS(models_to_run$i,models_to_run$trait_ID, models_to_run$exposure_sex,
         (models_to_run$phenotype_file),models_to_run$phenotype_col,models_to_run$phenotype_description,
         (models_to_run$IV_file),sample_file,pheno_cov=joint_model_adjustments,
@@ -280,10 +239,9 @@ pipeline <- drake_plan(
   gwas_age_bins = target(
     {
       summ_stats_create
-      # trait_ID <- as.character(traits[models_to_run$i,"Neale_pheno_ID"]) ## this is the Neale_id, used to be pheno_description
-      # pheno_dir <- paste0("analysis/traitMR/", trait_ID)
-      # trait_info <- paste0(pheno_dir,"/trait_info.txt")
-      # file_in(trait_info)
+      #file_in("analysis/traitMR/trait_info")
+      #file_in("analysis/traitMR/IVs")
+      #imp_dir
       household_GWAS(models_to_run$i,models_to_run$trait_ID, models_to_run$exposure_sex,
         (models_to_run$phenotype_file),models_to_run$phenotype_col,models_to_run$phenotype_description,
         (models_to_run$IV_file),sample_file,pheno_cov=joint_model_adjustments,
@@ -292,60 +250,71 @@ pipeline <- drake_plan(
     }, dynamic = map(models_to_run)
   ),
 
-  create_shiny_data = {
+  mr_age_bins = target({
+
+    file_in("analysis/traitMR/trait_info")
+    file_in("analysis/traitMR/IVs")
+
+    household_MR(household_GWAS_result = gwas_age_bins, models_to_run$i, models_to_run$trait_ID,
+      models_to_run$exposure_sex,grouping_var="age_even_bins", models_to_run$IV_file)
+    }, dynamic = map(gwas_age_bins, models_to_run)
+  ),
+
+  mr_tt_bins = target({
+    file_in("analysis/traitMR/trait_info")
+    file_in("analysis/traitMR/IVs")
+    household_MR(household_GWAS_result = gwas_tt_bins, models_to_run$i, models_to_run$trait_ID,
+      models_to_run$exposure_sex, grouping_var="time_together_even_bins", models_to_run$IV_file)
+    }, dynamic = map(gwas_tt_bins, models_to_run)
+  ),
+
+  shiny_data = target({
+    file_in("analysis/traitMR/trait_info")
+    file_in("analysis/traitMR/IVs")
+    read_shiny_data(traits,traits_to_run$i)
+
+  }, dynamic = map(traits_to_run)),
+
+  shiny_data_out = target({
     loadd(traits)
-    loadd(trait_info)
+    loadd(shiny_data)
     loadd(models_to_run)
-    loadd(summ_stats_create)
-    loadd(gwas_age_bins)
-    loadd(gwas_tt_bins)
-    save(traits, trait_info, models_to_run, summ_stats_create, gwas_age_bins, gwas_tt_bins, file = file_out("code/shiny/data.RData"))},
+    loadd(mr_age_bins)
+    loadd(mr_tt_bins)
+    save(traits, shiny_data, models_to_run, gwas_age_bins, gwas_tt_bins, file = file_out("code/shiny/data.RData"))
+  }, hpc = FALSE)
 
-  mr = target(
-    {
-      gwas
-      # trait_ID <- as.character(traits[models_to_run$i,"Neale_pheno_ID"]) ## this is the Neale_id, used to be pheno_description
-      # pheno_dir <- paste0("analysis/traitMR/", trait_ID)
-      #IV_file <- paste0(pheno_dir,"/IVs/", exposure_sex,"_IVs.txt")
-      #outcome_gwas_file <- paste0(pheno_dir, "/household_GWAS/outcome_",outcome_sex,"/", phenotype_description,"_" ,exposure_sex, "-",outcome_sex, "_GWAS.csv")
-      household_mr(household_GWAS_result = gwas_age_bins, models_to_run$i,traits,models_to_run$exposure_sex,
-        models_to_run$gwas_outcome_file,models_to_run$IV_file,pheno_cov,household_intervals,outputs)
-    }
-  )
 
-  output = file_out("analysis/traitMR/","output/figures/traitMR","output/tables/traitMR")
 )
 
 
-### define age intervals
 
 full_proxymr <- bind_plans(pre_pipeline,pipeline)
 
 
-#vis_drake_graph(drake_config(filter_traits))
-# make(join_)
-#
-#
-#
-#
-#
-#
-# variant_file_full_name <- "/data/sgg2/jenny/data/Neale_UKBB_GWAS/Neale_SGG_directory.csv"
-# variant_file_full_name <- paste0(Neale_summary_dir, "/variants.tsv")
-# join_ <- drake_plan(
-#   variant_data = target(fread(!!variant_file_full_name,data.table=F), hpc = FALSE),
-# )
+run_mr <- drake_plan(
+
+  gwas_age_bins = readd(gwas_age_bins),
+  gwas_tt_bins = readd(gwas_tt_bins),
+  models_to_run = readd(models_to_run),
+
+  mr_age_bins = target({
+
+    file_in("analysis/traitMR/trait_info")
+    file_in("analysis/traitMR/IVs")
+
+    household_MR(household_GWAS_result = gwas_age_bins, models_to_run$i, models_to_run$trait_ID,
+      models_to_run$exposure_sex,grouping_var="age_even_bins", models_to_run$IV_file)
+    }, dynamic = map(gwas_age_bins, models_to_run)
+  ),
+
+  mr_tt_bins = target({
+    file_in("analysis/traitMR/trait_info")
+    file_in("analysis/traitMR/IVs")
+    household_MR(household_GWAS_result = gwas_tt_bins, models_to_run$i, models_to_run$trait_ID,
+      models_to_run$exposure_sex, grouping_var="time_together_even_bins", models_to_run$IV_file)
+    }, dynamic = map(gwas_tt_bins, models_to_run)
+  ),
 
 
-
-
-#memory_strategy = "lookahead", garbage_collection = TRUE
-
-
-
-
-
-
-
-
-### drake slurm example
+)
