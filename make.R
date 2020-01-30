@@ -48,10 +48,10 @@ make(full_proxymr,parallelism = "clustermq", console_log_file = "proxymr.log",  
   jobs = 94, template = list(cpus = 1, partition = partition,
   log_file="/data/sgg2/jenny/projects/proxyMR/proxymr_%a_clustermq.out"))
 
-
-make(run_mr, parallelism = "clustermq", console_log_file = "proxymr.log", cache_log_file = "cache_log.csv",
-  jobs = 75, template = list(cpus = 1, partition = partition,
-  log_file="/data/sgg2/jenny/projects/proxyMR/proxymr_%a_clustermq.out"))
+#
+# make(run_mr, parallelism = "clustermq", console_log_file = "proxymr.log", cache_log_file = "cache_log.csv",
+#   jobs = 75, template = list(cpus = 1, partition = partition,
+#   log_file="/data/sgg2/jenny/projects/proxyMR/proxymr_%a_clustermq.out"))
 
 #make(prep_shiny, console_log_file = "proxymr.log", cache_log_file = "cache_log.csv")
 
