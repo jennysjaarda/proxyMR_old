@@ -8,4 +8,4 @@
 #SBATCH --ntasks=1                                                 # Run on a single core
 
 
-Rscript code/make.R
+Rscript make.R
