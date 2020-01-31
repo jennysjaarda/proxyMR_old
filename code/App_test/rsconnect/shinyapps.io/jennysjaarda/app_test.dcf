@@ -1,0 +1,10 @@
+name: app_test
+title:
+username:
+account: jennysjaarda
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 1699393
+bundleId: 2750874
+url: https://jennysjaarda.shinyapps.io/app_test/
+when: 1579868940.06949
