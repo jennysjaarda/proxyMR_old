@@ -1813,8 +1813,8 @@ calc_Q_stat <- function(household_MR_result, trait_ID){
 }
 
 mr_sex_het <- function(calc_Q_stat_age, calc_Q_stat_tt, traits_summary){
-  mr_summary <- calc_Q_stat_out
-  mr_summary2 <- calc_Q_stat_out_tt
+  mr_summary <- calc_Q_stat_age
+  mr_summary2 <- calc_Q_stat_tt
 
   traits <- unique(mr_summary$trait_ID)
 
@@ -1932,4 +1932,16 @@ mr_scatter_plot_custom <-  function (mr_results, dat, mr_title, exposure_sex, ou
                            theme(legend.title = element_blank())
                        })
   mrres
+}
+
+MR_MLE <- function(trait, exposure_sex){
+
+  cat(paste0("Processing ", exposure_sex, "s...\n"))
+  if(exposure_sex=="male"){outcome_sex="female"}
+  if(exposure_sex=="female"){outcome_sex="male"}
+  if(exposure_sex=="male"){index="HOUSEHOLD_MEMBER1"}
+  if(exposure_sex=="female"){index="HOUSEHOLD_MEMBER2"}
+  opp_index <- ifelse(index=="HOUSEHOLD_MEMBER1", "HOUSEHOLD_MEMBER2", "HOUSEHOLD_MEMBER1")
+
+
 }
