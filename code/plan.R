@@ -260,6 +260,20 @@ pipeline <- drake_plan(
     }, dynamic = map(gwas_tt_bins, models_to_run)
   ),
 
+  mr_summary_age = target({
+    calc_Q_stat(mr_age_bins, models_to_run$trait_ID)
+  }, dynamic = map(mr_age_bins, models_to_run)
+  ),
+
+  mr_summary_tt = target({
+    calc_Q_stat(mr_tt_bins, models_to_run$trait_ID)
+  }, dynamic = map(mr_tt_bins, models_to_run)
+  ),
+
+  mr_sex_het = target({
+    mr_sex_het(mr_summary_age, mr_summary_tt, traits)}
+  ),
+
   shiny_data = target({
     file_in("analysis/traitMR/trait_info")
     file_in("analysis/traitMR/IVs")
@@ -268,12 +282,14 @@ pipeline <- drake_plan(
   }, dynamic = map(traits_to_run)),
 
   shiny_data_out = target({
-    loadd(traits)
-    loadd(shiny_data)
-    loadd(models_to_run)
-    loadd(mr_age_bins)
-    loadd(mr_tt_bins)
-    save(traits, shiny_data, models_to_run, gwas_age_bins, gwas_tt_bins, file = file_out("code/shiny/data.RData"))
+    # loadd(traits)
+    # loadd(shiny_data)
+    # loadd(models_to_run)
+    # loadd(mr_age_bins)
+    # loadd(mr_tt_bins)
+    # loadd()
+    save(traits, shiny_data, models_to_run, mr_age_bins, mr_tt_bins,
+      mr_summary_age, mr_summary_tt, mr_sex_het, file = file_out("code/shiny/data.RData"))
   }, hpc = FALSE)
 
 
@@ -283,30 +299,5 @@ pipeline <- drake_plan(
 
 full_proxymr <- bind_plans(pre_pipeline,pipeline)
 
-
-run_mr <- drake_plan(
-
-  gwas_age_bins = readd(gwas_age_bins),
-  gwas_tt_bins = readd(gwas_tt_bins),
-  models_to_run = readd(models_to_run),
-
-  mr_age_bins = target({
-
-    file_in("analysis/traitMR/trait_info")
-    file_in("analysis/traitMR/IVs")
-
-    household_MR(household_GWAS_result = gwas_age_bins, models_to_run$i, models_to_run$trait_ID,
-      models_to_run$exposure_sex,grouping_var="age_even_bins", models_to_run$IV_file)
-    }, dynamic = map(gwas_age_bins, models_to_run)
-  ),
-
-  mr_tt_bins = target({
-    file_in("analysis/traitMR/trait_info")
-    file_in("analysis/traitMR/IVs")
-    household_MR(household_GWAS_result = gwas_tt_bins, models_to_run$i, models_to_run$trait_ID,
-      models_to_run$exposure_sex, grouping_var="time_together_even_bins", models_to_run$IV_file)
-    }, dynamic = map(gwas_tt_bins, models_to_run)
-  ),
-
-
-)
+# config <- drake_config(full_proxymr)
+# vis_drake_graph(config)
