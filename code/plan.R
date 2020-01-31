@@ -270,7 +270,7 @@ pipeline <- drake_plan(
   }, dynamic = map(mr_tt_bins, models_to_run)
   ),
 
-  mr_sex_het = target({
+  calc_mr_sex_het = target({
     mr_sex_het(mr_summary_age, mr_summary_tt, traits)}
   ),
 
@@ -289,7 +289,7 @@ pipeline <- drake_plan(
     # loadd(mr_tt_bins)
     # loadd()
     save(traits, shiny_data, models_to_run, mr_age_bins, mr_tt_bins,
-      mr_summary_age, mr_summary_tt, mr_sex_het, file = file_out("code/shiny/data.RData"))
+      mr_summary_age, mr_summary_tt, calc_mr_sex_het, file = file_out("code/shiny/data.RData"))
   }, hpc = FALSE)
 
 
