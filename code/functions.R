@@ -1655,7 +1655,7 @@ household_MR <- function(household_GWAS_result, i, trait_ID, exposure_sex, group
   IV_data <- fread(IV_file, header=T, data.table=F)
   colnames(IV_data) <- c("SNP", "chr", "beta", "se", "pval", "other_allele", "effect_allele","eaf","samplesize")
   data_IV_format <- format_data(IV_data, type="exposure")
-  outcome <- "phenotype"
+  outcome <- "phenotype" #phenotype_description
   #j <- which(models_to_run[["exposure_sex"]]==exposure_sex & models_to_run[["trait_ID"]]==trait_ID) # j represents the model
   #outcome_gwas <- get(household_GWAS_result)[[j]]$outcome_gwas_out
   outcome_gwas <- household_GWAS_result[[1]]$outcome_gwas_out
@@ -1777,6 +1777,112 @@ household_MR <- function(household_GWAS_result, i, trait_ID, exposure_sex, group
   return(list(out))
 
 }
+
+calc_Q_stat <- function(household_MR_result, trait_ID){
+
+  bin_result_temp <- household_MR_result[[1]]$bin_summary
+  full_MR_temp <- household_MR_result[[1]]$full_MR_summary
+  full_MR_temp <- full_MR_temp[,-1]
+  bin_result_temp <- as.data.frame(bin_result_temp)
+
+  bin_result_temp <- bin_result_temp %>% mutate_if(is.factor,as.character) %>%
+    mutate_at(vars(IVW_beta, IVW_se, IVW_pval, n), as.numeric)
+
+  all_row <- which(bin_result_temp$bin=="all")
+  all_sum <- c(bin_result_temp[6,"IVW_beta"],bin_result_temp[6,"IVW_se"])
+  names(all_sum) <- c("MR_est", "MR_se")
+
+  bin_result_temp <- bin_result_temp %>%
+    dplyr::filter(bin != "all")
+  meta_bin <- metagen(TE = as.numeric(IVW_beta), seTE = as.numeric(IVW_se), studlab = bin, data = bin_result_temp)
+
+  Q_stat <- meta_bin$Q
+  Q_pval <- meta_bin$pval.Q
+  Q_df <- meta_bin$df.Q
+  Q_sum <- c(Q_stat, Q_pval, Q_df)
+  names(Q_sum) <- c("Q_stat", "Q_pval", "Q_df")
+
+
+  out <- as.data.frame(t(c(trait_ID, full_MR_temp, all_sum, Q_sum))) %>%
+    mutate_if(is.factor,as.character) %>%
+    as_tibble()
+
+  colnames(out)[1] <- "trait_ID"
+  return(out)
+
+}
+
+mr_sex_het <- function(calc_Q_stat_age, calc_Q_stat_tt, traits_summary){
+  mr_summary <- calc_Q_stat_out
+  mr_summary2 <- calc_Q_stat_out_tt
+
+  traits <- unique(mr_summary$trait_ID)
+
+  mr_summary$trait_description <- NA
+
+  mr_summary$sex_het <- NA
+  mr_summary$MR_meta_est <- NA
+  mr_summary$MR_meta_se <- NA
+  mr_summary$MR_meta_L95 <- NA
+  mr_summary$MR_meta_U95 <- NA
+  mr_summary$MR_meta_pval <- NA
+
+  for(trait in traits){
+
+    trait_description <- as.character(traits_summary[which(traits_summary$Neale_pheno_ID==trait), "description"])
+
+    male_row <- which(mr_summary$trait_ID==trait & mr_summary$exposure_sex=="male")
+    female_row <- which(mr_summary$trait_ID==trait & mr_summary$exposure_sex=="female")
+
+    beta_F <-  as.numeric(mr_summary[female_row,"MR_est"])
+    beta_M <-  as.numeric(mr_summary[male_row,"MR_est"])
+    SE_F <- as.numeric(mr_summary[female_row,"MR_se"])
+    SE_M <- as.numeric(mr_summary[male_row,"MR_se"])
+    n_M <- as.numeric(mr_summary[male_row,"N_outcome_GWAS"])
+    n_F <- as.numeric(mr_summary[male_row,"N_outcome_GWAS"])
+
+    se <- sqrt( (SE_F^2) + (SE_M^2) )
+    t <- (beta_F-beta_M)/se
+    p_het <- 2*pnorm(-abs(t))
+
+    mr_summary$sex_het[male_row] <- p_het
+    mr_summary$sex_het[female_row] <- p_het
+
+    effects <- c(beta_F, beta_M)
+    ses <- c(SE_F, SE_M)
+    n <- sum(n_M, n_F)
+    meta.result=meta.summaries(d=effects, se=ses,method=c("fixed"), conf.level=0.95)
+    b_meta=round(meta.result[3]$summary,digits=10)
+    b_meta_se=round(meta.result[4]$se.summary,digits=10)
+    lowerbound=b_meta-b_meta_se*1.96
+    upperbound=b_meta+b_meta_se*1.96
+    meta_p=round(2*(pt(abs(b_meta/b_meta_se),((n)-meta.result$het[2]),lower.tail=FALSE)),digits=10)
+
+    for(sex_row in c(male_row, female_row)){
+      mr_summary$trait_description[sex_row] <- trait_description
+      mr_summary$MR_meta_est[sex_row] <- b_meta
+      mr_summary$MR_meta_se[sex_row] <- b_meta_se
+      mr_summary$MR_meta_L95[sex_row] <- lowerbound
+      mr_summary$MR_meta_U95[sex_row] <- upperbound
+      mr_summary$MR_meta_pval[sex_row] <- meta_p
+
+    }
+  }
+
+  mr_summary <- mr_summary %>%
+    rename_at(vars(starts_with("Q_")),function(x) paste0("median_age_", x))
+
+  mr_summary2 <- mr_summary2 %>% dplyr::select(c(trait_ID, exposure_sex, starts_with("Q_"))) %>%
+    rename_at(vars(starts_with("Q_")),function(x) paste0("time_together_", x))
+
+  out <- full_join(mr_summary, mr_summary2, by = c("trait_ID", "exposure_sex"))
+
+  return(out)
+
+}
+
+
+#saveRDS(out, "code/shiny/mr_summary.rds")
 
 mr_scatter_plot_custom <-  function (mr_results, dat, mr_title, exposure_sex, outcome_sex){
   requireNamespace("ggplot2", quietly = TRUE)
