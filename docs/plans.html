@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Jenny" />
+
+<meta name="date" content="2020-01-31" />
+
+<title>Plans</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
+<link href="site_libs/vis-4.20.1/vis.css" rel="stylesheet" />
+<script src="site_libs/vis-4.20.1/vis.min.js"></script>
+<script src="site_libs/visNetwork-binding-2.0.9/visNetwork.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">proxyMR</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/jennysjaarda/proxyMR">
+    <span class="fa fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Plans</h1>
+<h4 class="author">Jenny</h4>
+<h4 class="date">2020-01-31</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2020-02-06
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 1
+</p>
+<p>
+<strong>Knit directory:</strong> <code>proxyMR/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.5.0). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges"> <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted changes </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguncommittedchanges" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The R Markdown is untracked by Git. To know which version of the R Markdown file created these results, you’ll want to first commit it to the Git repo. If you’re still working on the analysis, you can ignore this warning. When you’re finished, you can run <code>wflow_publish</code> to commit the R Markdown file and build the HTML.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20191211code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20191211)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20191211code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20191211)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjennysjaardaproxyMRtreeaea63da7c90c9690d802a3261931ed25d73832b4targetblankaea63daa"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jennysjaarda/proxyMR/tree/aea63da7c90c9690d802a3261931ed25d73832b4" target="_blank">aea63da</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjennysjaardaproxyMRtreeaea63da7c90c9690d802a3261931ed25d73832b4targetblankaea63daa" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .drake/
+    Ignored:    analysis/data_setup/
+    Ignored:    analysis/download_Neale_list.csv
+    Ignored:    analysis/process_Neale.out
+    Ignored:    analysis/traitMR/
+    Ignored:    data/processed/
+    Ignored:    data/raw/
+    Ignored:    data/slurm_clustermq.tmpl
+    Ignored:    output/figures/
+    Ignored:    output/tables/._5.household_correlations.baseGRS_filter.csv
+    Ignored:    output/tables/._define_Neale_categories.csv
+    Ignored:    output/tables/._define_Neale_categories_filled.csv
+    Ignored:    output/tables/traitMR/
+    Ignored:    packrat/lib-R/
+    Ignored:    packrat/lib-ext/
+    Ignored:    packrat/lib/
+    Ignored:    packrat/src/rbgen/
+    Ignored:    packrat/src/rmote/
+    Ignored:    packrat/src/webshot/
+    Ignored:    proxymr_100_clustermq.out
+    Ignored:    proxymr_10_clustermq.out
+    Ignored:    proxymr_11_clustermq.out
+    Ignored:    proxymr_12_clustermq.out
+    Ignored:    proxymr_13_clustermq.out
+    Ignored:    proxymr_14_clustermq.out
+    Ignored:    proxymr_15_clustermq.out
+    Ignored:    proxymr_16_clustermq.out
+    Ignored:    proxymr_17_clustermq.out
+    Ignored:    proxymr_18_clustermq.out
+    Ignored:    proxymr_19_clustermq.out
+    Ignored:    proxymr_1_clustermq.out
+    Ignored:    proxymr_20_clustermq.out
+    Ignored:    proxymr_21_clustermq.out
+    Ignored:    proxymr_22_clustermq.out
+    Ignored:    proxymr_23_clustermq.out
+    Ignored:    proxymr_24_clustermq.out
+    Ignored:    proxymr_25_clustermq.out
+    Ignored:    proxymr_26_clustermq.out
+    Ignored:    proxymr_27_clustermq.out
+    Ignored:    proxymr_28_clustermq.out
+    Ignored:    proxymr_29_clustermq.out
+    Ignored:    proxymr_2_clustermq.out
+    Ignored:    proxymr_30_clustermq.out
+    Ignored:    proxymr_31_clustermq.out
+    Ignored:    proxymr_32_clustermq.out
+    Ignored:    proxymr_33_clustermq.out
+    Ignored:    proxymr_34_clustermq.out
+    Ignored:    proxymr_35_clustermq.out
+    Ignored:    proxymr_36_clustermq.out
+    Ignored:    proxymr_37_clustermq.out
+    Ignored:    proxymr_38_clustermq.out
+    Ignored:    proxymr_39_clustermq.out
+    Ignored:    proxymr_3_clustermq.out
+    Ignored:    proxymr_40_clustermq.out
+    Ignored:    proxymr_41_clustermq.out
+    Ignored:    proxymr_42_clustermq.out
+    Ignored:    proxymr_43_clustermq.out
+    Ignored:    proxymr_44_clustermq.out
+    Ignored:    proxymr_45_clustermq.out
+    Ignored:    proxymr_46_clustermq.out
+    Ignored:    proxymr_47_clustermq.out
+    Ignored:    proxymr_48_clustermq.out
+    Ignored:    proxymr_49_clustermq.out
+    Ignored:    proxymr_4_clustermq.out
+    Ignored:    proxymr_50_clustermq.out
+    Ignored:    proxymr_51_clustermq.out
+    Ignored:    proxymr_52_clustermq.out
+    Ignored:    proxymr_53_clustermq.out
+    Ignored:    proxymr_54_clustermq.out
+    Ignored:    proxymr_55_clustermq.out
+    Ignored:    proxymr_56_clustermq.out
+    Ignored:    proxymr_57_clustermq.out
+    Ignored:    proxymr_58_clustermq.out
+    Ignored:    proxymr_59_clustermq.out
+    Ignored:    proxymr_5_clustermq.out
+    Ignored:    proxymr_60_clustermq.out
+    Ignored:    proxymr_61_clustermq.out
+    Ignored:    proxymr_62_clustermq.out
+    Ignored:    proxymr_63_clustermq.out
+    Ignored:    proxymr_64_clustermq.out
+    Ignored:    proxymr_65_clustermq.out
+    Ignored:    proxymr_66_clustermq.out
+    Ignored:    proxymr_67_clustermq.out
+    Ignored:    proxymr_68_clustermq.out
+    Ignored:    proxymr_69_clustermq.out
+    Ignored:    proxymr_6_clustermq.out
+    Ignored:    proxymr_70_clustermq.out
+    Ignored:    proxymr_71_clustermq.out
+    Ignored:    proxymr_72_clustermq.out
+    Ignored:    proxymr_73_clustermq.out
+    Ignored:    proxymr_74_clustermq.out
+    Ignored:    proxymr_75_clustermq.out
+    Ignored:    proxymr_76_clustermq.out
+    Ignored:    proxymr_77_clustermq.out
+    Ignored:    proxymr_78_clustermq.out
+    Ignored:    proxymr_79_clustermq.out
+    Ignored:    proxymr_7_clustermq.out
+    Ignored:    proxymr_80_clustermq.out
+    Ignored:    proxymr_81_clustermq.out
+    Ignored:    proxymr_82_clustermq.out
+    Ignored:    proxymr_83_clustermq.out
+    Ignored:    proxymr_84_clustermq.out
+    Ignored:    proxymr_85_clustermq.out
+    Ignored:    proxymr_86_clustermq.out
+    Ignored:    proxymr_87_clustermq.out
+    Ignored:    proxymr_88_clustermq.out
+    Ignored:    proxymr_89_clustermq.out
+    Ignored:    proxymr_8_clustermq.out
+    Ignored:    proxymr_90_clustermq.out
+    Ignored:    proxymr_91_clustermq.out
+    Ignored:    proxymr_92_clustermq.out
+    Ignored:    proxymr_93_clustermq.out
+    Ignored:    proxymr_94_clustermq.out
+    Ignored:    proxymr_95_clustermq.out
+    Ignored:    proxymr_96_clustermq.out
+    Ignored:    proxymr_97_clustermq.out
+    Ignored:    proxymr_98_clustermq.out
+    Ignored:    proxymr_99_clustermq.out
+    Ignored:    proxymr_9_clustermq.out
+
+Untracked files:
+    Untracked:  analysis/plans.Rmd
+
+Unstaged changes:
+    Modified:   cache_log.csv
+    Modified:   code/shiny/data.RData
+    Modified:   master.out
+    Deleted:    packrat/snapshot.lock
+    Modified:   proxymr.log
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+There are no past versions. Publish this analysis with <code>wflow_publish()</code> to start tracking its development.
+</p>
+<hr>
+</div>
+</div>
+</div>
+<pre class="r"><code>vis_drake_graph(pre_pipeline, make_imports = FALSE)</code></pre>
+<pre><code>unload targets from environment:
+   phesant_directory </code></pre>
+<div id="htmlwidget-ec897849c5c50a6f7846" style="width:672px;height:480px;" class="visNetwork html-widget"></div>
+<script type="application/json" data-for="htmlwidget-ec897849c5c50a6f7846">{"x":{"nodes":{"id":["p-F5SGC5DBF5ZWOZZTF5SGC5DBF5XGKYLMMVPWM2LMMVZS6VKLIJBCAR2XIFJSASLNOB2XIZLEEB3DGLRSEAWSARTJNRSSATLBNZUWMZLTOQQFEZLMMVQXGZJAGIYDCOBQG4ZTCIBNEBGWC3TJMZSXG5BAGIYDCOBQG4XHI43W","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXU4ZLBNRSV6VKLIJBF6R2XIFJS6L3WMFZGSYLOORZS45DTOY","clump_dir","Neale_files_dir","p-N52XI4DVOQXXIYLCNRSXGL3EMVTGS3TFL5HGKYLMMVPWGYLUMVTW64TJMVZV6ZTJNRWGKZBOMNZXM","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXEYLXF4XWOZLON4XXK23CL5ZXCY27OYZC45DYOQ","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXEYLXF4XWOZLON4XXK23CGE3DGOC7OJSWYX3TGQ4DQMZWGYXGIYLU","Neale_SGG_dir","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3DOL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3TAL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMZRGQ2TSL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3DOL3CNFXDKL3POV2F6YTJNY2S4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3TAL3CNFXDEL3POV2F6YTJNYZC4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRSHAYTSL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRZGMZTML3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3DOL3CNFXDIL3POV2F6YTJNY2C4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGY2TGL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3TCL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRZGM2TIL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3DQL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3TCL3CNFXDEL3POV2F6YTJNYZC4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRYGYYDGL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRYGYYDIL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3DOL3CNFXDEL3POV2F6YTJNYZC4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3DOL3CNFXDGL3POV2F6YTJNYZS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXEYLXF4XXA3DJNZVS6XZQGAYV65LLMJPWGYLML5RWQ4RZL53DELTGMFWQ","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXS6UCIIVJUCTSUF5IEQRKTIFHFIX3GNFWGKX3ENFZGKY3UN5ZHSLTUPB2A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXEYLXF5YGQZLON4XXK23CGMYTINJZFZRXG5Q","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXEYLXF4XXA2DFNZXS65LLMI3DQOBRFZRXG5Q","n-OBZG6Y3FONZXQOR2OJ2W4","p-MNXWIZJPOBZG6Y3FONZV6TTFMFWGKLTTNA","household_intervals","time_at_address_field","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXS6VKLIJBF64DIMVXG6X3ENFZGKY3UN5ZHSLTDON3A","Neale_manifest","filled_cats","sqc","relatives","Neale_SGG_dir_filt","pheno","household_relationships","phesant_files","fam","phesant_directory","time_at_household_raw","household_info","time_at_household","UKBB_directory","sqc_munge","hh_pairs","hh_pairs_kin","hh_pairs_filter","trait_corrs","model_adjustments","write_hh_pairs","write_traits_corr","traits_corr2","joint_model_adjustments","write_houshold1","write_houshold2","p-MFXGC3DZONUXGL3EMF2GCX3TMV2HK4BPNBXXK43FNBXWYZC7OBQWS4TTFZRXG5Q","p-N52XI4DVOQXXIYLCNRSXGLZRFZUG65LTMVUG63DEL5RW64TSMVWGC5DJN5XHGLTDON3A","Neale_to_process","household_time","write_joint","p-MFXGC3DZONUXGL3EMF2GCX3TMV2HK4BPJBHVKU2FJBHUYRC7JVCU2QSFKIYV64DIMVXG6X3NN5SGK3C7MFSGU5LTORWWK3TUOMXGG43W","p-MFXGC3DZONUXGL3EMF2GCX3TMV2HK4BPJBHVKU2FJBHUYRC7JVCU2QSFKIZF64DIMVXG6X3NN5SGK3C7MFSGU5LTORWWK3TUOMXGG43W","write_download_list","write_define_cats","traits_corr2_filled","household_time_munge","p-MFXGC3DZONUXGL3EMF2GCX3TMV2HK4BPJJHUSTSUL5YGQZLON5PW233EMVWF6YLENJ2XG5DNMVXHI4ZOMNZXM","p-MFXGC3DZONUXGL3EN53W43DPMFSF6TTFMFWGKX3MNFZXILTDON3A","p-N52XI4DVOQXXIYLCNRSXGL3EMVTGS3TFL5HGKYLMMVPWGYLUMVTW64TJMVZS4Y3TOY","run_process_Neale","write_household_time","traits_corr2_update","p-MFXGC3DZONUXGL3EMF2GCX3TMV2HK4BPNBXXK43FNBXWYZC7ORUW2ZJOMNZXM","traits_to_count_IVs","IV_list","IV_list_out","IV_summary","p-MFXGC3DZONUXGL3EMF2GCX3TMV2HK4BPJFLF63DJON2HGLY","traits_corr3","write_traits_corr2","traits_to_calc_het","variant_data_reduced","p-N52XI4DVOQXXIYLCNRSXGLZSFZUG65LTMVUG63DEL5RW64TSMVWGC5DJN5XHGLTDN5ZHEX3GNFWHIZLSFZRXG5Q","sex_het_summary","traits_corr4","sex_het_out","IV_info_out","write_traits_corr3","write_traits_corr4","valid_GRS_summary","p-MFXGC3DZONUXGL3EMF2GCX3TMV2HK4BPONSXQX3IMV2GK4TPM5SW4ZLJOR4S6","p-MFXGC3DZONUXGL3EMF2GCX3TMV2HK4BPJFLF62LOMZXS6","p-N52XI4DVOQXXIYLCNRSXGLZTFZUG65LTMVUG63DEL5RW64TSMVWGC5DJN5XHGLTOOVWUSVTTL5TGS3DUMVZC4Y3TOY","p-N52XI4DVOQXXIYLCNRSXGLZUFZUG65LTMVUG63DEL5RW64TSMVWGC5DJN5XHGLTTMV4GQZLUL5TGS3DUMVZC4Y3TOY","traits_corr5","write_traits_corr5","traits_corr6","p-N52XI4DVOQXXIYLCNRSXGLZVFZUG65LTMVUG63DEL5RW64TSMVWGC5DJN5XHGLTCMFZWKR2SKNPWM2LMORSXELTDON3A","write_traits_corr6","p-N52XI4DVOQXXIYLCNRSXGLZWFZUG65LTMVUG63DEL5RW64TSMVWGC5DJN5XHGLTON5XGE2LOMFZHSX3GNFWHIZLSFZRXG5Q"],"imported":[true,true,false,false,true,true,true,false,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"label":["file /data/sgg3/data/neale_files/UKBB GWAS Impute\nd v3.2 - File Manifest Release 20180731 - Manifes\nt 201807.tsv","file /data/sgg2/jenny/data/Neale_UKBB_GWAS//varia\nnts.tsv","clump_dir\n19.341s","Neale_files_dir\n6.467s","file output/tables/define_Neale_categories_filled\n.csv","file /data/sgg2/jenny/data/UKBB_raw//geno/ukb_sqc\n_v2.txt","file /data/sgg2/jenny/data/UKBB_raw//geno/ukb1638\n_rel_s488366.dat","Neale_SGG_dir\n15.314s","file /data/sgg2/jenny/data/UKBB_processed/PHESANT\n/ukb21067/bin1/out_bin1..tsv","file /data/sgg2/jenny/data/UKBB_processed/PHESANT\n/ukb21070/bin1/out_bin1..tsv","file /data/sgg2/jenny/data/UKBB_processed/PHESANT\n/ukb31459/bin1/out_bin1..tsv","file /data/sgg2/jenny/data/UKBB_processed/PHESANT\n/ukb21067/bin5/out_bin5..tsv","file /data/sgg2/jenny/data/UKBB_processed/PHESANT\n/ukb21070/bin2/out_bin2..tsv","file /data/sgg2/jenny/data/UKBB_processed/PHESANT\n/ukb22819/bin1/out_bin1..tsv","file /data/sgg2/jenny/data/UKBB_processed/PHESANT\n/ukb29336/bin1/out_bin1..tsv","file /data/sgg2/jenny/data/UKBB_processed/PHESANT\n/ukb21067/bin4/out_bin4..tsv","file /data/sgg2/jenny/data/UKBB_processed/PHESANT\n/ukb21653/bin1/out_bin1..tsv","file /data/sgg2/jenny/data/UKBB_processed/PHESANT\n/ukb21071/bin1/out_bin1..tsv","file /data/sgg2/jenny/data/UKBB_processed/PHESANT\n/ukb29354/bin1/out_bin1..tsv","file /data/sgg2/jenny/data/UKBB_processed/PHESANT\n/ukb21068/bin1/out_bin1..tsv","file /data/sgg2/jenny/data/UKBB_processed/PHESANT\n/ukb21071/bin2/out_bin2..tsv","file /data/sgg2/jenny/data/UKBB_processed/PHESANT\n/ukb28603/bin1/out_bin1..tsv","file /data/sgg2/jenny/data/UKBB_processed/PHESANT\n/ukb28604/bin1/out_bin1..tsv","file /data/sgg2/jenny/data/UKBB_processed/PHESANT\n/ukb21067/bin2/out_bin2..tsv","file /data/sgg2/jenny/data/UKBB_processed/PHESANT\n/ukb21067/bin3/out_bin3..tsv","file /data/sgg2/jenny/data/UKBB_raw//plink/_001_u\nkb_cal_chr9_v2.fam","file /data/sgg2/jenny/data/UKBB_processed//PHESAN\nT/PHESANT_file_directory.txt","file /data/sgg2/jenny/data/UKBB_raw/pheno/ukb3145\n9.csv","file /data/sgg2/jenny/data/UKBB_raw//pheno/ukb688\n1.csv","processx::run","file code/process_Neale.sh","household_intervals\n5.54s","time_at_address_field","file /data/sgg2/jenny/data/UKBB_processed//UKBB_p\nheno_directory.csv","Neale_manifest\n6.751s","filled_cats\n0.029s","sqc\n13.714s","relatives\n6.257s","Neale_SGG_dir_filt\n0.743s","pheno\n1.079s","household_relationships\n0.316s","phesant_files\n0.169s","fam\n0.75s","phesant_directory\n0.087s","time_at_household_raw\n0.516s","household_info\n0.57s","time_at_household\n0.52s","UKBB_directory\n0.332s","sqc_munge\n23.129s","hh_pairs\n0.923s","hh_pairs_kin\n505s (~8.42 minutes)","hh_pairs_filter\n0.77s","trait_corrs\n263s (~4.38 minutes)","model_adjustments\n16.097s","write_hh_pairs\n0.671s","write_traits_corr\n0.057s","traits_corr2\n0.115s","joint_model_adjustments\n8.872s","write_houshold1\n4.108s","write_houshold2\n4.165s","file analysis/data_setup/household_pairs.csv","file output/tables/1.household_correlations.csv","Neale_to_process\n26.414s","household_time\n43.323s","write_joint\n25.884s","file analysis/data_setup/HOUSEHOLD_MEMBER1_pheno_\nmodel_adjustments.csv","file analysis/data_setup/HOUSEHOLD_MEMBER2_pheno_\nmodel_adjustments.csv","write_download_list\n0.094s","write_define_cats\n0.1s","traits_corr2_filled\n12.633s","household_time_munge\n975s (~16.25 minutes)","file analysis/data_setup/JOINT_pheno_model_adjust\nments.csv","file analysis/download_Neale_list.csv","file output/tables/define_Neale_categories.csv","run_process_Neale\n0.991s","write_household_time\n2.141s","traits_corr2_update\n64s (~1.07 minutes)","file analysis/data_setup/household_time.csv","traits_to_count_IVs\n0.489s","IV_list\n143432.187s (~1.66 days) total\n(501 sub-targets)","IV_list_out\n9.175s","IV_summary\n847.971s (~14.13 minutes) total\n(501 sub-targets)","file analysis/data_setup/IV_lists/","traits_corr3\n1.063s","write_traits_corr2\n0.646s","traits_to_calc_het\n6.222s","variant_data_reduced\n341s (~5.68 minutes)","file output/tables/2.household_correlations.corr_\nfilter.csv","sex_het_summary\n118021.973s (~1.37 days) total\n(174 sub-targets)","traits_corr4\n46.311s","sex_het_out\n136s (~2.27 minutes)","IV_info_out\n47.505s","write_traits_corr3\n8.85s","write_traits_corr4\n12.321s","valid_GRS_summary\n117s (~1.95 minutes)","file analysis/data_setup/sex_heterogeneity/","file analysis/data_setup/IV_info/","file output/tables/3.household_correlations.numIV\ns_filter.csv","file output/tables/4.household_correlations.sexhe\nt_filter.csv","traits_corr5\n6.022s","write_traits_corr5\n0.823s","traits_corr6\n5.056s","file output/tables/5.household_correlations.baseG\nRS_filter.csv","write_traits_corr6\n58.558s","file output/tables/6.household_correlations.nonbi\nnary_filter.csv"],"status":["imported","imported","up to date","up to date","imported","imported","imported","up to date","imported","imported","imported","imported","imported","imported","imported","imported","imported","imported","imported","imported","imported","imported","imported","imported","imported","imported","imported","imported","imported","imported","imported","outdated","imported","imported","up to date","up to date","up to date","up to date","outdated","up to date","up to date","up to date","up to date","up to date","up to date","up to date","up to date","up to date","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated"],"type":["file","file","object","object","file","file","file","object","file","file","file","file","file","file","file","file","file","file","file","file","file","file","file","file","file","file","file","file","file","function","file","object","object","file","object","object","object","object","object","object","object","object","object","object","object","object","object","object","object","object","object","object","object","object","object","object","object","object","object","object","file","file","object","object","object","file","file","object","object","object","object","file","file","file","object","object","object","file","object","dynamic","object","dynamic","file","object","object","object","object","file","dynamic","object","object","object","object","object","object","file","file","file","file","object","object","object","file","object","file"],"font.size":[20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20],"color":["#1874CD","#1874CD","#228B22","#228B22","#1874CD","#1874CD","#1874CD","#228B22","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#000000","#1874CD","#1874CD","#228B22","#228B22","#228B22","#228B22","#000000","#228B22","#228B22","#228B22","#228B22","#228B22","#228B22","#228B22","#228B22","#228B22","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000"],"shape":["square","square","dot","dot","square","square","square","dot","square","square","square","square","square","square","square","square","square","square","square","square","square","square","square","square","square","square","square","square","square","triangle","square","dot","dot","square","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","square","square","dot","dot","dot","square","square","dot","dot","dot","dot","square","square","square","dot","dot","dot","square","dot","star","dot","star","square","dot","dot","dot","dot","square","star","dot","dot","dot","dot","dot","dot","square","square","square","square","dot","dot","dot","square","dot","square"],"level":[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,3,4,5,6,6,6,7,7,7,7,7,7,8,8,8,8,8,8,9,9,9,9,9,10,10,10,10,11,11,12,13,14,15,15,16,17,17,17,18,18,19,19,19,20,20,20,20,20,21,21,21,22,22,23,23,24],"x":[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-0.91304347826087,-0.91304347826087,-0.91304347826087,-0.91304347826087,-0.91304347826087,-0.91304347826087,-0.91304347826087,-0.91304347826087,-0.91304347826087,-0.91304347826087,-0.91304347826087,-0.91304347826087,-0.91304347826087,-0.91304347826087,-0.826086956521739,-0.826086956521739,-0.739130434782609,-0.652173913043478,-0.565217391304348,-0.565217391304348,-0.565217391304348,-0.478260869565217,-0.478260869565217,-0.478260869565217,-0.478260869565217,-0.478260869565217,-0.478260869565217,-0.391304347826087,-0.391304347826087,-0.391304347826087,-0.391304347826087,-0.391304347826087,-0.391304347826087,-0.304347826086957,-0.304347826086957,-0.304347826086957,-0.304347826086957,-0.304347826086957,-0.217391304347826,-0.217391304347826,-0.217391304347826,-0.217391304347826,-0.130434782608696,-0.130434782608696,-0.0434782608695652,0.0434782608695652,0.130434782608696,0.217391304347826,0.217391304347826,0.304347826086957,0.391304347826087,0.391304347826087,0.391304347826087,0.478260869565217,0.478260869565217,0.565217391304348,0.565217391304348,0.565217391304348,0.652173913043478,0.652173913043478,0.652173913043478,0.652173913043478,0.652173913043478,0.739130434782609,0.739130434782609,0.739130434782609,0.826086956521739,0.826086956521739,0.91304347826087,0.91304347826087,1],"y":[-1,-0.939393939393939,-0.878787878787879,-0.818181818181818,-0.757575757575758,-0.696969696969697,-0.636363636363636,-0.575757575757576,-0.515151515151515,-0.454545454545455,-0.393939393939394,-0.333333333333333,-0.272727272727273,-0.212121212121212,-0.151515151515152,-0.0909090909090909,-0.0303030303030303,0.0303030303030303,0.0909090909090908,0.151515151515151,0.212121212121212,0.272727272727273,0.333333333333333,0.393939393939394,0.454545454545455,0.515151515151515,0.575757575757576,0.636363636363636,0.696969696969697,0.757575757575758,0.818181818181818,0.878787878787879,0.939393939393939,1,-0.919191919191919,-0.777777777777778,-0.636363636363636,-0.494949494949495,-0.353535353535354,-0.212121212121212,-0.0707070707070707,0.0707070707070707,0.212121212121212,0.353535353535353,0.494949494949495,0.636363636363636,0.777777777777778,0.919191919191919,-0.353535353535354,0.353535353535353,0,0,-0.53030303030303,0,0.53030303030303,-0.757575757575758,-0.454545454545455,-0.151515151515152,0.151515151515151,0.454545454545454,0.757575757575758,-0.757575757575758,-0.454545454545455,-0.151515151515152,0.151515151515151,0.454545454545454,0.757575757575758,-0.707070707070707,-0.353535353535354,0,0.353535353535353,0.707070707070707,-0.636363636363636,-0.212121212121212,0.212121212121212,0.636363636363636,-0.353535353535354,0.353535353535353,0,0,0,-0.353535353535354,0.353535353535353,0,-0.53030303030303,0,0.53030303030303,-0.353535353535354,0.353535353535353,-0.53030303030303,0,0.53030303030303,-0.707070707070707,-0.353535353535354,0,0.353535353535353,0.707070707070707,-0.53030303030303,0,0.53030303030303,-0.353535353535354,0.353535353535353,-0.353535353535354,0.353535353535353,0]},"edges":{"from":["p-F5SGC5DBF5ZWOZZTF5SGC5DBF5XGKYLMMVPWM2LMMVZS6VKLIJBCAR2XIFJSASLNOB2XIZLEEB3DGLRSEAWSARTJNRSSATLBNZUWMZLTOQQFEZLMMVQXGZJAGIYDCOBQG4ZTCIBNEBGWC3TJMZSXG5BAGIYDCOBQG4XHI43W","p-F5SGC5DBF5ZWOZZTF5SGC5DBF5XGKYLMMVPWM2LMMVZS6VKLIJBCAR2XIFJSASLNOB2XIZLEEB3DGLRSEAWSARTJNRSSATLBNZUWMZLTOQQFEZLMMVQXGZJAGIYDCOBQG4ZTCIBNEBGWC3TJMZSXG5BAGIYDCOBQG4XHI43W","traits_corr3","traits_corr3","traits_corr3","traits_corr3","traits_corr3","traits_corr3","traits_corr3","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXU4ZLBNRSV6VKLIJBF6R2XIFJS6L3WMFZGSYLOORZS45DTOY","traits_to_count_IVs","traits_to_count_IVs","traits_to_count_IVs","traits_corr2_update","traits_corr2_update","traits_corr2_update","traits_corr2_update","traits_corr2_update","Neale_manifest","Neale_manifest","Neale_manifest","Neale_manifest","clump_dir","IV_list","IV_list_out","IV_list_out","write_traits_corr2","traits_corr4","traits_corr4","traits_corr4","traits_corr4","write_traits_corr3","Neale_files_dir","write_traits_corr4","traits_corr5","traits_corr5","write_traits_corr5","traits_corr6","write_traits_corr6","Neale_to_process","Neale_to_process","Neale_to_process","write_download_list","fam","sqc","p-N52XI4DVOQXXIYLCNRSXGL3EMVTGS3TFL5HGKYLMMVPWGYLUMVTW64TJMVZV6ZTJNRWGKZBOMNZXM","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXEYLXF4XWOZLON4XXK23CL5ZXCY27OYZC45DYOQ","write_define_cats","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXEYLXF4XWOZLON4XXK23CGE3DGOC7OJSWYX3TGQ4DQMZWGYXGIYLU","sex_het_summary","sex_het_summary","sex_het_summary","traits_to_calc_het","traits_to_calc_het","traits_to_calc_het","traits_to_calc_het","sex_het_out","Neale_SGG_dir","Neale_SGG_dir","hh_pairs_filter","hh_pairs_filter","hh_pairs_filter","phesant_files","UKBB_directory","phesant_directory","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3DOL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3DOL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3TAL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMZRGQ2TSL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMZRGQ2TSL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3DOL3CNFXDKL3POV2F6YTJNY2S4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3TAL3CNFXDEL3POV2F6YTJNYZC4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRSHAYTSL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRZGMZTML3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3DOL3CNFXDIL3POV2F6YTJNY2C4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGY2TGL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3TCL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRZGM2TIL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3DQL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3DQL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3TCL3CNFXDEL3POV2F6YTJNYZC4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRYGYYDGL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRYGYYDIL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3DOL3CNFXDEL3POV2F6YTJNYZC4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3DOL3CNFXDGL3POV2F6YTJNYZS4LTUON3A","trait_corrs","trait_corrs","write_traits_corr","household_time_munge","write_household_time","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXEYLXF4XXA3DJNZVS6XZQGAYV65LLMJPWGYLML5RWQ4RZL53DELTGMFWQ","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXS6UCIIVJUCTSUF5IEQRKTIFHFIX3GNFWGKX3ENFZGKY3UN5ZHSLTUPB2A","filled_cats","traits_corr2","traits_corr2","pheno","sqc_munge","Neale_SGG_dir_filt","IV_summary","valid_GRS_summary","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXEYLXF5YGQZLON4XXK23CGMYTINJZFZRXG5Q","household_info","joint_model_adjustments","joint_model_adjustments","joint_model_adjustments","time_at_household","time_at_household_raw","household_time","write_joint","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXEYLXF4XXA2DFNZXS65LLMI3DQOBRFZRXG5Q","traits_corr2_filled","traits_corr2_filled","n-OBZG6Y3FONZXQOR2OJ2W4","p-MNXWIZJPOBZG6Y3FONZV6TTFMFWGKLTTNA","IV_info_out","model_adjustments","model_adjustments","model_adjustments","relatives","hh_pairs","write_hh_pairs","write_houshold1","write_houshold2","household_relationships","hh_pairs_kin","run_process_Neale","variant_data_reduced","time_at_address_field","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXS6VKLIJBF64DIMVXG6X3ENFZGKY3UN5ZHSLTDON3A"],"to":["Neale_manifest","traits_corr2_filled","write_traits_corr2","traits_corr4","sex_het_summary","traits_to_calc_het","sex_het_out","IV_info_out","variant_data_reduced","variant_data_reduced","IV_list","IV_list_out","IV_summary","traits_corr3","traits_to_count_IVs","IV_list","IV_list_out","IV_summary","IV_list","sex_het_summary","IV_summary","valid_GRS_summary","IV_list","IV_list_out","IV_summary","p-MFXGC3DZONUXGL3EMF2GCX3TMV2HK4BPJFLF63DJON2HGLY","p-N52XI4DVOQXXIYLCNRSXGLZSFZUG65LTMVUG63DEL5RW64TSMVWGC5DJN5XHGLTDN5ZHEX3GNFWHIZLSFZRXG5Q","write_traits_corr3","write_traits_corr4","traits_corr5","valid_GRS_summary","p-N52XI4DVOQXXIYLCNRSXGLZTFZUG65LTMVUG63DEL5RW64TSMVWGC5DJN5XHGLTOOVWUSVTTL5TGS3DUMVZC4Y3TOY","IV_summary","p-N52XI4DVOQXXIYLCNRSXGLZUFZUG65LTMVUG63DEL5RW64TSMVWGC5DJN5XHGLTTMV4GQZLUL5TGS3DUMVZC4Y3TOY","write_traits_corr5","traits_corr6","p-N52XI4DVOQXXIYLCNRSXGLZVFZUG65LTMVUG63DEL5RW64TSMVWGC5DJN5XHGLTCMFZWKR2SKNPWM2LMORSXELTDON3A","write_traits_corr6","p-N52XI4DVOQXXIYLCNRSXGLZWFZUG65LTMVUG63DEL5RW64TSMVWGC5DJN5XHGLTON5XGE2LOMFZHSX3GNFWHIZLSFZRXG5Q","write_download_list","write_define_cats","traits_corr2_filled","p-MFXGC3DZONUXGL3EN53W43DPMFSF6TTFMFWGKX3MNFZXILTDON3A","sqc_munge","sqc_munge","filled_cats","sqc","p-N52XI4DVOQXXIYLCNRSXGL3EMVTGS3TFL5HGKYLMMVPWGYLUMVTW64TJMVZS4Y3TOY","relatives","traits_corr4","sex_het_out","IV_info_out","traits_corr4","sex_het_summary","sex_het_out","IV_info_out","p-MFXGC3DZONUXGL3EMF2GCX3TMV2HK4BPONSXQX3IMV2GK4TPM5SW4ZLJOR4S6","traits_corr2_update","Neale_SGG_dir_filt","trait_corrs","model_adjustments","write_hh_pairs","trait_corrs","trait_corrs","trait_corrs","phesant_files","pheno","phesant_files","phesant_files","time_at_household","phesant_files","phesant_files","phesant_files","phesant_files","phesant_files","phesant_files","phesant_files","phesant_files","phesant_files","household_relationships","phesant_files","phesant_files","phesant_files","phesant_files","phesant_files","write_traits_corr","traits_corr2","p-N52XI4DVOQXXIYLCNRSXGLZRFZUG65LTMVUG63DEL5RW64TSMVWGC5DJN5XHGLTDON3A","write_household_time","p-MFXGC3DZONUXGL3EMF2GCX3TMV2HK4BPNBXXK43FNBXWYZC7ORUW2ZJOMNZXM","fam","phesant_directory","traits_corr2_filled","Neale_to_process","traits_corr2_filled","model_adjustments","model_adjustments","traits_corr2","traits_corr3","traits_corr5","time_at_household_raw","hh_pairs","household_time_munge","household_time","write_joint","household_time","household_time","household_time_munge","p-MFXGC3DZONUXGL3EMF2GCX3TMV2HK4BPJJHUSTSUL5YGQZLON5PW233EMVWF6YLENJ2XG5DNMVXHI4ZOMNZXM","household_info","traits_corr2_update","run_process_Neale","run_process_Neale","run_process_Neale","p-MFXGC3DZONUXGL3EMF2GCX3TMV2HK4BPJFLF62LOMZXS6","joint_model_adjustments","write_houshold1","write_houshold2","hh_pairs_kin","hh_pairs_kin","p-MFXGC3DZONUXGL3EMF2GCX3TMV2HK4BPNBXXK43FNBXWYZC7OBQWS4TTFZRXG5Q","p-MFXGC3DZONUXGL3EMF2GCX3TMV2HK4BPJBHVKU2FJBHUYRC7JVCU2QSFKIYV64DIMVXG6X3NN5SGK3C7MFSGU5LTORWWK3TUOMXGG43W","p-MFXGC3DZONUXGL3EMF2GCX3TMV2HK4BPJBHVKU2FJBHUYRC7JVCU2QSFKIZF64DIMVXG6X3NN5SGK3C7MFSGU5LTORWWK3TUOMXGG43W","hh_pairs_filter","hh_pairs_filter","traits_corr2_update","sex_het_summary","time_at_household","UKBB_directory"],"arrows":["to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to"]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"dot","physics":false},"manipulation":{"enabled":false},"interaction":{"navigationButtons":true},"edges":{"smooth":false},"physics":{"stabilization":false}},"groups":null,"width":null,"height":null,"idselection":{"enabled":false,"style":"width: 150px; height: 26px","useLabels":true,"main":"Select by id"},"byselection":{"enabled":false,"style":"width: 150px; height: 26px","multiple":false,"hideColor":"rgba(200,200,200,0.5)","highlight":false},"main":{"text":"Dependency graph","style":"font-family:Georgia, Times New Roman, Times, serif;font-weight:bold;font-size:20px;text-align:center;"},"submain":null,"footer":null,"background":"rgba(0, 0, 0, 0)","highlight":{"enabled":false,"hoverNearest":false,"degree":1,"algorithm":"all","hideColor":"rgba(200,200,200,0.5)","labelOnly":true},"collapse":{"enabled":true,"fit":false,"resetHighlight":true,"clusterOptions":null,"keepCoord":true,"labelSuffix":"(cluster)"},"legend":{"width":0.2,"useGroups":false,"position":"left","ncol":1,"stepX":100,"stepY":100,"zoom":true,"nodes":{"label":["Up to date","Outdated","Imported","Object","Dynamic","Function","File"],"color":["#228B22","#000000","#1874CD","#888888","#888888","#888888","#888888"],"shape":["dot","dot","dot","dot","star","triangle","square"],"font.color":["black","black","black","black","black","black","black"],"font.size":[20,20,20,20,20,20,20],"id":[1,2,6,8,9,10,11]},"nodesToDataframe":true},"tooltipStay":300,"tooltipStyle":"position: fixed;visibility:hidden;padding: 5px;white-space: nowrap;font-family: verdana;font-size:14px;font-color:#000000;background-color: #f5f4ed;-moz-border-radius: 3px;-webkit-border-radius: 3px;border-radius: 3px;border: 1px solid #808074;box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);","igraphlayout":{"type":"square"}},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>vis_drake_graph(pre_pipeline, make_imports = FALSE)</code></pre>
+<div id="htmlwidget-ac00066e7f6365b7f0d3" style="width:672px;height:480px;" class="visNetwork html-widget"></div>
+<script type="application/json" data-for="htmlwidget-ac00066e7f6365b7f0d3">{"x":{"nodes":{"id":["p-F5SGC5DBF5ZWOZZTF5SGC5DBF5XGKYLMMVPWM2LMMVZS6VKLIJBCAR2XIFJSASLNOB2XIZLEEB3DGLRSEAWSARTJNRSSATLBNZUWMZLTOQQFEZLMMVQXGZJAGIYDCOBQG4ZTCIBNEBGWC3TJMZSXG5BAGIYDCOBQG4XHI43W","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXU4ZLBNRSV6VKLIJBF6R2XIFJS6L3WMFZGSYLOORZS45DTOY","clump_dir","Neale_files_dir","p-N52XI4DVOQXXIYLCNRSXGL3EMVTGS3TFL5HGKYLMMVPWGYLUMVTW64TJMVZV6ZTJNRWGKZBOMNZXM","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXEYLXF4XWOZLON4XXK23CL5ZXCY27OYZC45DYOQ","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXEYLXF4XWOZLON4XXK23CGE3DGOC7OJSWYX3TGQ4DQMZWGYXGIYLU","Neale_SGG_dir","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3DOL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3TAL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMZRGQ2TSL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3DOL3CNFXDKL3POV2F6YTJNY2S4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3TAL3CNFXDEL3POV2F6YTJNYZC4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRSHAYTSL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRZGMZTML3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3DOL3CNFXDIL3POV2F6YTJNY2C4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGY2TGL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3TCL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRZGM2TIL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3DQL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3TCL3CNFXDEL3POV2F6YTJNYZC4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRYGYYDGL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRYGYYDIL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3DOL3CNFXDEL3POV2F6YTJNYZC4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3DOL3CNFXDGL3POV2F6YTJNYZS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXEYLXF4XXA3DJNZVS6XZQGAYV65LLMJPWGYLML5RWQ4RZL53DELTGMFWQ","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXS6UCIIVJUCTSUF5IEQRKTIFHFIX3GNFWGKX3ENFZGKY3UN5ZHSLTUPB2A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXEYLXF5YGQZLON4XXK23CGMYTINJZFZRXG5Q","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXEYLXF4XXA2DFNZXS65LLMI3DQOBRFZRXG5Q","n-OBZG6Y3FONZXQOR2OJ2W4","p-MNXWIZJPOBZG6Y3FONZV6TTFMFWGKLTTNA","household_intervals","time_at_address_field","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXS6VKLIJBF64DIMVXG6X3ENFZGKY3UN5ZHSLTDON3A","Neale_manifest","filled_cats","sqc","relatives","Neale_SGG_dir_filt","pheno","household_relationships","phesant_files","fam","phesant_directory","time_at_household_raw","household_info","time_at_household","UKBB_directory","sqc_munge","hh_pairs","hh_pairs_kin","hh_pairs_filter","trait_corrs","model_adjustments","write_hh_pairs","write_traits_corr","traits_corr2","joint_model_adjustments","write_houshold1","write_houshold2","p-MFXGC3DZONUXGL3EMF2GCX3TMV2HK4BPNBXXK43FNBXWYZC7OBQWS4TTFZRXG5Q","p-N52XI4DVOQXXIYLCNRSXGLZRFZUG65LTMVUG63DEL5RW64TSMVWGC5DJN5XHGLTDON3A","Neale_to_process","household_time","write_joint","p-MFXGC3DZONUXGL3EMF2GCX3TMV2HK4BPJBHVKU2FJBHUYRC7JVCU2QSFKIYV64DIMVXG6X3NN5SGK3C7MFSGU5LTORWWK3TUOMXGG43W","p-MFXGC3DZONUXGL3EMF2GCX3TMV2HK4BPJBHVKU2FJBHUYRC7JVCU2QSFKIZF64DIMVXG6X3NN5SGK3C7MFSGU5LTORWWK3TUOMXGG43W","write_download_list","write_define_cats","traits_corr2_filled","household_time_munge","p-MFXGC3DZONUXGL3EMF2GCX3TMV2HK4BPJJHUSTSUL5YGQZLON5PW233EMVWF6YLENJ2XG5DNMVXHI4ZOMNZXM","p-MFXGC3DZONUXGL3EN53W43DPMFSF6TTFMFWGKX3MNFZXILTDON3A","p-N52XI4DVOQXXIYLCNRSXGL3EMVTGS3TFL5HGKYLMMVPWGYLUMVTW64TJMVZS4Y3TOY","run_process_Neale","write_household_time","traits_corr2_update","p-MFXGC3DZONUXGL3EMF2GCX3TMV2HK4BPNBXXK43FNBXWYZC7ORUW2ZJOMNZXM","traits_to_count_IVs","IV_list","IV_list_out","IV_summary","p-MFXGC3DZONUXGL3EMF2GCX3TMV2HK4BPJFLF63DJON2HGLY","traits_corr3","write_traits_corr2","traits_to_calc_het","variant_data_reduced","p-N52XI4DVOQXXIYLCNRSXGLZSFZUG65LTMVUG63DEL5RW64TSMVWGC5DJN5XHGLTDN5ZHEX3GNFWHIZLSFZRXG5Q","sex_het_summary","traits_corr4","sex_het_out","IV_info_out","write_traits_corr3","write_traits_corr4","valid_GRS_summary","p-MFXGC3DZONUXGL3EMF2GCX3TMV2HK4BPONSXQX3IMV2GK4TPM5SW4ZLJOR4S6","p-MFXGC3DZONUXGL3EMF2GCX3TMV2HK4BPJFLF62LOMZXS6","p-N52XI4DVOQXXIYLCNRSXGLZTFZUG65LTMVUG63DEL5RW64TSMVWGC5DJN5XHGLTOOVWUSVTTL5TGS3DUMVZC4Y3TOY","p-N52XI4DVOQXXIYLCNRSXGLZUFZUG65LTMVUG63DEL5RW64TSMVWGC5DJN5XHGLTTMV4GQZLUL5TGS3DUMVZC4Y3TOY","traits_corr5","write_traits_corr5","traits_corr6","p-N52XI4DVOQXXIYLCNRSXGLZVFZUG65LTMVUG63DEL5RW64TSMVWGC5DJN5XHGLTCMFZWKR2SKNPWM2LMORSXELTDON3A","write_traits_corr6","p-N52XI4DVOQXXIYLCNRSXGLZWFZUG65LTMVUG63DEL5RW64TSMVWGC5DJN5XHGLTON5XGE2LOMFZHSX3GNFWHIZLSFZRXG5Q"],"imported":[true,true,false,false,true,true,true,false,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"label":["file /data/sgg3/data/neale_files/UKBB GWAS Impute\nd v3.2 - File Manifest Release 20180731 - Manifes\nt 201807.tsv","file /data/sgg2/jenny/data/Neale_UKBB_GWAS//varia\nnts.tsv","clump_dir\n19.341s","Neale_files_dir\n6.467s","file output/tables/define_Neale_categories_filled\n.csv","file /data/sgg2/jenny/data/UKBB_raw//geno/ukb_sqc\n_v2.txt","file /data/sgg2/jenny/data/UKBB_raw//geno/ukb1638\n_rel_s488366.dat","Neale_SGG_dir\n15.314s","file /data/sgg2/jenny/data/UKBB_processed/PHESANT\n/ukb21067/bin1/out_bin1..tsv","file /data/sgg2/jenny/data/UKBB_processed/PHESANT\n/ukb21070/bin1/out_bin1..tsv","file /data/sgg2/jenny/data/UKBB_processed/PHESANT\n/ukb31459/bin1/out_bin1..tsv","file /data/sgg2/jenny/data/UKBB_processed/PHESANT\n/ukb21067/bin5/out_bin5..tsv","file /data/sgg2/jenny/data/UKBB_processed/PHESANT\n/ukb21070/bin2/out_bin2..tsv","file /data/sgg2/jenny/data/UKBB_processed/PHESANT\n/ukb22819/bin1/out_bin1..tsv","file /data/sgg2/jenny/data/UKBB_processed/PHESANT\n/ukb29336/bin1/out_bin1..tsv","file /data/sgg2/jenny/data/UKBB_processed/PHESANT\n/ukb21067/bin4/out_bin4..tsv","file /data/sgg2/jenny/data/UKBB_processed/PHESANT\n/ukb21653/bin1/out_bin1..tsv","file /data/sgg2/jenny/data/UKBB_processed/PHESANT\n/ukb21071/bin1/out_bin1..tsv","file /data/sgg2/jenny/data/UKBB_processed/PHESANT\n/ukb29354/bin1/out_bin1..tsv","file /data/sgg2/jenny/data/UKBB_processed/PHESANT\n/ukb21068/bin1/out_bin1..tsv","file /data/sgg2/jenny/data/UKBB_processed/PHESANT\n/ukb21071/bin2/out_bin2..tsv","file /data/sgg2/jenny/data/UKBB_processed/PHESANT\n/ukb28603/bin1/out_bin1..tsv","file /data/sgg2/jenny/data/UKBB_processed/PHESANT\n/ukb28604/bin1/out_bin1..tsv","file /data/sgg2/jenny/data/UKBB_processed/PHESANT\n/ukb21067/bin2/out_bin2..tsv","file /data/sgg2/jenny/data/UKBB_processed/PHESANT\n/ukb21067/bin3/out_bin3..tsv","file /data/sgg2/jenny/data/UKBB_raw//plink/_001_u\nkb_cal_chr9_v2.fam","file /data/sgg2/jenny/data/UKBB_processed//PHESAN\nT/PHESANT_file_directory.txt","file /data/sgg2/jenny/data/UKBB_raw/pheno/ukb3145\n9.csv","file /data/sgg2/jenny/data/UKBB_raw//pheno/ukb688\n1.csv","processx::run","file code/process_Neale.sh","household_intervals\n5.54s","time_at_address_field","file /data/sgg2/jenny/data/UKBB_processed//UKBB_p\nheno_directory.csv","Neale_manifest\n6.751s","filled_cats\n0.029s","sqc\n13.714s","relatives\n6.257s","Neale_SGG_dir_filt\n0.743s","pheno\n1.079s","household_relationships\n0.316s","phesant_files\n0.169s","fam\n0.75s","phesant_directory\n0.087s","time_at_household_raw\n0.516s","household_info\n0.57s","time_at_household\n0.52s","UKBB_directory\n0.332s","sqc_munge\n23.129s","hh_pairs\n0.923s","hh_pairs_kin\n505s (~8.42 minutes)","hh_pairs_filter\n0.77s","trait_corrs\n263s (~4.38 minutes)","model_adjustments\n16.097s","write_hh_pairs\n0.671s","write_traits_corr\n0.057s","traits_corr2\n0.115s","joint_model_adjustments\n8.872s","write_houshold1\n4.108s","write_houshold2\n4.165s","file analysis/data_setup/household_pairs.csv","file output/tables/1.household_correlations.csv","Neale_to_process\n26.414s","household_time\n43.323s","write_joint\n25.884s","file analysis/data_setup/HOUSEHOLD_MEMBER1_pheno_\nmodel_adjustments.csv","file analysis/data_setup/HOUSEHOLD_MEMBER2_pheno_\nmodel_adjustments.csv","write_download_list\n0.094s","write_define_cats\n0.1s","traits_corr2_filled\n12.633s","household_time_munge\n975s (~16.25 minutes)","file analysis/data_setup/JOINT_pheno_model_adjust\nments.csv","file analysis/download_Neale_list.csv","file output/tables/define_Neale_categories.csv","run_process_Neale\n0.991s","write_household_time\n2.141s","traits_corr2_update\n64s (~1.07 minutes)","file analysis/data_setup/household_time.csv","traits_to_count_IVs\n0.489s","IV_list\n143432.187s (~1.66 days) total\n(501 sub-targets)","IV_list_out\n9.175s","IV_summary\n847.971s (~14.13 minutes) total\n(501 sub-targets)","file analysis/data_setup/IV_lists/","traits_corr3\n1.063s","write_traits_corr2\n0.646s","traits_to_calc_het\n6.222s","variant_data_reduced\n341s (~5.68 minutes)","file output/tables/2.household_correlations.corr_\nfilter.csv","sex_het_summary\n118021.973s (~1.37 days) total\n(174 sub-targets)","traits_corr4\n46.311s","sex_het_out\n136s (~2.27 minutes)","IV_info_out\n47.505s","write_traits_corr3\n8.85s","write_traits_corr4\n12.321s","valid_GRS_summary\n117s (~1.95 minutes)","file analysis/data_setup/sex_heterogeneity/","file analysis/data_setup/IV_info/","file output/tables/3.household_correlations.numIV\ns_filter.csv","file output/tables/4.household_correlations.sexhe\nt_filter.csv","traits_corr5\n6.022s","write_traits_corr5\n0.823s","traits_corr6\n5.056s","file output/tables/5.household_correlations.baseG\nRS_filter.csv","write_traits_corr6\n58.558s","file output/tables/6.household_correlations.nonbi\nnary_filter.csv"],"status":["imported","imported","up to date","up to date","imported","imported","imported","up to date","imported","imported","imported","imported","imported","imported","imported","imported","imported","imported","imported","imported","imported","imported","imported","imported","imported","imported","imported","imported","imported","imported","imported","outdated","imported","imported","up to date","up to date","up to date","up to date","outdated","up to date","up to date","up to date","up to date","up to date","up to date","up to date","up to date","up to date","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated","outdated"],"type":["file","file","object","object","file","file","file","object","file","file","file","file","file","file","file","file","file","file","file","file","file","file","file","file","file","file","file","file","file","function","file","object","object","file","object","object","object","object","object","object","object","object","object","object","object","object","object","object","object","object","object","object","object","object","object","object","object","object","object","object","file","file","object","object","object","file","file","object","object","object","object","file","file","file","object","object","object","file","object","dynamic","object","dynamic","file","object","object","object","object","file","dynamic","object","object","object","object","object","object","file","file","file","file","object","object","object","file","object","file"],"font.size":[20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20],"color":["#1874CD","#1874CD","#228B22","#228B22","#1874CD","#1874CD","#1874CD","#228B22","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#1874CD","#000000","#1874CD","#1874CD","#228B22","#228B22","#228B22","#228B22","#000000","#228B22","#228B22","#228B22","#228B22","#228B22","#228B22","#228B22","#228B22","#228B22","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000","#000000"],"shape":["square","square","dot","dot","square","square","square","dot","square","square","square","square","square","square","square","square","square","square","square","square","square","square","square","square","square","square","square","square","square","triangle","square","dot","dot","square","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","dot","square","square","dot","dot","dot","square","square","dot","dot","dot","dot","square","square","square","dot","dot","dot","square","dot","star","dot","star","square","dot","dot","dot","dot","square","star","dot","dot","dot","dot","dot","dot","square","square","square","square","dot","dot","dot","square","dot","square"],"level":[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,3,4,5,6,6,6,7,7,7,7,7,7,8,8,8,8,8,8,9,9,9,9,9,10,10,10,10,11,11,12,13,14,15,15,16,17,17,17,18,18,19,19,19,20,20,20,20,20,21,21,21,22,22,23,23,24],"x":[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-0.91304347826087,-0.91304347826087,-0.91304347826087,-0.91304347826087,-0.91304347826087,-0.91304347826087,-0.91304347826087,-0.91304347826087,-0.91304347826087,-0.91304347826087,-0.91304347826087,-0.91304347826087,-0.91304347826087,-0.91304347826087,-0.826086956521739,-0.826086956521739,-0.739130434782609,-0.652173913043478,-0.565217391304348,-0.565217391304348,-0.565217391304348,-0.478260869565217,-0.478260869565217,-0.478260869565217,-0.478260869565217,-0.478260869565217,-0.478260869565217,-0.391304347826087,-0.391304347826087,-0.391304347826087,-0.391304347826087,-0.391304347826087,-0.391304347826087,-0.304347826086957,-0.304347826086957,-0.304347826086957,-0.304347826086957,-0.304347826086957,-0.217391304347826,-0.217391304347826,-0.217391304347826,-0.217391304347826,-0.130434782608696,-0.130434782608696,-0.0434782608695652,0.0434782608695652,0.130434782608696,0.217391304347826,0.217391304347826,0.304347826086957,0.391304347826087,0.391304347826087,0.391304347826087,0.478260869565217,0.478260869565217,0.565217391304348,0.565217391304348,0.565217391304348,0.652173913043478,0.652173913043478,0.652173913043478,0.652173913043478,0.652173913043478,0.739130434782609,0.739130434782609,0.739130434782609,0.826086956521739,0.826086956521739,0.91304347826087,0.91304347826087,1],"y":[-1,-0.939393939393939,-0.878787878787879,-0.818181818181818,-0.757575757575758,-0.696969696969697,-0.636363636363636,-0.575757575757576,-0.515151515151515,-0.454545454545455,-0.393939393939394,-0.333333333333333,-0.272727272727273,-0.212121212121212,-0.151515151515152,-0.0909090909090909,-0.0303030303030303,0.0303030303030303,0.0909090909090908,0.151515151515151,0.212121212121212,0.272727272727273,0.333333333333333,0.393939393939394,0.454545454545455,0.515151515151515,0.575757575757576,0.636363636363636,0.696969696969697,0.757575757575758,0.818181818181818,0.878787878787879,0.939393939393939,1,-0.919191919191919,-0.777777777777778,-0.636363636363636,-0.494949494949495,-0.353535353535354,-0.212121212121212,-0.0707070707070707,0.0707070707070707,0.212121212121212,0.353535353535353,0.494949494949495,0.636363636363636,0.777777777777778,0.919191919191919,-0.353535353535354,0.353535353535353,0,0,-0.53030303030303,0,0.53030303030303,-0.757575757575758,-0.454545454545455,-0.151515151515152,0.151515151515151,0.454545454545454,0.757575757575758,-0.757575757575758,-0.454545454545455,-0.151515151515152,0.151515151515151,0.454545454545454,0.757575757575758,-0.707070707070707,-0.353535353535354,0,0.353535353535353,0.707070707070707,-0.636363636363636,-0.212121212121212,0.212121212121212,0.636363636363636,-0.353535353535354,0.353535353535353,0,0,0,-0.353535353535354,0.353535353535353,0,-0.53030303030303,0,0.53030303030303,-0.353535353535354,0.353535353535353,-0.53030303030303,0,0.53030303030303,-0.707070707070707,-0.353535353535354,0,0.353535353535353,0.707070707070707,-0.53030303030303,0,0.53030303030303,-0.353535353535354,0.353535353535353,-0.353535353535354,0.353535353535353,0]},"edges":{"from":["p-F5SGC5DBF5ZWOZZTF5SGC5DBF5XGKYLMMVPWM2LMMVZS6VKLIJBCAR2XIFJSASLNOB2XIZLEEB3DGLRSEAWSARTJNRSSATLBNZUWMZLTOQQFEZLMMVQXGZJAGIYDCOBQG4ZTCIBNEBGWC3TJMZSXG5BAGIYDCOBQG4XHI43W","p-F5SGC5DBF5ZWOZZTF5SGC5DBF5XGKYLMMVPWM2LMMVZS6VKLIJBCAR2XIFJSASLNOB2XIZLEEB3DGLRSEAWSARTJNRSSATLBNZUWMZLTOQQFEZLMMVQXGZJAGIYDCOBQG4ZTCIBNEBGWC3TJMZSXG5BAGIYDCOBQG4XHI43W","traits_corr3","traits_corr3","traits_corr3","traits_corr3","traits_corr3","traits_corr3","traits_corr3","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXU4ZLBNRSV6VKLIJBF6R2XIFJS6L3WMFZGSYLOORZS45DTOY","traits_to_count_IVs","traits_to_count_IVs","traits_to_count_IVs","traits_corr2_update","traits_corr2_update","traits_corr2_update","traits_corr2_update","traits_corr2_update","Neale_manifest","Neale_manifest","Neale_manifest","Neale_manifest","clump_dir","IV_list","IV_list_out","IV_list_out","write_traits_corr2","traits_corr4","traits_corr4","traits_corr4","traits_corr4","write_traits_corr3","Neale_files_dir","write_traits_corr4","traits_corr5","traits_corr5","write_traits_corr5","traits_corr6","write_traits_corr6","Neale_to_process","Neale_to_process","Neale_to_process","write_download_list","fam","sqc","p-N52XI4DVOQXXIYLCNRSXGL3EMVTGS3TFL5HGKYLMMVPWGYLUMVTW64TJMVZV6ZTJNRWGKZBOMNZXM","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXEYLXF4XWOZLON4XXK23CL5ZXCY27OYZC45DYOQ","write_define_cats","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXEYLXF4XWOZLON4XXK23CGE3DGOC7OJSWYX3TGQ4DQMZWGYXGIYLU","sex_het_summary","sex_het_summary","sex_het_summary","traits_to_calc_het","traits_to_calc_het","traits_to_calc_het","traits_to_calc_het","sex_het_out","Neale_SGG_dir","Neale_SGG_dir","hh_pairs_filter","hh_pairs_filter","hh_pairs_filter","phesant_files","UKBB_directory","phesant_directory","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3DOL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3DOL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3TAL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMZRGQ2TSL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMZRGQ2TSL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3DOL3CNFXDKL3POV2F6YTJNY2S4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3TAL3CNFXDEL3POV2F6YTJNYZC4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRSHAYTSL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRZGMZTML3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3DOL3CNFXDIL3POV2F6YTJNY2C4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGY2TGL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3TCL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRZGM2TIL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3DQL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3DQL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3TCL3CNFXDEL3POV2F6YTJNYZC4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRYGYYDGL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRYGYYDIL3CNFXDCL3POV2F6YTJNYYS4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3DOL3CNFXDEL3POV2F6YTJNYZC4LTUON3A","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXVASCFKNAU4VBPOVVWEMRRGA3DOL3CNFXDGL3POV2F6YTJNYZS4LTUON3A","trait_corrs","trait_corrs","write_traits_corr","household_time_munge","write_household_time","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXEYLXF4XXA3DJNZVS6XZQGAYV65LLMJPWGYLML5RWQ4RZL53DELTGMFWQ","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXS6UCIIVJUCTSUF5IEQRKTIFHFIX3GNFWGKX3ENFZGKY3UN5ZHSLTUPB2A","filled_cats","traits_corr2","traits_corr2","pheno","sqc_munge","Neale_SGG_dir_filt","IV_summary","valid_GRS_summary","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXEYLXF5YGQZLON4XXK23CGMYTINJZFZRXG5Q","household_info","joint_model_adjustments","joint_model_adjustments","joint_model_adjustments","time_at_household","time_at_household_raw","household_time","write_joint","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXEYLXF4XXA2DFNZXS65LLMI3DQOBRFZRXG5Q","traits_corr2_filled","traits_corr2_filled","n-OBZG6Y3FONZXQOR2OJ2W4","p-MNXWIZJPOBZG6Y3FONZV6TTFMFWGKLTTNA","IV_info_out","model_adjustments","model_adjustments","model_adjustments","relatives","hh_pairs","write_hh_pairs","write_houshold1","write_houshold2","household_relationships","hh_pairs_kin","run_process_Neale","variant_data_reduced","time_at_address_field","p-F5SGC5DBF5ZWOZZSF5VGK3TOPEXWIYLUMEXVKS2CIJPXA4TPMNSXG43FMQXS6VKLIJBF64DIMVXG6X3ENFZGKY3UN5ZHSLTDON3A"],"to":["Neale_manifest","traits_corr2_filled","write_traits_corr2","traits_corr4","sex_het_summary","traits_to_calc_het","sex_het_out","IV_info_out","variant_data_reduced","variant_data_reduced","IV_list","IV_list_out","IV_summary","traits_corr3","traits_to_count_IVs","IV_list","IV_list_out","IV_summary","IV_list","sex_het_summary","IV_summary","valid_GRS_summary","IV_list","IV_list_out","IV_summary","p-MFXGC3DZONUXGL3EMF2GCX3TMV2HK4BPJFLF63DJON2HGLY","p-N52XI4DVOQXXIYLCNRSXGLZSFZUG65LTMVUG63DEL5RW64TSMVWGC5DJN5XHGLTDN5ZHEX3GNFWHIZLSFZRXG5Q","write_traits_corr3","write_traits_corr4","traits_corr5","valid_GRS_summary","p-N52XI4DVOQXXIYLCNRSXGLZTFZUG65LTMVUG63DEL5RW64TSMVWGC5DJN5XHGLTOOVWUSVTTL5TGS3DUMVZC4Y3TOY","IV_summary","p-N52XI4DVOQXXIYLCNRSXGLZUFZUG65LTMVUG63DEL5RW64TSMVWGC5DJN5XHGLTTMV4GQZLUL5TGS3DUMVZC4Y3TOY","write_traits_corr5","traits_corr6","p-N52XI4DVOQXXIYLCNRSXGLZVFZUG65LTMVUG63DEL5RW64TSMVWGC5DJN5XHGLTCMFZWKR2SKNPWM2LMORSXELTDON3A","write_traits_corr6","p-N52XI4DVOQXXIYLCNRSXGLZWFZUG65LTMVUG63DEL5RW64TSMVWGC5DJN5XHGLTON5XGE2LOMFZHSX3GNFWHIZLSFZRXG5Q","write_download_list","write_define_cats","traits_corr2_filled","p-MFXGC3DZONUXGL3EN53W43DPMFSF6TTFMFWGKX3MNFZXILTDON3A","sqc_munge","sqc_munge","filled_cats","sqc","p-N52XI4DVOQXXIYLCNRSXGL3EMVTGS3TFL5HGKYLMMVPWGYLUMVTW64TJMVZS4Y3TOY","relatives","traits_corr4","sex_het_out","IV_info_out","traits_corr4","sex_het_summary","sex_het_out","IV_info_out","p-MFXGC3DZONUXGL3EMF2GCX3TMV2HK4BPONSXQX3IMV2GK4TPM5SW4ZLJOR4S6","traits_corr2_update","Neale_SGG_dir_filt","trait_corrs","model_adjustments","write_hh_pairs","trait_corrs","trait_corrs","trait_corrs","phesant_files","pheno","phesant_files","phesant_files","time_at_household","phesant_files","phesant_files","phesant_files","phesant_files","phesant_files","phesant_files","phesant_files","phesant_files","phesant_files","household_relationships","phesant_files","phesant_files","phesant_files","phesant_files","phesant_files","write_traits_corr","traits_corr2","p-N52XI4DVOQXXIYLCNRSXGLZRFZUG65LTMVUG63DEL5RW64TSMVWGC5DJN5XHGLTDON3A","write_household_time","p-MFXGC3DZONUXGL3EMF2GCX3TMV2HK4BPNBXXK43FNBXWYZC7ORUW2ZJOMNZXM","fam","phesant_directory","traits_corr2_filled","Neale_to_process","traits_corr2_filled","model_adjustments","model_adjustments","traits_corr2","traits_corr3","traits_corr5","time_at_household_raw","hh_pairs","household_time_munge","household_time","write_joint","household_time","household_time","household_time_munge","p-MFXGC3DZONUXGL3EMF2GCX3TMV2HK4BPJJHUSTSUL5YGQZLON5PW233EMVWF6YLENJ2XG5DNMVXHI4ZOMNZXM","household_info","traits_corr2_update","run_process_Neale","run_process_Neale","run_process_Neale","p-MFXGC3DZONUXGL3EMF2GCX3TMV2HK4BPJFLF62LOMZXS6","joint_model_adjustments","write_houshold1","write_houshold2","hh_pairs_kin","hh_pairs_kin","p-MFXGC3DZONUXGL3EMF2GCX3TMV2HK4BPNBXXK43FNBXWYZC7OBQWS4TTFZRXG5Q","p-MFXGC3DZONUXGL3EMF2GCX3TMV2HK4BPJBHVKU2FJBHUYRC7JVCU2QSFKIYV64DIMVXG6X3NN5SGK3C7MFSGU5LTORWWK3TUOMXGG43W","p-MFXGC3DZONUXGL3EMF2GCX3TMV2HK4BPJBHVKU2FJBHUYRC7JVCU2QSFKIZF64DIMVXG6X3NN5SGK3C7MFSGU5LTORWWK3TUOMXGG43W","hh_pairs_filter","hh_pairs_filter","traits_corr2_update","sex_het_summary","time_at_household","UKBB_directory"],"arrows":["to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to"]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"dot","physics":false},"manipulation":{"enabled":false},"interaction":{"navigationButtons":true},"edges":{"smooth":false},"physics":{"stabilization":false}},"groups":null,"width":null,"height":null,"idselection":{"enabled":false,"style":"width: 150px; height: 26px","useLabels":true,"main":"Select by id"},"byselection":{"enabled":false,"style":"width: 150px; height: 26px","multiple":false,"hideColor":"rgba(200,200,200,0.5)","highlight":false},"main":{"text":"Dependency graph","style":"font-family:Georgia, Times New Roman, Times, serif;font-weight:bold;font-size:20px;text-align:center;"},"submain":null,"footer":null,"background":"rgba(0, 0, 0, 0)","highlight":{"enabled":false,"hoverNearest":false,"degree":1,"algorithm":"all","hideColor":"rgba(200,200,200,0.5)","labelOnly":true},"collapse":{"enabled":true,"fit":false,"resetHighlight":true,"clusterOptions":null,"keepCoord":true,"labelSuffix":"(cluster)"},"legend":{"width":0.2,"useGroups":false,"position":"left","ncol":1,"stepX":100,"stepY":100,"zoom":true,"nodes":{"label":["Up to date","Outdated","Imported","Object","Dynamic","Function","File"],"color":["#228B22","#000000","#1874CD","#888888","#888888","#888888","#888888"],"shape":["dot","dot","dot","dot","star","triangle","square"],"font.color":["black","black","black","black","black","black","black"],"font.size":[20,20,20,20,20,20,20],"id":[1,2,6,8,9,10,11]},"nodesToDataframe":true},"tooltipStay":300,"tooltipStyle":"position: fixed;visibility:hidden;padding: 5px;white-space: nowrap;font-family: verdana;font-size:14px;font-color:#000000;background-color: #f5f4ed;-moz-border-radius: 3px;-webkit-border-radius: 3px;border-radius: 3px;border: 1px solid #808074;box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);","igraphlayout":{"type":"square"}},"evals":[],"jsHooks":[]}</script>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 3.5.3 (2019-03-11)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: CentOS Linux 7 (Core)
+
+Matrix products: default
+BLAS: /data/sgg2/jenny/bin/R-3.5.3/lib64/R/lib/libRblas.so
+LAPACK: /data/sgg2/jenny/bin/R-3.5.3/lib64/R/lib/libRlapack.so
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] tidyselect_0.2.5        kableExtra_1.1.0        R.utils_2.9.2          
+ [4] R.oo_1.23.0             R.methodsS3_1.7.1       meta_4.9-9             
+ [7] strex_1.2.0             RColorBrewer_1.1-2      cutr_0.0.0.9000        
+[10] rbgen_0.1               ukbtools_0.11.3         disk.frame_0.3.2       
+[13] furrr_0.1.0             TwoSampleMR_0.4.26      reader_1.0.6           
+[16] NCmisc_1.1.6            optparse_1.6.4          readxl_1.3.1           
+[19] ggthemes_4.2.0          tryCatchLog_1.1.6       futile.logger_1.4.3    
+[22] DataExplorer_0.8.1      taRifx_1.0.6.1          qqman_0.1.4            
+[25] MASS_7.3-51.4           bit64_0.9-7             bit_1.1-15.1           
+[28] rslurm_0.5.0            rmeta_3.0               devtools_2.2.1         
+[31] usethis_1.5.1           data.table_1.12.8       clustermq_0.8.8.1      
+[34] future.batchtools_0.8.1 future_1.16.0           rlang_0.4.2            
+[37] knitr_1.26              drake_7.9.0.9000        forcats_0.4.0          
+[40] stringr_1.4.0           dplyr_0.8.3             purrr_0.3.3            
+[43] readr_1.3.1             tidyr_1.0.0             tibble_2.1.3           
+[46] ggplot2_3.2.1           tidyverse_1.3.0         pacman_0.5.1           
+[49] processx_3.4.1          workflowr_1.5.0        
+
+loaded via a namespace (and not attached):
+  [1] backports_1.1.5      plyr_1.8.5           igraph_1.2.4.2      
+  [4] lazyeval_0.2.2       storr_1.2.1          listenv_0.8.0       
+  [7] pryr_0.1.4           digest_0.6.23        foreach_1.4.7       
+ [10] htmltools_0.4.0      bigreadr_0.2.0       fansi_0.4.1         
+ [13] magrittr_1.5         checkmate_1.9.4      memoise_1.1.0       
+ [16] base64url_1.4        doParallel_1.0.15    bigassertr_0.1.1    
+ [19] remotes_2.1.0        globals_0.12.5       modelr_0.1.5        
+ [22] prettyunits_1.1.0    colorspace_1.4-1     rvest_0.3.5         
+ [25] rappdirs_0.3.1       haven_2.2.0          xfun_0.12           
+ [28] callr_3.4.0          crayon_1.3.4         jsonlite_1.6        
+ [31] zeallot_0.1.0        iterators_1.0.12     brew_1.0-6          
+ [34] glue_1.3.1           gtable_0.3.0         webshot_0.5.2       
+ [37] pkgbuild_1.0.6       future.apply_1.4.0   scales_1.1.0        
+ [40] futile.options_1.0.1 DBI_1.1.0            Rcpp_1.0.3          
+ [43] viridisLite_0.3.0    progress_1.2.2       txtq_0.2.0          
+ [46] htmlwidgets_1.5.1    httr_1.4.1           getopt_1.20.3       
+ [49] calibrate_1.7.5      ellipsis_0.3.0       XML_3.99-0.1        
+ [52] pkgconfig_2.0.3      dbplyr_1.4.2         reshape2_1.4.3      
+ [55] later_1.0.0          visNetwork_2.0.9     munsell_0.5.0       
+ [58] cellranger_1.1.0     tools_3.5.3          cli_2.0.1           
+ [61] generics_0.0.2       broom_0.5.4          evaluate_0.14       
+ [64] yaml_2.2.0           fs_1.3.1             packrat_0.5.0       
+ [67] nlme_3.1-142         formatR_1.7          proftools_0.99-2    
+ [70] xml2_1.2.2           compiler_3.5.3       rstudioapi_0.10     
+ [73] filelock_1.0.2       testthat_2.3.1       reprex_0.3.0        
+ [76] stringi_1.4.5        ps_1.3.0             desc_1.2.0          
+ [79] lattice_0.20-38      Matrix_1.2-18        vctrs_0.2.1         
+ [82] pillar_1.4.3         lifecycle_0.1.0      networkD3_0.4       
+ [85] httpuv_1.5.2         R6_2.4.1             promises_1.1.0      
+ [88] gridExtra_2.3        sessioninfo_1.1.1    codetools_0.2-16    
+ [91] lambda.r_1.2.4       assertthat_0.2.1     pkgload_1.0.2       
+ [94] rprojroot_1.3-2      withr_2.1.2          metafor_2.1-0       
+ [97] batchtools_0.9.12    parallel_3.5.3       hms_0.5.3           
+[100] fst_0.9.0            grid_3.5.3           rmarkdown_2.0       
+[103] git2r_0.26.1         lubridate_1.7.4     </code></pre>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
