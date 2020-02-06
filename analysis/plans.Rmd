@@ -1,0 +1,24 @@
+---
+title: "Plans"
+author: "Jenny"
+date: "2020-01-31"
+output: workflowr::wflow_html
+---
+
+
+```{r setup, include = FALSE}
+options(scipen=999)
+source("code/packages.R")
+source("code/settings.R")
+source("code/plan.R")
+library(R.utils)
+library(kableExtra)
+```
+
+
+```{r plans}
+
+vis_drake_graph(pre_pipeline, make_imports = FALSE)
+vis_drake_graph(pre_pipeline, make_imports = FALSE)
+
+```
