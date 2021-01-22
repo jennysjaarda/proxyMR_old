@@ -15,7 +15,7 @@
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -389,42 +389,47 @@ div.section {
 
 
 <p>
-<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report"
+  data-toggle="collapse" data-target="#workflowr-report">
+  
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span>
 </button>
 </p>
+
 <div id="workflowr-report" class="collapse">
 <ul class="nav nav-tabs">
-<li class="active">
+  <li class="active">
 <a data-toggle="tab" href="#summary">Summary</a>
 </li>
-<li>
+  <li>
 <a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> </a>
 </li>
-<li>
+  <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
 </li>
 </ul>
+
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
-<p>
-<strong>Last updated:</strong> 2020-01-28
+  <p>
+<strong>Last updated:</strong> 2021-01-22
 </p>
-<p>
+  <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 1
 </p>
-<p>
+  <p>
 <strong>Knit directory:</strong> <code>proxyMR/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
 </p>
-<p>
+  <p>
+  
 This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
   href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.5.0). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
 </p>
 <hr>
 </div>
 <div id="checks" class="tab-pane fade">
-<div class="panel-group" id="workflowr-checks">
-<div class="panel panel-default">
+  <div class="panel-group" id="workflowr-checks">
+  <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
 <a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
@@ -432,6 +437,7 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 </div>
 <div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
 <div class="panel-body">
+  
 <p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
 </div>
 </div>
@@ -444,6 +450,7 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 </div>
 <div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
 <div class="panel-body">
+  
 <p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
 </div>
 </div>
@@ -456,6 +463,7 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 </div>
 <div id="strongSeedstrongcodesetseed20191211code" class="panel-collapse collapse">
 <div class="panel-body">
+  
 <p>The command <code>set.seed(20191211)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
 </div>
 </div>
@@ -468,6 +476,7 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 </div>
 <div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
 <div class="panel-body">
+  
 <p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
 </div>
 </div>
@@ -480,6 +489,7 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 </div>
 <div id="strongCachestrongnone" class="panel-collapse collapse">
 <div class="panel-body">
+  
 <p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
 </div>
 </div>
@@ -492,29 +502,29 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 </div>
 <div id="strongFilepathsstrongabsolute" class="panel-collapse collapse">
 <div class="panel-body">
-<p>
+  <p>
 Using absolute paths to the files within your workflowr project makes it difficult for you and others to run your code on a different machine. Change the absolute path(s) below to the suggested relative path(s) to make your code more reproducible.
 </p>
 <table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th style="text-align:left;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> 
 absolute
 </th>
-<th style="text-align:left;">
+   <th style="text-align:left;"> 
 relative
 </th>
-</tr>
-</thead>
+  </tr>
+ </thead>
 <tbody>
-<tr>
-<td style="text-align:left;">
+  <tr>
+   <td style="text-align:left;"> 
 /data/sgg2/jenny/projects/proxyMR
 </td>
-<td style="text-align:left;">
+   <td style="text-align:left;"> 
 .
 </td>
-</tr>
+  </tr>
 </tbody>
 </table>
 </div>
@@ -523,15 +533,17 @@ relative
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjennysjaardaproxyMRtreee46cd1bfa3530af292aa7b7021e4d91c6cb6d3dbtargetblanke46cd1ba"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jennysjaarda/proxyMR/tree/e46cd1bfa3530af292aa7b7021e4d91c6cb6d3db" target="_blank">e46cd1b</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjennysjaardaproxyMRtree7ddc4b58a9f2012860853f73790915c77f1a70e2targetblank7ddc4b5a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jennysjaarda/proxyMR/tree/7ddc4b58a9f2012860853f73790915c77f1a70e2" target="_blank">7ddc4b5</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjennysjaardaproxyMRtreee46cd1bfa3530af292aa7b7021e4d91c6cb6d3dbtargetblanke46cd1ba" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjennysjaardaproxyMRtree7ddc4b58a9f2012860853f73790915c77f1a70e2targetblank7ddc4b5a" class="panel-collapse collapse">
 <div class="panel-body">
+  
+
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
 </p>
-<pre><code>
+ <pre><code>
 Ignored files:
     Ignored:    .drake/
     Ignored:    analysis/data_setup/
@@ -542,6 +554,9 @@ Ignored files:
     Ignored:    data/raw/
     Ignored:    data/slurm_clustermq.tmpl
     Ignored:    output/figures/
+    Ignored:    output/tables/._5.household_correlations.baseGRS_filter.csv
+    Ignored:    output/tables/._define_Neale_categories.csv
+    Ignored:    output/tables/._define_Neale_categories_filled.csv
     Ignored:    output/tables/traitMR/
     Ignored:    packrat/lib-R/
     Ignored:    packrat/lib-ext/
@@ -549,133 +564,117 @@ Ignored files:
     Ignored:    packrat/src/rbgen/
     Ignored:    packrat/src/rmote/
     Ignored:    packrat/src/webshot/
+    Ignored:    proxymr_100_clustermq.out
+    Ignored:    proxymr_10_clustermq.out
+    Ignored:    proxymr_11_clustermq.out
+    Ignored:    proxymr_12_clustermq.out
+    Ignored:    proxymr_13_clustermq.out
+    Ignored:    proxymr_14_clustermq.out
+    Ignored:    proxymr_15_clustermq.out
+    Ignored:    proxymr_16_clustermq.out
+    Ignored:    proxymr_17_clustermq.out
+    Ignored:    proxymr_18_clustermq.out
+    Ignored:    proxymr_19_clustermq.out
+    Ignored:    proxymr_1_clustermq.out
+    Ignored:    proxymr_20_clustermq.out
+    Ignored:    proxymr_21_clustermq.out
+    Ignored:    proxymr_22_clustermq.out
+    Ignored:    proxymr_23_clustermq.out
+    Ignored:    proxymr_24_clustermq.out
+    Ignored:    proxymr_25_clustermq.out
+    Ignored:    proxymr_26_clustermq.out
+    Ignored:    proxymr_27_clustermq.out
+    Ignored:    proxymr_28_clustermq.out
+    Ignored:    proxymr_29_clustermq.out
+    Ignored:    proxymr_2_clustermq.out
+    Ignored:    proxymr_30_clustermq.out
+    Ignored:    proxymr_31_clustermq.out
+    Ignored:    proxymr_32_clustermq.out
+    Ignored:    proxymr_33_clustermq.out
+    Ignored:    proxymr_34_clustermq.out
+    Ignored:    proxymr_35_clustermq.out
+    Ignored:    proxymr_36_clustermq.out
+    Ignored:    proxymr_37_clustermq.out
+    Ignored:    proxymr_38_clustermq.out
+    Ignored:    proxymr_39_clustermq.out
+    Ignored:    proxymr_3_clustermq.out
+    Ignored:    proxymr_40_clustermq.out
+    Ignored:    proxymr_41_clustermq.out
+    Ignored:    proxymr_42_clustermq.out
+    Ignored:    proxymr_43_clustermq.out
+    Ignored:    proxymr_44_clustermq.out
+    Ignored:    proxymr_45_clustermq.out
+    Ignored:    proxymr_46_clustermq.out
+    Ignored:    proxymr_47_clustermq.out
+    Ignored:    proxymr_48_clustermq.out
+    Ignored:    proxymr_49_clustermq.out
+    Ignored:    proxymr_4_clustermq.out
+    Ignored:    proxymr_50_clustermq.out
+    Ignored:    proxymr_51_clustermq.out
+    Ignored:    proxymr_52_clustermq.out
+    Ignored:    proxymr_53_clustermq.out
+    Ignored:    proxymr_54_clustermq.out
+    Ignored:    proxymr_55_clustermq.out
+    Ignored:    proxymr_56_clustermq.out
+    Ignored:    proxymr_57_clustermq.out
+    Ignored:    proxymr_58_clustermq.out
+    Ignored:    proxymr_59_clustermq.out
+    Ignored:    proxymr_5_clustermq.out
+    Ignored:    proxymr_60_clustermq.out
+    Ignored:    proxymr_61_clustermq.out
+    Ignored:    proxymr_62_clustermq.out
+    Ignored:    proxymr_63_clustermq.out
+    Ignored:    proxymr_64_clustermq.out
+    Ignored:    proxymr_65_clustermq.out
+    Ignored:    proxymr_66_clustermq.out
+    Ignored:    proxymr_67_clustermq.out
+    Ignored:    proxymr_68_clustermq.out
+    Ignored:    proxymr_69_clustermq.out
+    Ignored:    proxymr_6_clustermq.out
+    Ignored:    proxymr_70_clustermq.out
+    Ignored:    proxymr_71_clustermq.out
+    Ignored:    proxymr_72_clustermq.out
+    Ignored:    proxymr_73_clustermq.out
+    Ignored:    proxymr_74_clustermq.out
+    Ignored:    proxymr_75_clustermq.out
+    Ignored:    proxymr_76_clustermq.out
+    Ignored:    proxymr_77_clustermq.out
+    Ignored:    proxymr_78_clustermq.out
+    Ignored:    proxymr_79_clustermq.out
+    Ignored:    proxymr_7_clustermq.out
+    Ignored:    proxymr_80_clustermq.out
+    Ignored:    proxymr_81_clustermq.out
+    Ignored:    proxymr_82_clustermq.out
+    Ignored:    proxymr_83_clustermq.out
+    Ignored:    proxymr_84_clustermq.out
+    Ignored:    proxymr_85_clustermq.out
+    Ignored:    proxymr_86_clustermq.out
+    Ignored:    proxymr_87_clustermq.out
+    Ignored:    proxymr_88_clustermq.out
+    Ignored:    proxymr_89_clustermq.out
+    Ignored:    proxymr_8_clustermq.out
+    Ignored:    proxymr_90_clustermq.out
+    Ignored:    proxymr_91_clustermq.out
+    Ignored:    proxymr_92_clustermq.out
+    Ignored:    proxymr_93_clustermq.out
+    Ignored:    proxymr_94_clustermq.out
+    Ignored:    proxymr_95_clustermq.out
+    Ignored:    proxymr_96_clustermq.out
+    Ignored:    proxymr_97_clustermq.out
+    Ignored:    proxymr_98_clustermq.out
+    Ignored:    proxymr_99_clustermq.out
+    Ignored:    proxymr_9_clustermq.out
 
 Untracked files:
-    Untracked:  .future/
-    Untracked:  Rplots.pdf
-    Untracked:  cache_log.csv
-    Untracked:  code/App_test/
-    Untracked:  output/tables/._5.household_correlations.baseGRS_filter.csv
-    Untracked:  output/tables/._define_Neale_categories.csv
-    Untracked:  output/tables/._define_Neale_categories_filled.csv
-    Untracked:  output/tables/1.household_correlations.csv
-    Untracked:  output/tables/2.household_correlations.corr_filter.csv
-    Untracked:  output/tables/3.household_correlations.numIVs_filter.csv
-    Untracked:  output/tables/4.household_correlations.sexhet_filter.csv
-    Untracked:  output/tables/5.household_correlations.baseGRS_filter.csv
-    Untracked:  output/tables/6.household_correlations.nonbinary_filter.csv
-    Untracked:  output/tables/define_Neale_categories.csv
-    Untracked:  output/tables/household_correlations.final_filter.csv
-    Untracked:  proxymr.log
-    Untracked:  proxymr_100_clustermq.out
-    Untracked:  proxymr_10_clustermq.out
-    Untracked:  proxymr_11_clustermq.out
-    Untracked:  proxymr_12_clustermq.out
-    Untracked:  proxymr_13_clustermq.out
-    Untracked:  proxymr_14_clustermq.out
-    Untracked:  proxymr_15_clustermq.out
-    Untracked:  proxymr_16_clustermq.out
-    Untracked:  proxymr_17_clustermq.out
-    Untracked:  proxymr_18_clustermq.out
-    Untracked:  proxymr_19_clustermq.out
-    Untracked:  proxymr_1_clustermq.out
-    Untracked:  proxymr_20_clustermq.out
-    Untracked:  proxymr_21_clustermq.out
-    Untracked:  proxymr_22_clustermq.out
-    Untracked:  proxymr_23_clustermq.out
-    Untracked:  proxymr_24_clustermq.out
-    Untracked:  proxymr_25_clustermq.out
-    Untracked:  proxymr_26_clustermq.out
-    Untracked:  proxymr_27_clustermq.out
-    Untracked:  proxymr_28_clustermq.out
-    Untracked:  proxymr_29_clustermq.out
-    Untracked:  proxymr_2_clustermq.out
-    Untracked:  proxymr_30_clustermq.out
-    Untracked:  proxymr_31_clustermq.out
-    Untracked:  proxymr_32_clustermq.out
-    Untracked:  proxymr_33_clustermq.out
-    Untracked:  proxymr_34_clustermq.out
-    Untracked:  proxymr_35_clustermq.out
-    Untracked:  proxymr_36_clustermq.out
-    Untracked:  proxymr_37_clustermq.out
-    Untracked:  proxymr_38_clustermq.out
-    Untracked:  proxymr_39_clustermq.out
-    Untracked:  proxymr_3_clustermq.out
-    Untracked:  proxymr_40_clustermq.out
-    Untracked:  proxymr_41_clustermq.out
-    Untracked:  proxymr_42_clustermq.out
-    Untracked:  proxymr_43_clustermq.out
-    Untracked:  proxymr_44_clustermq.out
-    Untracked:  proxymr_45_clustermq.out
-    Untracked:  proxymr_46_clustermq.out
-    Untracked:  proxymr_47_clustermq.out
-    Untracked:  proxymr_48_clustermq.out
-    Untracked:  proxymr_49_clustermq.out
-    Untracked:  proxymr_4_clustermq.out
-    Untracked:  proxymr_50_clustermq.out
-    Untracked:  proxymr_51_clustermq.out
-    Untracked:  proxymr_52_clustermq.out
-    Untracked:  proxymr_53_clustermq.out
-    Untracked:  proxymr_54_clustermq.out
-    Untracked:  proxymr_55_clustermq.out
-    Untracked:  proxymr_56_clustermq.out
-    Untracked:  proxymr_57_clustermq.out
-    Untracked:  proxymr_58_clustermq.out
-    Untracked:  proxymr_59_clustermq.out
-    Untracked:  proxymr_5_clustermq.out
-    Untracked:  proxymr_60_clustermq.out
-    Untracked:  proxymr_61_clustermq.out
-    Untracked:  proxymr_62_clustermq.out
-    Untracked:  proxymr_63_clustermq.out
-    Untracked:  proxymr_64_clustermq.out
-    Untracked:  proxymr_65_clustermq.out
-    Untracked:  proxymr_66_clustermq.out
-    Untracked:  proxymr_67_clustermq.out
-    Untracked:  proxymr_68_clustermq.out
-    Untracked:  proxymr_69_clustermq.out
-    Untracked:  proxymr_6_clustermq.out
-    Untracked:  proxymr_70_clustermq.out
-    Untracked:  proxymr_71_clustermq.out
-    Untracked:  proxymr_72_clustermq.out
-    Untracked:  proxymr_73_clustermq.out
-    Untracked:  proxymr_74_clustermq.out
-    Untracked:  proxymr_75_clustermq.out
-    Untracked:  proxymr_76_clustermq.out
-    Untracked:  proxymr_77_clustermq.out
-    Untracked:  proxymr_78_clustermq.out
-    Untracked:  proxymr_79_clustermq.out
-    Untracked:  proxymr_7_clustermq.out
-    Untracked:  proxymr_80_clustermq.out
-    Untracked:  proxymr_81_clustermq.out
-    Untracked:  proxymr_82_clustermq.out
-    Untracked:  proxymr_83_clustermq.out
-    Untracked:  proxymr_84_clustermq.out
-    Untracked:  proxymr_85_clustermq.out
-    Untracked:  proxymr_86_clustermq.out
-    Untracked:  proxymr_87_clustermq.out
-    Untracked:  proxymr_88_clustermq.out
-    Untracked:  proxymr_89_clustermq.out
-    Untracked:  proxymr_8_clustermq.out
-    Untracked:  proxymr_90_clustermq.out
-    Untracked:  proxymr_91_clustermq.out
-    Untracked:  proxymr_92_clustermq.out
-    Untracked:  proxymr_93_clustermq.out
-    Untracked:  proxymr_94_clustermq.out
-    Untracked:  proxymr_95_clustermq.out
-    Untracked:  proxymr_96_clustermq.out
-    Untracked:  proxymr_97_clustermq.out
-    Untracked:  proxymr_98_clustermq.out
-    Untracked:  proxymr_99_clustermq.out
-    Untracked:  proxymr_9_clustermq.out
+    Untracked:  plans.html
 
 Unstaged changes:
-    Modified:   .gitignore
-    Deleted:    packrat/snapshot.lock
+    Modified:   analysis/plans.Rmd
 
-</code></pre>
-<p>
+</code></pre> <p>
 Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
 </p>
+
 </div>
 </div>
 </div>
@@ -683,7 +682,7 @@ Note that any generated files, e.g. HTML, png, CSS, etc., are not included in t
 <hr>
 </div>
 <div id="versions" class="tab-pane fade">
-
+  
 <p>
 These are the previous versions of the R Markdown and HTML files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view them.
 </p>
@@ -711,10 +710,44 @@ Message
 <tbody>
 <tr>
 <td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jennysjaarda/proxyMR/4ac4dde6b22900a8124e1a383064219cb08e8ada/docs/setup.html" target="_blank">4ac4dde</a>
+</td>
+<td>
+Jenny Sjaarda
+</td>
+<td>
+2020-01-31
+</td>
+<td>
+update repo from running make
+</td>
+</tr>
+<tr>
+<td>
 Rmd
 </td>
 <td>
 <a href="https://github.com/jennysjaarda/proxyMR/blob/25b7ed4439b246d95e1a497a552a43d005a7c87d/analysis/setup.Rmd" target="_blank">25b7ed4</a>
+</td>
+<td>
+Jenny
+</td>
+<td>
+2020-01-28
+</td>
+<td>
+modify Rmd documents
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jennysjaarda/proxyMR/blob/6829cabe75cd506044cc44143695832ca11f4fb5/analysis/setup.Rmd" target="_blank">6829cab</a>
 </td>
 <td>
 Jenny
@@ -848,12 +881,19 @@ init setup
 </tbody>
 </table>
 </div>
+
 <hr>
 </div>
 </div>
 </div>
-<p><strong>Last updated:</strong> 2020-01-28</p>
-<p><strong>Code version:</strong> e46cd1bfa3530af292aa7b7021e4d91c6cb6d3db</p>
+
+
+
+
+
+
+<p><strong>Last updated:</strong> 2021-01-22</p>
+<p><strong>Code version:</strong> 7ddc4b58a9f2012860853f73790915c77f1a70e2</p>
 <p><strong>To reproduce the results from this project, please follow these instructions.</strong></p>
 <p><em>In general, <code>drake</code> was used to manage long-running code and <code>workflowr</code> was used to manage the <a href="https://jennysjaarda.github.io/PSYMETAB/index.html">website</a>.</em></p>
 <hr />
@@ -886,20 +926,16 @@ wflow_git_push()</code></pre>
 git clone https://GitHub.com/jennysjaarda/proxyMR.git proxyMR</code></pre>
 <p>Open project in atom (or preferred text editor) and modify the following files:</p>
 <ul>
-<li>Because Terminal cannot generate a preview and <code>workflowr</code> doesn’t like the sysgit, to the <code>.Rprofile</code> file, add:
-<ul>
+<li>Because Terminal cannot generate a preview and <code>workflowr</code> doesn’t like the sysgit, to the <code>.Rprofile</code> file, add:</li>
 <li><code>options(workflowr.sysgit = &quot;&quot;)</code></li>
 <li><code>options(&quot;workflowr.view&quot; = FALSE)</code></li>
-</ul></li>
-<li>To ensure git hub isn’t manaaging large files, modify the <code>.gitignore</code> file, by adding the following lines:
-<ul>
+<li>To ensure git hub isn’t manaaging large files, modify the <code>.gitignore</code> file, by adding the following lines:</li>
 <li><code>analysis/*</code></li>
 <li><code>data/*</code></li>
 <li><code>!analysis/*.Rmd</code></li>
 <li><code>!data/*.md</code></li>
 <li><code>.git/</code></li>
 <li><code>.drake/</code></li>
-</ul></li>
 <li>Save and push these changes to GitHub.</li>
 <li>Pull to the server.</li>
 </ul>
@@ -1048,11 +1084,16 @@ wflow_publish(rmd_commit,
 </ol>
 <br>
 <p>
-<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo"
+  data-toggle="collapse" data-target="#workflowr-sessioninfo"
+  style = "display: block;">
+  
 <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
 </button>
 </p>
+
 <div id="workflowr-sessioninfo" class="collapse">
+
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>R version 3.5.3 (2019-03-11)
 Platform: x86_64-pc-linux-gnu (64-bit)
@@ -1085,6 +1126,8 @@ loaded via a namespace (and not attached):
 [21] yaml_2.2.0      httpuv_1.5.2    xfun_0.12       compiler_3.5.3 
 [25] htmltools_0.4.0 knitr_1.26     </code></pre>
 </div>
+
+
 </div>
 </div>
 

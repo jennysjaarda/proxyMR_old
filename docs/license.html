@@ -15,13 +15,15 @@
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -282,7 +284,13 @@ $(document).ready(function () {
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/jennysjaarda/proxyMR">
+    <span class="fa fa-github"></span>
+     
+    Source code
+  </a>
+</li>
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -305,42 +313,47 @@ div.section {
 
 
 <p>
-<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report"
+  data-toggle="collapse" data-target="#workflowr-report">
+  
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 </button>
 </p>
+
 <div id="workflowr-report" class="collapse">
 <ul class="nav nav-tabs">
-<li class="active">
+  <li class="active">
 <a data-toggle="tab" href="#summary">Summary</a>
 </li>
-<li>
+  <li>
 <a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
 </li>
-<li>
+  <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
 </li>
 </ul>
+
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
-<p>
-<strong>Last updated:</strong> 2019-12-11
+  <p>
+<strong>Last updated:</strong> 2021-01-22
 </p>
-<p>
+  <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 2 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
 </p>
-<p>
+  <p>
 <strong>Knit directory:</strong> <code>proxyMR/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
 </p>
-<p>
+  <p>
+  
 This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
   href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.5.0). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
 </p>
 <hr>
 </div>
 <div id="checks" class="tab-pane fade">
-<div id="workflowr-checks" class="panel-group">
-<div class="panel panel-default">
+  <div class="panel-group" id="workflowr-checks">
+  <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
 <a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
@@ -348,6 +361,7 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 </div>
 <div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
 <div class="panel-body">
+  
 <p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
 </div>
 </div>
@@ -355,20 +369,148 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstronga5f52dc"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> a5f52dc </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjennysjaardaproxyMRtree7ddc4b58a9f2012860853f73790915c77f1a70e2targetblank7ddc4b5a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jennysjaarda/proxyMR/tree/7ddc4b58a9f2012860853f73790915c77f1a70e2" target="_blank">7ddc4b5</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstronga5f52dc" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjennysjaardaproxyMRtree7ddc4b58a9f2012860853f73790915c77f1a70e2targetblank7ddc4b5a" class="panel-collapse collapse">
 <div class="panel-body">
+  
+
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
 </p>
-<pre><code>
-working directory clean
-</code></pre>
-<p>
+ <pre><code>
+Ignored files:
+    Ignored:    .drake/
+    Ignored:    analysis/data_setup/
+    Ignored:    analysis/download_Neale_list.csv
+    Ignored:    analysis/process_Neale.out
+    Ignored:    analysis/traitMR/
+    Ignored:    data/processed/
+    Ignored:    data/raw/
+    Ignored:    data/slurm_clustermq.tmpl
+    Ignored:    output/figures/
+    Ignored:    output/tables/._5.household_correlations.baseGRS_filter.csv
+    Ignored:    output/tables/._define_Neale_categories.csv
+    Ignored:    output/tables/._define_Neale_categories_filled.csv
+    Ignored:    output/tables/traitMR/
+    Ignored:    packrat/lib-R/
+    Ignored:    packrat/lib-ext/
+    Ignored:    packrat/lib/
+    Ignored:    packrat/src/rbgen/
+    Ignored:    packrat/src/rmote/
+    Ignored:    packrat/src/webshot/
+    Ignored:    proxymr_100_clustermq.out
+    Ignored:    proxymr_10_clustermq.out
+    Ignored:    proxymr_11_clustermq.out
+    Ignored:    proxymr_12_clustermq.out
+    Ignored:    proxymr_13_clustermq.out
+    Ignored:    proxymr_14_clustermq.out
+    Ignored:    proxymr_15_clustermq.out
+    Ignored:    proxymr_16_clustermq.out
+    Ignored:    proxymr_17_clustermq.out
+    Ignored:    proxymr_18_clustermq.out
+    Ignored:    proxymr_19_clustermq.out
+    Ignored:    proxymr_1_clustermq.out
+    Ignored:    proxymr_20_clustermq.out
+    Ignored:    proxymr_21_clustermq.out
+    Ignored:    proxymr_22_clustermq.out
+    Ignored:    proxymr_23_clustermq.out
+    Ignored:    proxymr_24_clustermq.out
+    Ignored:    proxymr_25_clustermq.out
+    Ignored:    proxymr_26_clustermq.out
+    Ignored:    proxymr_27_clustermq.out
+    Ignored:    proxymr_28_clustermq.out
+    Ignored:    proxymr_29_clustermq.out
+    Ignored:    proxymr_2_clustermq.out
+    Ignored:    proxymr_30_clustermq.out
+    Ignored:    proxymr_31_clustermq.out
+    Ignored:    proxymr_32_clustermq.out
+    Ignored:    proxymr_33_clustermq.out
+    Ignored:    proxymr_34_clustermq.out
+    Ignored:    proxymr_35_clustermq.out
+    Ignored:    proxymr_36_clustermq.out
+    Ignored:    proxymr_37_clustermq.out
+    Ignored:    proxymr_38_clustermq.out
+    Ignored:    proxymr_39_clustermq.out
+    Ignored:    proxymr_3_clustermq.out
+    Ignored:    proxymr_40_clustermq.out
+    Ignored:    proxymr_41_clustermq.out
+    Ignored:    proxymr_42_clustermq.out
+    Ignored:    proxymr_43_clustermq.out
+    Ignored:    proxymr_44_clustermq.out
+    Ignored:    proxymr_45_clustermq.out
+    Ignored:    proxymr_46_clustermq.out
+    Ignored:    proxymr_47_clustermq.out
+    Ignored:    proxymr_48_clustermq.out
+    Ignored:    proxymr_49_clustermq.out
+    Ignored:    proxymr_4_clustermq.out
+    Ignored:    proxymr_50_clustermq.out
+    Ignored:    proxymr_51_clustermq.out
+    Ignored:    proxymr_52_clustermq.out
+    Ignored:    proxymr_53_clustermq.out
+    Ignored:    proxymr_54_clustermq.out
+    Ignored:    proxymr_55_clustermq.out
+    Ignored:    proxymr_56_clustermq.out
+    Ignored:    proxymr_57_clustermq.out
+    Ignored:    proxymr_58_clustermq.out
+    Ignored:    proxymr_59_clustermq.out
+    Ignored:    proxymr_5_clustermq.out
+    Ignored:    proxymr_60_clustermq.out
+    Ignored:    proxymr_61_clustermq.out
+    Ignored:    proxymr_62_clustermq.out
+    Ignored:    proxymr_63_clustermq.out
+    Ignored:    proxymr_64_clustermq.out
+    Ignored:    proxymr_65_clustermq.out
+    Ignored:    proxymr_66_clustermq.out
+    Ignored:    proxymr_67_clustermq.out
+    Ignored:    proxymr_68_clustermq.out
+    Ignored:    proxymr_69_clustermq.out
+    Ignored:    proxymr_6_clustermq.out
+    Ignored:    proxymr_70_clustermq.out
+    Ignored:    proxymr_71_clustermq.out
+    Ignored:    proxymr_72_clustermq.out
+    Ignored:    proxymr_73_clustermq.out
+    Ignored:    proxymr_74_clustermq.out
+    Ignored:    proxymr_75_clustermq.out
+    Ignored:    proxymr_76_clustermq.out
+    Ignored:    proxymr_77_clustermq.out
+    Ignored:    proxymr_78_clustermq.out
+    Ignored:    proxymr_79_clustermq.out
+    Ignored:    proxymr_7_clustermq.out
+    Ignored:    proxymr_80_clustermq.out
+    Ignored:    proxymr_81_clustermq.out
+    Ignored:    proxymr_82_clustermq.out
+    Ignored:    proxymr_83_clustermq.out
+    Ignored:    proxymr_84_clustermq.out
+    Ignored:    proxymr_85_clustermq.out
+    Ignored:    proxymr_86_clustermq.out
+    Ignored:    proxymr_87_clustermq.out
+    Ignored:    proxymr_88_clustermq.out
+    Ignored:    proxymr_89_clustermq.out
+    Ignored:    proxymr_8_clustermq.out
+    Ignored:    proxymr_90_clustermq.out
+    Ignored:    proxymr_91_clustermq.out
+    Ignored:    proxymr_92_clustermq.out
+    Ignored:    proxymr_93_clustermq.out
+    Ignored:    proxymr_94_clustermq.out
+    Ignored:    proxymr_95_clustermq.out
+    Ignored:    proxymr_96_clustermq.out
+    Ignored:    proxymr_97_clustermq.out
+    Ignored:    proxymr_98_clustermq.out
+    Ignored:    proxymr_99_clustermq.out
+    Ignored:    proxymr_9_clustermq.out
+
+Untracked files:
+    Untracked:  plans.html
+
+Unstaged changes:
+    Modified:   analysis/plans.Rmd
+
+</code></pre> <p>
 Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
 </p>
+
 </div>
 </div>
 </div>
@@ -376,7 +518,7 @@ Note that any generated files, e.g. HTML, png, CSS, etc., are not included in t
 <hr>
 </div>
 <div id="versions" class="tab-pane fade">
-
+  
 <p>
 These are the previous versions of the R Markdown and HTML files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view them.
 </p>
@@ -404,10 +546,27 @@ Message
 <tbody>
 <tr>
 <td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jennysjaarda/proxyMR/bcea4974d949520cce2a3831a6513b36da0f0fb7/docs/license.html" target="_blank">bcea497</a>
+</td>
+<td>
+Jenny Sjaarda
+</td>
+<td>
+2019-12-11
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
 Rmd
 </td>
 <td>
-a5f52dc
+<a href="https://github.com/jennysjaarda/proxyMR/blob/a5f52dc60781eb5bf11cfee027cfb71068b97b28/analysis/license.Rmd" target="_blank">a5f52dc</a>
 </td>
 <td>
 Jenny Sjaarda
@@ -422,10 +581,15 @@ Start workflowr project.
 </tbody>
 </table>
 </div>
+
 <hr>
 </div>
 </div>
 </div>
+
+
+
+
 <p>What license are you using for your code? See <a href="http://choosealicense.com/">choosealicense.com</a> for help deciding. It’s a convention to save a file <code>LICENSE</code> in the root of your Git repo that contains the license text.</p>
 <p>What license are you using for the written content on your site? It is traditional to choose a <a href="https://creativecommons.org/choose/">Creative Commons</a> license for this type of content.</p>
 <p>How should others cite your work? It’s a convention to save a file <code>CITATION</code> in the root of your Git repo that contains the citation information.</p>
